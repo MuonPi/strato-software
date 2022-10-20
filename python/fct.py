@@ -14,20 +14,20 @@ from ADS1x15 import ADS1115
 
 def read_byte(adr, reg, bus = smbus.SMBus(1)):					#bus=i2c bus nummer; adr=adresse sensor; reg=register sensor
 	return bus.read_byte_data(adr, reg)			#bus=aus smbus SMBus(1)
-    
+
 def read_byte_2c(adr, reg, bus = smbus.SMBus(1)):				#als 2er-komplement auslesen
 	tmp = read_byte(adr, reg)
 	if (tmp >= 0x80):
 		return -((255 - tmp) + 1)
 	else:
 		return tmp
- 
+
 def read_2byte_hl(adr, reg, bus = smbus.SMBus(1)):					#als 1er-komplement auslesen zuerst highbyte dann lowbyte
 	h = bus.read_byte_data(adr, reg)
 	l = bus.read_byte_data(adr, reg+1)
 	tmp = (h << 8) + l
 	return tmp
- 
+
 def read_2byte_hl_2c(adr, reg, bus = smbus.SMBus(1)):				#als 2er-komplement auslesen
 	tmp = read_2byte_hl(adr, reg)
 	if (tmp >= 0x8000):
@@ -40,7 +40,7 @@ def read_2byte_lh(adr, reg, bus = smbus.SMBus(1)):					#als 1er-komplement ausle
 	h = bus.read_byte_data(adr, reg+1)
 	tmp = (h << 8) + l
 	return tmp
- 
+
 def read_2byte_lh_2c(adr, reg, bus = smbus.SMBus(1)):				#als 2er-komplement auslesen
 	tmp = read_2byte_lh(adr, reg)
 	if (tmp >= 0x8000):
@@ -62,9 +62,9 @@ def read_3byte_hlx_2c(adr, reg, bus = smbus.SMBus(1)):
 	else:
 		return tmp
 
-def read_word(adr, reg, bus = smbus.SMBus(1)):					
-	return bus.read_word_data(adr, reg)		
-    
+def read_word(adr, reg, bus = smbus.SMBus(1)):
+	return bus.read_word_data(adr, reg)
+
 def write_byte(adr, reg, cmd, bus = smbus.SMBus(1)):            #cmd=command
 	return bus.write_byte_data(adr, reg, cmd)
 
@@ -109,8 +109,6 @@ class MPU6050:
 			print('MPU6050_acce_save_fail')
 
 
-
-
 class SEN0321:
 	def init():
 		try:
@@ -132,7 +130,7 @@ class SEN0321:
 			write_file(filename("ozon_raw", "csv", 5), "raw", dat)
 		except:
 			print('SEN0321_ozon_save_fail')
-        
+
 
 
 class BME280:
@@ -207,8 +205,8 @@ class QMC5883L:
 			write_file(filename("magn_raw", "csv", 5), "raw", dat)#, 3)
 		except:
 			print('QMC5883L_magn_save_fail')
-        
-        
+
+
 
 class VEML6075:
 	def init():
@@ -258,7 +256,7 @@ class ADS_1115:
 			write_file(filename("volt_raw", "csv", 5), "raw", dat)
 		except:
 			print('ADS1115_volt_save_fail')
-		
+
 
 
 
@@ -319,9 +317,9 @@ class MuonPi:
 		except:
 			print('rateXOR_save_fail')
 
-			
-			
-			
+
+
+
 class SIM7000E:
 	sim = None
 	def init(prt = 'ttyUSB3'):
@@ -474,7 +472,7 @@ class SIM7000E:
 
 class LoRa:
 	lor = None
-	def init(prt = 'ttyUSB0'):
+	def init(prt = 'nanoatmega328'):
 		try:
 			try:
 				LoRa.lor.close()
@@ -497,18 +495,17 @@ class LoRa:
 				print('LoRa_close_fail')
 	def answer(tmo = 10):
 		try:
-			asw = []
+			asw = bytearray()
 			now = time.time()
 			while time.time() < now + tmo:
-				while LoRa.lor.in_waiting:
+				while LoRa.lor.in_waiting > 0:
+					tmp = LoRa.lor.read(100)
+					print(tmp)
+					# LoRa.lor.readinto(asw)
+					# print(asw)
 					time.sleep(.2)
-					tmp = LoRa.lor.readline().decode().strip()
-					if tmp != '':
-						asw = asw + [tmp]
 					if LoRa.lor.in_waiting == 0:
-						#print(asw)
-						return asw #.strip()
-					#asw = asw + ';'
+						return asw
 			print('LoRa_answer_timeout')
 			return ['fail']
 		except:
@@ -602,10 +599,12 @@ class LoRa:
 		sum2 = 0
 		i = 0
 		while i < len(pld):
-			sum1 = (sum1 + ord(pld[i])) % 255
+			sum1 = (sum1 + pld[i]) % 255
 			sum2 = (sum2 + sum1) % 255
 			i += 1
-		rlt = str(sum1) + ' ' + str(sum2)
+		rlt = bytearray()
+		rlt.append(sum1)
+		rlt.append(sum2)
 		return rlt
 	def uplinkSequenceNo():
 		try:
@@ -634,30 +633,20 @@ class LoRa:
 			return usn
 	def create_message(pld): # message die an lora gesendet werden soll
 		try:
-			el1 = str(0xF9)
-			#"el2 = a.itemsize"
-			try:					# payload creation
-				el2 = str(len(pld))
-				#if(str(pld[0]) == 'fail'):
-				#	el3 = '0'
-				#else:
-				el3 = str(pld[0])
-				i = 1
-				while i < len(pld): 
-				#	if(str(pld[i]) == 'fail'):
-				#		el3 = el3 + ' ' + '0'
-				#	else:
-					el3 = el3 + ' ' + str(pld[i]) 
-					i += 1
-			except:
-				print('LoRa_create_payload_in_message_fail')
-				el3 = '0'
-			#el4 = LoRa.checksum(el3)
-			rlt = el1 + ' ' + el2 + ' ' + el3# + ' ' + el4
-			return rlt
+			if (len(pld)>255):
+				raise ValueError('payload larger than 255 bytes')
+			msg = bytearray()
+			msg.append(0xf9) # append msg header byte
+			msg.append(len(pld))
+			for b in pld:
+				msg.append(b)
+			rlt = LoRa.checksum(pld)
+			for b in rlt:
+				msg.append(b)
+			return msg
 		except:
 			print('LoRa_create_message_fail')
-			return str(0xF9) + ' ' + '0'
+			return bytearray(b'\xf9\x00\x00\x00')
 	def save_message(dat):
 		try:
 			write_file(filename("lora_raw", "csv", 5), "raw", dat)#, 18)
@@ -676,13 +665,13 @@ class LoRa:
 			return ['fail']
 	def send_message(msg):
 		try:
-			LoRa.lor.write(msg.encode())
+			LoRa.lor.write(msg)
 			return LoRa.answer()
 		except:
 			print('LoRa_send_fail')
 			LoRa.init()
 			return ['fail']
-		
+
 
 
 
@@ -706,9 +695,9 @@ def init_transfers():
 	SIM7000E.init()
 	LoRa.init()
 	print('init_transfers_done')
-	
 
-	
+
+
 
 def failsafe_sensors():
 	global sensorfail
@@ -720,8 +709,8 @@ def failsafe_sensors():
 	else:
 		sensorfail[0] = sensorfail[1]
 		sensorfail[1] = 0
-		
-		
+
+
 
 
 def failsafe_transfers():
@@ -734,8 +723,8 @@ def failsafe_transfers():
 	else:
 		transferfail[0] = transferfail[1]
 		transferfail[1] = 0
-	
-        
+
+
 
 
 #------------------ ADC Commands ------------------------
@@ -777,7 +766,7 @@ def filename(nam, typ, tim, dif = 0):				# dateiname, dateiendung, time nachdem 
     if(int(hou / 10) == 0):
         houstr = '0' + str(hou)				# stunde als string
     else:
-        houstr = str(hou)			
+        houstr = str(hou)
     min = int(min % 60)
     if(int(min / 10) == 0):
         minstr = '0' + str(min)
@@ -812,11 +801,11 @@ def read_logfile(pat, atr):			# dateipfad, attribut welches ausgegeben werden so
 	fil.close()
 	ret = 'fail'
 	return ret
-	
-	
-	
-	
-	
+
+
+
+
+
 
 
 
@@ -868,9 +857,9 @@ def read_gps(hdl, tmo):        # hdl=handle, tmo=timeout
 def maps_str(cor):      # cor=koordinaten mit , getrennt
 	out = 'https://www.google.de/maps?q=' + str(cor[0]) + ',' + str(cor[1])
 	return out
-	
-	
-	
+
+
+
 
 
 #-------------------- Time Commands --------------------
@@ -887,8 +876,8 @@ def sleep_until(tme):		# Pause bis Programmlaufzeit bestimmte Zeit ist
 	global starttime
 	time.sleep(tme - ((time.time() - starttime) % tme))
 	return 1
-	
-	
+
+
 
 def past_seconds(tme):		# vergangene Sekunden des Tages # tme = übergebene Zeit in Form hh:mm:ss
 	tme = tme.split(':')
