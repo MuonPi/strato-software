@@ -527,8 +527,13 @@ class LoRa:
 				i += 1
 			#print(dat)		# als erste stelle eventuell den idcounter für lora senden
 			#[datu, uhrz, mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
-			avr = []	# avr = average
-			avr = avr + [LoRa.uplinkSequenceNo()]
+			avr = bytearray()	# avr = average
+			seq_no = LoRa.uplinkSequenceNo()
+			for b in seq_no:
+				avr.append(b)
+
+			## TODO: update avr to feature cayenne low power protocol ?!
+
 			#print(avr)
 			avr = avr + [past_seconds(dat[txtlen - 1][1].strip())]	# letzter zeitstempel aus payload file wird verwendet in sekunden
 			#print(avr)
@@ -597,11 +602,11 @@ class LoRa:
 	def checksum(pld):
 		sum1 = 0
 		sum2 = 0
-		i = 0
-		while i < len(pld):
-			sum1 = (sum1 + pld[i]) % 255
-			sum2 = (sum2 + sum1) % 255
-			i += 1
+		for b in pld:
+			sum1 +=  b
+			sum1 = sum1 % 256
+			sum2 += sum1
+			sum2 = sum2 % 256
 		rlt = bytearray()
 		rlt.append(sum1)
 		rlt.append(sum2)
@@ -616,7 +621,12 @@ class LoRa:
 			fil = open("/home/pi/strato2/raw/uplinkSequenceNo.txt", 'w')
 			fil.write(str(usn))
 			fil.close()
-			return usn
+			seq_no = bytearray()
+			seq_no.append(usn //  2^24)
+			seq_no.append((usn % 2^24) // 2^16)
+			seq_no.append((usn % 2^16) // 2^8)
+			seq_no.append(usn % 2^8)
+			return seq_no
 		except:
 			print('LoRa_uplinkSequenceNo_fail')
 			try:
