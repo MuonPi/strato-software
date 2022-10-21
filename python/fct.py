@@ -6,6 +6,7 @@ import serial
 import pynmea2
 import random
 import os
+import cayenneLPP
 #import schedule
 from ADS1x15 import ADS1115
 
@@ -514,30 +515,59 @@ class LoRa:
 			return ['fail']
 	def average_payload():
 		try:
-			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5, -5), 'r')
-			txt = fil.readlines()
+			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
+			txtact = fil.readlines()														#aktueller inhalt
 			#txt = ['datum1;10:10:10;50.514642778351906;zahl12','datum2;10:10:10;50.514642778351906;8.577668325826654;123;757865'] ############################# muss gelöscht werden
 			fil.close()
-			txtlen = len(txt)
+			txtlen = len(txtact)
 			#print(txt)
 			i = 0
 			dat = []
 			while(i < txtlen):
-				dat = dat + [txt[i].split(';')]
+				dat = dat + [txtact[i].split(';')]
 				i += 1
 			#print(dat)		# als erste stelle eventuell den idcounter für lora senden
 			#[datu, uhrz, mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
 			avr = bytearray()	# avr = average
-			seq_no = LoRa.uplinkSequenceNo()
+			seq_no = LoRa.uplinkSequenceNo()						# uplinkSequenceNo hinzufügen
 			for b in seq_no:
 				avr.append(b)
+			#print(seq_no)
+			# TODO: update avr to feature cayenne low power protocol ?!
 
-			## TODO: update avr to feature cayenne low power protocol ?!
+			tme = dat[txtlen - 1][1].strip().split(':')
+			avr.append(0x01)
+			avr.append(int(tme[0]))
+			avr.append(0x01)
+			avr.append(int(tme[1]))
+			avr.append(0x01)
+			avr.append(int(float(tme[2])))
+			#avr.append(0x01)
+			#if(dat[txtlen - 1][2].strip() == 'fail'):				# letzte latitude hinzufügen
+			#	avr.append(0x00)
+			#else:
+			#	avr.append(int(float(dat[txtlen - 1][2].strip()) * 100000))
 
+
+			#lpp = cayenneLPP.CayenneLPP(size = 100)			#größe festlegen nicht vergessen
+
+			#lpp.add_digital_output(past_seconds(dat[txtlen - 1][1].strip()))
+
+
+
+			#seq_no.append(usn //  2^24)
+			#seq_no.append((usn % 2^24) // 2^16)
+			#seq_no.append((usn % 2^16) // 2^8)
+			#seq_no.append(usn % 2^8)
+
+
+
+
+
+			'''
+			avr.append(past_seconds(dat[txtlen - 1][1].strip()))	# letzter zeitstempel aus payload file wird verwendet in sekunden
 			#print(avr)
-			avr = avr + [past_seconds(dat[txtlen - 1][1].strip())]	# letzter zeitstempel aus payload file wird verwendet in sekunden
-			#print(avr)
-			if(dat[txtlen - 1][2].strip() == 'fail'):				# letzte latitude hinzufügen			###### vielleicht hilft .strip() damit es geht
+			if(dat[txtlen - 1][2].strip() == 'fail'):				# letzte latitude hinzufügen
 				lat = 0
 			else:
 				lat = int(float(dat[txtlen - 1][2].strip()) * 100000)
@@ -568,10 +598,11 @@ class LoRa:
 			#avr = avr + [tst]
 			######################################## als nächstes müssen mittelwerte und beträge berechnet und hinzugefügt werden
 			#print(avr)
+			'''
 			return avr
 		except:
 			print('LoRa_average_payload_fail')
-			return[0]
+			return bytearray()
 	'''def average_payload():
 		try:
 	def read_payload():
@@ -622,10 +653,11 @@ class LoRa:
 			fil.write(str(usn))
 			fil.close()
 			seq_no = bytearray()
-			seq_no.append(usn //  2^24)
-			seq_no.append((usn % 2^24) // 2^16)
-			seq_no.append((usn % 2^16) // 2^8)
-			seq_no.append(usn % 2^8)
+			seq_no.append(usn // (2**24))
+			seq_no.append((usn % (2**24)) // (2**16))
+			seq_no.append((usn % (2**16)) // (2**8))
+			seq_no.append(usn % (2**8))
+			print(seq_no)
 			return seq_no
 		except:
 			print('LoRa_uplinkSequenceNo_fail')
@@ -634,9 +666,13 @@ class LoRa:
 				print('LoRa_uplinkSequenceNo_closed')
 			except:
 				None
-			os.remove("/home/pi/strato2/raw/uplinkSequenceNo.txt")
+			try:
+				os.remove("/home/pi/strato2/raw/uplinkSequenceNo.txt")
+			except:
+				None
 			fil = open("/home/pi/strato2/raw/uplinkSequenceNo.txt", 'w')
 			usn = int(random.random() * 10000 + 1)
+			#usn = 0
 			#print(usn)
 			fil.write(str(usn))
 			fil.close()
