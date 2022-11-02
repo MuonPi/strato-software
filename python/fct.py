@@ -484,7 +484,8 @@ class LoRa:
 				None
 			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
 			LoRa.lor = serial.Serial('/dev/' + prt, 115200)
-			time.sleep(.1)
+			print(LoRa.answer())
+			time.sleep(1)
 			LoRa.lor.reset_input_buffer()
 			#### fehlt ####################
 			print('LoRa_init_done')
@@ -513,13 +514,19 @@ class LoRa:
 			print('LoRa_answer_timeout')
 			return ['fail']
 			'''
-			time.sleep(2)
 			asw = bytearray()
-			while (LoRa.lor.in_waiting() > 0):
-				print(LoRa.lor.in_waiting())
-				asw.append(LoRa.lor.read())
-				print(asw)
-			
+			now = time.time()
+			print('Answer:')
+			while(time.time() < (now + tmo)):
+				while(LoRa.lor.in_waiting > 0):
+					print(LoRa.lor.in_waiting)
+					asw = asw + LoRa.lor.read(LoRa.lor.in_waiting)
+					print(asw)
+					time.sleep(.1)
+					if LoRa.lor.in_waiting <= 0:
+						return asw
+					if(time.time() > (now + tmo)):
+						return ['fail']
 		except:
 			print('LoRa_answer_fail')
 			LoRa.init()
@@ -527,25 +534,23 @@ class LoRa:
 	def average_payload():
 		try:
 			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
-			txtact = fil.readlines()	#aktueller inhalt
-			#txt = ['datum1;10:10:10;50.514642778351906;zahl12','datum2;10:10:10;50.514642778351906;8.577668325826654;123;757865'] ############################# muss gelöscht werden
+			txt = fil.readlines()	#aktueller inhalt
 			fil.close()
-			txtlen = len(txtact)
-			#print(txt)
-			i = 0
+			txtlen = len(txt)
+			# print(txt)
 			dat = []
-			while(i < txtlen):
-				dat = dat + [txtact[i].split(';')]
-				i += 1
-			#print(dat)		# als erste stelle eventuell den idcounter für lora senden
+			for i in range(txtlen):
+				dat = dat + [txt[i].split(';')]
+			
 			#[datu, uhrz, mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
+			
 			avr = bytearray()	# avr = average
+			# -------- 1. upLinkSequnceNo -------
 			seq_no = LoRa.uplinkSequenceNo()						# uplinkSequenceNo hinzufügen
 			for b in seq_no:
 				avr.append(b)
-			#print(seq_no)
-			# TODO: update avr to feature cayenne low power protocol ?!
-
+			
+			# -------- 2. Time Stamp -----------
 			tme = dat[txtlen - 1][1].strip().split(':')
 			avr.append(0x01) # channel 1
 			avr.append(0x01) # data type 1 (digital output)
@@ -558,26 +563,43 @@ class LoRa:
 			avr.append(0x03) # channel 3
 			avr.append(0x01) # data type 1 (digital output)
 			avr.append(int(float(tme[2])))
-			#avr.append(0x01)
-			#if(dat[txtlen - 1][2].strip() == 'fail'):				# letzte latitude hinzufügen
-			#	avr.append(0x00)
-			#else:
-			#	avr.append(int(float(dat[txtlen - 1][2].strip()) * 100000))
 
+			# --------- 3. GPS Position ----------
+			avr.append(0x04) # channel 4
+			avr.append(0x88) # gps position
+			if(dat[txtlen - 1][2].strip() == 'fail'):				# latitude hinzufügen
+				lat = 0
+			else:
+				lat = int(float(dat[txtlen - 1][2].strip()) * 10000)
+			avr.append(lat // (2**16))
+			avr.append((lat % (2**16)) // (2**8))
+			avr.append(lat % (2**8))
+			if(dat[txtlen - 1][3].strip() == 'fail'):				# longitude hinzufügen
+				lon = 0
+			else:
+				lon = int(float(dat[txtlen - 1][3].strip()) * 10000)
+			avr.append(lon // (2**16))
+			avr.append((lon % (2**16)) // (2**8))
+			avr.append(lon % (2**8))
+			if(dat[txtlen - 1][4].strip() == 'fail'):				# höhe hinzufügen
+				hei = 0
+			else:
+				hei = int(float(dat[txtlen - 1][4].strip()) * 100) # in cm angegeben
+				if(hei < 0):
+					hei = 0
+			avr.append(hei // (2**16))
+			avr.append((hei % (2**16)) // (2**8))
+			avr.append(hei % (2**8))
 
-			#lpp = cayenneLPP.CayenneLPP(size = 100)			#größe festlegen nicht vergessen
-
-			#lpp.add_digital_output(past_seconds(dat[txtlen - 1][1].strip()))
-
-
-
-			#seq_no.append(usn //  2^24)
-			#seq_no.append((usn % 2^24) // 2^16)
-			#seq_no.append((usn % 2^16) // 2^8)
-			#seq_no.append(usn % 2^8)
-
-
-
+			# -------- 4. Akkuspannung ----------
+			avr.append(0x05) # channel 5
+			avr.append(0x03) # analog output
+			if(dat[txtlen - 1][5].strip() == 'fail'):				# akkuspannung hinzufügen
+				vol = 0
+			else:
+				vol = int(dat[txtlen - 1][5].strip() / 32768 * 6.144 * 100) # in centivolt angegeben
+			avr.append(vol // (2**8))
+			avr.append(vol % (2**8))
 
 
 			'''
@@ -694,7 +716,7 @@ class LoRa:
 			return usn
 	def create_message(pld): # message die an lora gesendet werden soll
 		try:
-			if (len(pld)>255):
+			if(len(pld) > 255):
 				raise ValueError('payload larger than 255 bytes')
 			msg = bytearray()
 			msg.append(0xf9) # append msg header byte
@@ -707,7 +729,7 @@ class LoRa:
 			return msg
 		except:
 			print('LoRa_create_message_fail')
-			return bytearray(b'\xf9\x00\x00\x00')
+			return bytearray(b'\xf9\x00\xf9\xf2')
 	def save_message(dat):
 		try:
 			write_file(filename("lora_raw", "csv", 5), "raw", dat)#, 18)
@@ -726,10 +748,10 @@ class LoRa:
 			return ['fail']
 	def send_message(msg):
 		try:
-			print(len(msg))
+			# print(len(msg))
 			for i in range(len(msg)):
 				LoRa.lor.write(msg[i])
-				print(msg[i])
+				# print(msg[i])
 			return LoRa.answer()
 		except:
 			print('LoRa_send_fail')

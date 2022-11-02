@@ -67,14 +67,14 @@ while True:
 		print(int(random.random() * 10000 + 1))
 		i += 1'''
 		
-	
 	lora = fct.LoRa.average_payload()
-	print(lora)
+	# print(lora)
 	fct.LoRa.save_payload(lora)
 	msg = fct.LoRa.create_message(lora)
 	print(" ".join("%02x" % b for b in msg))
 	fct.LoRa.save_message(msg)
 	answ = fct.LoRa.send_message(msg)
+	print(answ)
 	#print(" ".join("%02x" % b for b in answ))
 	
 	
