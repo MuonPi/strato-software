@@ -321,6 +321,7 @@ class MuonPi:
 
 
 
+'''
 class SIM7000E:
 	sim = None
 	def init(prt = 'ttyUSB3'):
@@ -442,7 +443,7 @@ class SIM7000E:
 			write_file("payl_sim.csv", "raw", dat)#, 18)
 		except:
 			print('SIM7000E_save_payload_fail')
-	'''def send_file(pat):
+	def send_file(pat):
 		try:
 			fil = open(pat, 'w')
 			########################## fehlt ##################
@@ -466,21 +467,22 @@ class SIM7000E:
 		except:
 			print('SIM7000E_http_fail')
 			SIM7000E.init()
-			return 1'''
+			return 1
+			'''
 
 
 
 
 class LoRa:
 	lor = None
-	def init(prt = 'nanoatmega328'):
+	def init(prt = 'ttyUSB0'):
 		try:
 			try:
 				LoRa.lor.close()
 				print('LoRa_handle_closed')
 			except:
 				None
-			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5, -5), 'a').close()
+			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
 			LoRa.lor = serial.Serial('/dev/' + prt, 115200)
 			time.sleep(.1)
 			LoRa.lor.reset_input_buffer()
@@ -496,6 +498,7 @@ class LoRa:
 				print('LoRa_close_fail')
 	def answer(tmo = 10):
 		try:
+			'''
 			asw = bytearray()
 			now = time.time()
 			while time.time() < now + tmo:
@@ -509,6 +512,14 @@ class LoRa:
 						return asw
 			print('LoRa_answer_timeout')
 			return ['fail']
+			'''
+			time.sleep(2)
+			asw = bytearray()
+			while (LoRa.lor.in_waiting() > 0):
+				print(LoRa.lor.in_waiting())
+				asw.append(LoRa.lor.read())
+				print(asw)
+			
 		except:
 			print('LoRa_answer_fail')
 			LoRa.init()
@@ -516,7 +527,7 @@ class LoRa:
 	def average_payload():
 		try:
 			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
-			txtact = fil.readlines()														#aktueller inhalt
+			txtact = fil.readlines()	#aktueller inhalt
 			#txt = ['datum1;10:10:10;50.514642778351906;zahl12','datum2;10:10:10;50.514642778351906;8.577668325826654;123;757865'] ############################# muss gelöscht werden
 			fil.close()
 			txtlen = len(txtact)
@@ -536,11 +547,16 @@ class LoRa:
 			# TODO: update avr to feature cayenne low power protocol ?!
 
 			tme = dat[txtlen - 1][1].strip().split(':')
-			avr.append(0x01)
+			avr.append(0x01) # channel 1
+			avr.append(0x01) # data type 1 (digital output)
 			avr.append(int(tme[0]))
-			avr.append(0x01)
+
+			avr.append(0x02) # channel 2
+			avr.append(0x01) # data type 1 (digital output)
 			avr.append(int(tme[1]))
-			avr.append(0x01)
+			
+			avr.append(0x03) # channel 3
+			avr.append(0x01) # data type 1 (digital output)
 			avr.append(int(float(tme[2])))
 			#avr.append(0x01)
 			#if(dat[txtlen - 1][2].strip() == 'fail'):				# letzte latitude hinzufügen
@@ -657,7 +673,6 @@ class LoRa:
 			seq_no.append((usn % (2**24)) // (2**16))
 			seq_no.append((usn % (2**16)) // (2**8))
 			seq_no.append(usn % (2**8))
-			print(seq_no)
 			return seq_no
 		except:
 			print('LoRa_uplinkSequenceNo_fail')
@@ -711,7 +726,10 @@ class LoRa:
 			return ['fail']
 	def send_message(msg):
 		try:
-			LoRa.lor.write(msg)
+			print(len(msg))
+			for i in range(len(msg)):
+				LoRa.lor.write(msg[i])
+				print(msg[i])
 			return LoRa.answer()
 		except:
 			print('LoRa_send_fail')
@@ -738,7 +756,7 @@ def init_sensors():
 def init_transfers():
 	global transferfail
 	transferfail = [0, 0]
-	SIM7000E.init()
+	# SIM7000E.init()
 	LoRa.init()
 	print('init_transfers_done')
 

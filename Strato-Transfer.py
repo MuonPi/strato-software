@@ -34,7 +34,7 @@ while True:
 	#fct.write_file("send_raw.csv", "raw", payload, 11)
 	
 	
-	fct.SIM7000E.test()
+	#fct.SIM7000E.test()
 	#fct.SIM7000E.activate_gnss()
 	#scor = fct.SIM7000E.read_scor()
 	#if scor[0] != 'fail':
@@ -71,10 +71,11 @@ while True:
 	lora = fct.LoRa.average_payload()
 	print(lora)
 	fct.LoRa.save_payload(lora)
-	msge = fct.LoRa.create_message(lora)
-	print(msge)
-	fct.LoRa.save_message(msge)
-	fct.LoRa.send_message(msge)
+	msg = fct.LoRa.create_message(lora)
+	print(" ".join("%02x" % b for b in msg))
+	fct.LoRa.save_message(msg)
+	answ = fct.LoRa.send_message(msg)
+	#print(" ".join("%02x" % b for b in answ))
 	
 	
 	
@@ -83,4 +84,4 @@ while True:
 	
 	#----------------- END ------------------------
 	
-	fct.sleep_until(60)
+	fct.sleep_until(5)
