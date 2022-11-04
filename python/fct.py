@@ -484,7 +484,7 @@ class LoRa:
 				None
 			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
 			LoRa.lor = serial.Serial('/dev/' + prt, 115200)
-			print(LoRa.answer())
+			#print(LoRa.answer())
 			time.sleep(1)
 			LoRa.lor.reset_input_buffer()
 			#### fehlt ####################
@@ -498,7 +498,7 @@ class LoRa:
 			except:
 				print('LoRa_close_fail')
 	def answer(tmo = 10):
-		try:
+		#try:
 			'''
 			asw = bytearray()
 			now = time.time()
@@ -514,23 +514,55 @@ class LoRa:
 			print('LoRa_answer_timeout')
 			return ['fail']
 			'''
+			'''
 			asw = bytearray()
 			now = time.time()
 			print('Answer:')
 			while(time.time() < (now + tmo)):
 				while(LoRa.lor.in_waiting > 0):
-					print(LoRa.lor.in_waiting)
+					#print(LoRa.lor.in_waiting)
 					asw = asw + LoRa.lor.read(LoRa.lor.in_waiting)
-					print(asw)
+					# print(asw)
 					time.sleep(.1)
 					if LoRa.lor.in_waiting <= 0:
 						return asw
 					if(time.time() > (now + tmo)):
 						return ['fail']
-		except:
-			print('LoRa_answer_fail')
-			LoRa.init()
-			return ['fail']
+			'''
+			
+			buf = bytearray()
+			chk = bytearray()
+			now = time.time()
+			while time.time() < now + tmo:
+				while(LoRa.lor.in_waiting > 0):
+					incomingByte = LoRa.lor.read()
+					buf += incomingByte
+				# print(buf)
+				if(len(buf) < 4):
+					continue
+				for i in range(len(buf)):
+					if(buf[i] == 0xf9 and len(buf) >= i + 4): # header, size, data block, chkA, chkB => length >= 5
+						asw = bytearray()
+						payload_size = int(buf[i+1])
+						if(len(buf) >= i + 4 + payload_size):
+							for j in range(i + 2, i + 2 + payload_size):
+								asw.append(buf[j])
+						chk = LoRa.checksum(asw)
+						if(chk[0] != buf[i + 2 + payload_size] or chk[1] != (buf[i + 3 + payload_size])):
+							continue
+						if(len(buf) >= i + 4 + payload_size):
+							buf = buf[i + 4 + payload_size:]
+						else:
+							buf = bytearray()
+						
+				# do stuff with the data
+						return asw
+			return bytearray()
+		
+		#except:
+		#	print('LoRa_answer_fail')
+		#	LoRa.init()
+		#	return bytearray()
 	def average_payload():
 		try:
 			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
@@ -729,7 +761,7 @@ class LoRa:
 			return msg
 		except:
 			print('LoRa_create_message_fail')
-			return bytearray(b'\xf9\x00\xf9\xf2')
+			return bytearray(b'\xf9\x00\x00\x00')
 	def save_message(dat):
 		try:
 			write_file(filename("lora_raw", "csv", 5), "raw", dat)#, 18)
@@ -738,21 +770,22 @@ class LoRa:
 	'''def create_average():
 		None
 		############## fehlt ##################'''
-	def test():
-		try:
-			LoRa.lor.write('test'.encode())
-			return LoRa.answer()
-		except:
-			print('LoRa_test_fail')
-			LoRa.init()
-			return ['fail']
 	def send_message(msg):
 		try:
-			# print(len(msg))
-			for i in range(len(msg)):
-				LoRa.lor.write(msg[i])
-				# print(msg[i])
-			return LoRa.answer()
+			# test = open('test.txt', 'a')
+			# test.writelines(msg)
+			#txt = []
+			#for i in range(len(msg)):
+				#LoRa.lor.write(msg[i])
+				#test.write(str(hex(msg[i])))
+				#print(hex(msg[i]))#,'utf-8'))
+				#		txt[i] += str(int(msg[i]))
+			# test.close()
+			#test = str(int(msg))
+			#print(test.encode())
+			#		LoRa.lor.write(txt.encode())
+			LoRa.lor.write(bytes(msg))
+			#return LoRa.answer()
 		except:
 			print('LoRa_send_fail')
 			LoRa.init()
