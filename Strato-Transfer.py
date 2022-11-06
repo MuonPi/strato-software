@@ -66,19 +66,28 @@ while True:
 	while(i < 100):
 		print(int(random.random() * 10000 + 1))
 		i += 1'''
-		
-	lora = fct.LoRa.average_payload()
-	# print(lora)
-	fct.LoRa.save_payload(lora)
-	msg = fct.LoRa.create_message(bytearray(b'test'))
-	print(" ".join("%02x" % b for b in msg))
-	#fct.LoRa.save_message(msg)
-	fct.LoRa.send_message(msg)
-	#print(" ".join("%02x" % b for b in answ))
+	
+
 	answ = fct.LoRa.answer()
 	print("msg identified:")
 	print(answ)
-	#print(" ".join("%02x" % b for b in answ))
+
+	time.sleep(1)
+		
+	lora = fct.LoRa.average_payload()
+	fct.LoRa.save_payload(lora)
+	msg = fct.LoRa.create_message(lora)
+	print(" ".join("%02x" % b for b in msg))
+	# fct.LoRa.save_message(msg)
+	fct.LoRa.send_message(msg)
+	# print(" ".join("%02x" % b for b in answ))
+
+	answ = fct.LoRa.answer()
+	print("msg identified:")
+	print(answ)
+	
+	# print(" ".join("%02x" % b for b in answ))
+
 	exit(0)
 	
 	

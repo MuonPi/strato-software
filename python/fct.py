@@ -498,7 +498,7 @@ class LoRa:
 			except:
 				print('LoRa_close_fail')
 	def answer(tmo = 10):
-		#try:
+		try:
 			'''
 			asw = bytearray()
 			now = time.time()
@@ -559,10 +559,10 @@ class LoRa:
 						return asw
 			return bytearray()
 		
-		#except:
-		#	print('LoRa_answer_fail')
-		#	LoRa.init()
-		#	return bytearray()
+		except:
+			print('LoRa_answer_fail')
+			LoRa.init()
+			return bytearray()
 	def average_payload():
 		try:
 			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
@@ -741,11 +741,14 @@ class LoRa:
 				None
 			fil = open("/home/pi/strato2/raw/uplinkSequenceNo.txt", 'w')
 			usn = int(random.random() * 10000 + 1)
-			#usn = 0
-			#print(usn)
 			fil.write(str(usn))
 			fil.close()
-			return usn
+			seq_no = bytearray()
+			seq_no.append(usn // (2**24))
+			seq_no.append((usn % (2**24)) // (2**16))
+			seq_no.append((usn % (2**16)) // (2**8))
+			seq_no.append(usn % (2**8))
+			return seq_no
 	def create_message(pld): # message die an lora gesendet werden soll
 		try:
 			if(len(pld) > 255):
