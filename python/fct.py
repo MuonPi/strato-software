@@ -547,13 +547,13 @@ class LoRa:
 						if(len(buf) >= i + 4 + payload_size):
 							for j in range(i + 2, i + 2 + payload_size):
 								asw.append(buf[j])
-						chk = LoRa.checksum(asw)
-						if(chk[0] != buf[i + 2 + payload_size] or chk[1] != (buf[i + 3 + payload_size])):
-							continue
-						if(len(buf) >= i + 4 + payload_size):
-							buf = buf[i + 4 + payload_size:]
-						else:
-							buf = bytearray()
+							chk = LoRa.checksum(asw)
+							if(chk[0] != buf[i + 2 + payload_size] or chk[1] != (buf[i + 3 + payload_size])):
+								continue
+							if(len(buf) >= i + 4 + payload_size):
+								buf = buf[i + 4 + payload_size:]
+							else:
+								buf = bytearray()
 						
 				# do stuff with the data
 						return asw

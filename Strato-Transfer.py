@@ -69,7 +69,7 @@ while True:
 	
 
 	answ = fct.LoRa.answer()
-	print("msg identified:")
+	print("init message:")
 	print(answ)
 
 	time.sleep(1)
@@ -81,10 +81,10 @@ while True:
 	# fct.LoRa.save_message(msg)
 	fct.LoRa.send_message(msg)
 	# print(" ".join("%02x" % b for b in answ))
-
-	answ = fct.LoRa.answer()
-	print("msg identified:")
-	print(answ)
+	print("message identified:")
+	for i in range(10):
+		answ = fct.LoRa.answer()
+		print(answ)
 	
 	# print(" ".join("%02x" % b for b in answ))
 
