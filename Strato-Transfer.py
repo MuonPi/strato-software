@@ -22,7 +22,6 @@ time.sleep(1)
 
 
 
-
 while True:
 	
 	
@@ -67,8 +66,9 @@ while True:
 		print(int(random.random() * 10000 + 1))
 		i += 1'''
 	
+	fct.LoRa.init()
 
-	answ = fct.LoRa.answer()
+	answ = fct.LoRa.answer(1)
 	print("init message:")
 	print(answ)
 
@@ -82,9 +82,10 @@ while True:
 	fct.LoRa.send_message(msg)
 	# print(" ".join("%02x" % b for b in answ))
 	print("message identified:")
-	for i in range(10):
+	while(answ != bytearray(b'EV_TXCOMPLETE')):
 		answ = fct.LoRa.answer()
 		print(answ)
+
 	
 	# print(" ".join("%02x" % b for b in answ))
 
