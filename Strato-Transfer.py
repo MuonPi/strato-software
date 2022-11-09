@@ -75,22 +75,20 @@ while True:
 	time.sleep(1)
 		
 	lora = fct.LoRa.average_payload()
-	fct.LoRa.save_payload(lora)
+	# fct.LoRa.save_payload(lora)
 	msg = fct.LoRa.create_message(lora)
+	print("created:")
 	print(" ".join("%02x" % b for b in msg))
 	# fct.LoRa.save_message(msg)
 	fct.LoRa.send_message(msg)
 	# print(" ".join("%02x" % b for b in answ))
-	print("message identified:")
 	while(answ != bytearray(b'EV_TXCOMPLETE')):
 		answ = fct.LoRa.answer()
+		print("message identified:")
 		print(answ)
+		print(" ".join("%02x" % b for b in answ))
+	exit(1)
 
-	
-	# print(" ".join("%02x" % b for b in answ))
-
-	exit(0)
-	
 	
 	
 	

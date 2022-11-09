@@ -6,7 +6,7 @@ import serial
 import pynmea2
 import random
 import os
-import cayenneLPP
+#import cayenneLPP
 #import schedule
 from ADS1x15 import ADS1115
 
@@ -585,15 +585,15 @@ class LoRa:
 			# -------- 2. Time Stamp -----------
 			tme = dat[txtlen - 1][1].strip().split(':')
 			avr.append(0x01) # channel 1
-			avr.append(0x01) # data type 1 (digital output)
+			avr.append(0x00) # data type 1 (digital output)
 			avr.append(int(tme[0]))
 
 			avr.append(0x02) # channel 2
-			avr.append(0x01) # data type 1 (digital output)
+			avr.append(0x00) # data type 1 (digital output)
 			avr.append(int(tme[1]))
 			
 			avr.append(0x03) # channel 3
-			avr.append(0x01) # data type 1 (digital output)
+			avr.append(0x00) # data type 1 (digital output)
 			avr.append(int(float(tme[2])))
 
 			# --------- 3. GPS Position ----------
@@ -625,13 +625,15 @@ class LoRa:
 
 			# -------- 4. Akkuspannung ----------
 			avr.append(0x05) # channel 5
-			avr.append(0x03) # analog output
+			avr.append(0x02) # analog output
+			print(dat[txtlen - 1][5].strip())
 			if(dat[txtlen - 1][5].strip() == 'fail'):				# akkuspannung hinzufügen
 				vol = 0
 			else:
 				vol = int(dat[txtlen - 1][5].strip() / 32768 * 6.144 * 100) # in centivolt angegeben
 			avr.append(vol // (2**8))
 			avr.append(vol % (2**8))
+			print('voltage')
 
 
 			'''
