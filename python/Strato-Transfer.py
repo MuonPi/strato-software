@@ -20,19 +20,18 @@ fct.set_starttime()
 fct.init_transfers()
 time.sleep(1)
 
-fct.LoRa.average_payload()
-
 
 while(True):
 	
 	
 	fct.failsafe_transfers()
+
+
+	# --------------- LoRa ------------------
 	
 	fct.LoRa.init()
-
 	asw = fct.LoRa.answer(5)
-	print(asw)
-	 	
+	
 	pld = fct.LoRa.average_payload()
 	msg = fct.LoRa.create_message(pld)
 	fct.LoRa.save_message(msg)
@@ -49,7 +48,7 @@ while(True):
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
 			break
 	
-	exit(1)
+	# exit(1)
 
 	
 	
@@ -57,4 +56,4 @@ while(True):
 	
 	#----------------- END ------------------------
 	
-	fct.sleep_until(60)
+	fct.sleep_until(20)

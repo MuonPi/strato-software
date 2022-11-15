@@ -21,8 +21,6 @@ fct.init_sensors()
 time.sleep(1)
 
 
-
-
 while True:
 	
 	
@@ -48,10 +46,8 @@ while True:
 	#-------------- ADS-1115 -------------------
 	
 	volt = fct.ADS_1115.read_volt()
-	#volt = 0
 	
 	fct.ADS_1115.save_volt(volt)
-	#time.sleep(1)
 	
 	
 	
@@ -109,13 +105,13 @@ while True:
 	
 	#----------- P A Y L O A D - A R R A Y --------
 	
-	#payload = [mcor, mhei, volt, gyro, acce, ozon, pres, temp, humi, magn, uvse]
-	payload = [mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
+	# payload = [mcor, mhei, volt, gyro, acce, ozon, pres, temp, humi, magn, uvse]
+	# payload = [mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
 	
-	#print(payload)
+	# print(payload)
 	
-	fct.write_file(fct.filename("payl_raw", "csv", 5), "raw", payload)#, 18)
-	fct.write_file("payl_raw.csv", "raw", payload)#, 18)
+	# fct.write_file(fct.filename("payl_raw", "csv", 5), "raw", payload)#, 18)
+	# fct.write_file("payl_raw.csv", "raw", payload)#, 18)
 	
 	
 	

@@ -602,11 +602,18 @@ class LoRa:
 				hei = int(float(dat[txtlen - 1][4].strip()) * 100) # in cm angegeben
 				if(hei < 0):
 					hei = 0'''
-
-			mcor = MuonPi.read_mcor()
+			try:
+				mcor = MuonPi.read_mcor()
+			except:
+				print('send_mcor_fail')
+				mcor = [0, 0]
 			mlat = int(float(mcor[0]) * 10000)
 			mlon = int(float(mcor[1]) * 10000)
-			mhei = int(float(MuonPi.read_mhei()[0]) * 100)
+			try:
+				mhei = int(float(MuonPi.read_mhei()[0]) * 100)
+			except:
+				print('send_mhei_fail')
+				mhei = 0
 			avr.append(0x02) # channel 2
 			avr.append(0x88) # gps position
 			avr.append((mlat % (2**24)) // (2**16))
@@ -629,51 +636,75 @@ class LoRa:
 			
 
 			# vol = int(float(dat[txtlen - 1][5].strip()) / 32768 * 6.144 * 100) # in centivolt angegeben
-
-			volt = int(average(read_file(filename('volt_raw', 'csv', 5), 'raw', 2, 5)) / 32768 * 6.144 * 100) # in centivolt angegeben
+			try:
+				volt = int(average(read_file(filename('volt_raw', 'csv', 5), 'raw', 2, 5)) / 32768 * 6.144 * 100) # in centivolt angegeben
+			except:
+				print('send_volt_fail')
+				volt = 0
 			avr.append(0x03) # channel 3
 			avr.append(0x02) # analog output
 			avr.append((volt % (2**16)) // (2**8))
 			avr.append(volt % (2**8))
 
 			# ------- 4. XOR rate ------------
-			mxor = int(float(MuonPi.read_mxor()[0]) * 1000)
+			try:
+				mxor = int(float(MuonPi.read_mxor()[0]) * 1000)
+			except:
+				print('send_mxor_fail')
+				mxor = 0
 			avr.append(0x04) # channel 4
 			avr.append(0x02) # analog input
 			avr.append((mxor % (2**16)) // (2**8))
 			avr.append(mxor % (2**8))
 
 			# ------- 5. AND rate ------------
-			mand = int(float(MuonPi.read_mand()[0]) * 1000)
+			try:
+				mand = int(float(MuonPi.read_mand()[0]) * 1000)
+			except:
+				print('send_mand_fail')
+				mand = 0
 			avr.append(0x05) # channel 5
 			avr.append(0x02) # analog input
 			avr.append((mand % (2**16)) // (2**8))
 			avr.append(mand % (2**8))
 
 			# ------- 6. Counter rate ------------
-			'''print(MuonPi.read_coun())
-			coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
+			'''
+			try:
+				coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
+			except:
+				print('send_coun_fail')
+				coun = 0
 			avr.append(0x06) # channel 6
 			avr.append(0x02) # analog input
 			avr.append((coun % (2**16)) // (2**8))
 			avr.append(coun % (2**8))''' # counter rate existiert noch nicht
 
 			# ---------- 7. Pressure --------------
-			pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 5672.25) # in Pa
+			try:
+				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 5672.25) # in Pa
+			except:
+				print('send_pres_fail')
+				pres = 0
 			avr.append(0x07) # channel 7
 			avr.append(0x02) # analog input
 			avr.append((pres % (2**16)) // (2**8))
 			avr.append(pres % (2**8))
 
 			# ---------- 8. Temperature Out ----------
-			temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) / 421158.4) # in K
+			try:
+				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) / 421158.4) # in K
+			except:
+				print('send_temo_fail')
+				temo = 0
 			avr.append(0x08) # channel 8
 			avr.append(0x02) # analog input
 			avr.append((temo % (2**16)) // (2**8))
 			avr.append(temo % (2**8))
 
 			# --------- 9. Temperature In ------------
-			'''temi = int(float(MuonPi.read_temi()) * 1000) # ist *1000 sinnvoll?
+			'''try:
+				temi = int(float(MuonPi.read_temi()) * 1000) # ist *1000 sinnvoll?
 			avr.append(0x09) # channel 9
 			avr.append(0x02) # analog input
 			avr.append((temi % (2**16)) // (2**8))
@@ -925,18 +956,14 @@ def write_file(nam, dir, val):#, num = 1):		# name, value, number
 
 
 def read_file(nam, dir, num = 2, cnt = 1):#, num = 1):		# name, value, number(arraystelle, die ausgelesen weden soll), count(anzahl, die zurück gegeben werden soll)
-	try:
-		pat	= "/home/pi/strato2/" + dir + "/" + nam	# path
-		fil = open(pat, 'r')
-		txt = fil.readlines()
-		fil.close()
-		val = []
-		for i in range(cnt):
-			val += [txt[len(txt) - 1 - i].split(';')[num].strip()]
-		return val
-	except:
-		print('read_file_fail')
-		return ['fail']
+	pat	= "/home/pi/strato2/" + dir + "/" + nam	# path
+	fil = open(pat, 'r')
+	txt = fil.readlines()
+	fil.close()
+	val = []
+	for i in range(cnt):
+		val += [txt[len(txt) - 1 - i].split(';')[num].strip()]
+	return val
 
 
 
@@ -987,20 +1014,11 @@ def muon_logfile(pat = '/var/muondetector/currentWorkingFileInformation.conf'): 
 def read_logfile(pat, atr):			# dateipfad, attribut welches ausgegeben werden soll
 	fil = open(pat, 'r')			# liest einen Wert eines Attributs einer Log-File aus
 	txt = fil.readlines()
-	for i in range(-1, -50, -1):
-		#print(txt[i])
-		#time.sleep(0.5)
-		#print(txt[i][20:27])
-		if txt[i][20:20+len(atr)] == atr:
-			#print("detected")
-			fil.close()
-			ret = txt[i][21+len(atr):-1].strip()
-			return ret
 	fil.close()
-	ret = 'fail'
-	return ret
-
-
+	for i in range(-1, -50, -1):
+		if txt[i][20:20 + len(atr)] == atr:
+			return txt[i].split(' ')[2].strip()
+	return 'fail'
 
 
 
