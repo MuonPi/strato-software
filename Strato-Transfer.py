@@ -20,73 +20,35 @@ fct.set_starttime()
 fct.init_transfers()
 time.sleep(1)
 
+fct.LoRa.average_payload()
 
 
-while True:
+while(True):
 	
 	
 	fct.failsafe_transfers()
 	
-	
-	#---------------- SIM7000E ---------------------
-	
-	#fct.write_file("send_raw.csv", "raw", payload, 11)
-	
-	
-	#fct.SIM7000E.test()
-	#fct.SIM7000E.activate_gnss()
-	#scor = fct.SIM7000E.read_scor()
-	#if scor[0] != 'fail':
-	#	fct.SIM7000E.deactivate_gnss()
-	#print(scor)
-	#fct.SIM7000E.save_scor(scor)
-	#fct.SIM7000E.deactivate_gnss()
-	#fct.SIM7000E.send_file("/home/pi/strato2/raw/send_raw.csv")
-	
-	
-	
-	
-	#----------------- LoRa -----------------------
-	
-	#message = fct.LoRa.create_message(payload2)
-	#print(message)
-	#print(fct.LoRa.test())
-	#fct.LoRa.send(payload)
-	#print('LoRa gesendet')
-	
-	'''l = []
-	l = l + ['l']
-	print(l)
-	print(len(l))
-	print(l[0])
-	k = l[0].split(';')
-	print(k)
-	i = 0
-	while(i < 100):
-		print(int(random.random() * 10000 + 1))
-		i += 1'''
-	
 	fct.LoRa.init()
 
-	answ = fct.LoRa.answer(1)
-	print("init message:")
-	print(answ)
+	asw = fct.LoRa.answer(5)
+	print(asw)
+	 	
+	pld = fct.LoRa.average_payload()
+	msg = fct.LoRa.create_message(pld)
+	fct.LoRa.save_message(msg)
 
-	time.sleep(1)
-		
-	lora = fct.LoRa.average_payload()
-	# fct.LoRa.save_payload(lora)
-	msg = fct.LoRa.create_message(lora)
-	print("created:")
+	print("created msg: ")
 	print(" ".join("%02x" % b for b in msg))
-	# fct.LoRa.save_message(msg)
+
 	fct.LoRa.send_message(msg)
-	# print(" ".join("%02x" % b for b in answ))
-	while(answ != bytearray(b'EV_TXCOMPLETE')):
-		answ = fct.LoRa.answer()
-		print("message identified:")
-		print(answ)
-		print(" ".join("%02x" % b for b in answ))
+
+	print('answer: ')
+	for i in range(3):
+		asw = fct.LoRa.answer()
+		print(asw)
+		if(asw == bytearray(b'EV_TXCOMPLETE')):
+			break
+	
 	exit(1)
 
 	
@@ -95,4 +57,4 @@ while True:
 	
 	#----------------- END ------------------------
 	
-	fct.sleep_until(5)
+	fct.sleep_until(60)

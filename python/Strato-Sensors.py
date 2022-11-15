@@ -50,7 +50,7 @@ while True:
 	volt = fct.ADS_1115.read_volt()
 	#volt = 0
 	
-	#fct.ADS1115.save_volt(volt)
+	fct.ADS_1115.save_volt(volt)
 	#time.sleep(1)
 	
 	

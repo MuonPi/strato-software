@@ -317,6 +317,28 @@ class MuonPi:
 			write_file(filename("mxor_raw", "csv", 5), "raw", dat)
 		except:
 			print('rateXOR_save_fail')
+	def read_coun():
+		try:
+			return [read_logfile(muon_logfile(), "ubloxCounter")[:-2].strip()]
+		except:
+			print('ubloxCounter_read_fail')
+			return ['fail']#'fail'
+	def save_mxor(dat):
+		try:
+			write_file(filename("coun_raw", "csv", 5), "raw", dat)
+		except:
+			print('ubloxCounter_save_fail')
+	def read_temi():
+		try:
+			return [read_logfile(muon_logfile(), "temperature")[:-2].strip()]
+		except:
+			print('temperature_read_fail')
+			return ['fail']#'fail'
+	def save_temi(dat):
+		try:
+			write_file(filename("temi_raw", "csv", 5), "raw", dat)
+		except:
+			print('temperature_save_fail')
 
 
 
@@ -485,7 +507,7 @@ class LoRa:
 			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
 			LoRa.lor = serial.Serial('/dev/' + prt, 115200)
 			#print(LoRa.answer())
-			time.sleep(1)
+			time.sleep(.2)
 			LoRa.lor.reset_input_buffer()
 			#### fehlt ####################
 			print('LoRa_init_done')
@@ -499,37 +521,6 @@ class LoRa:
 				print('LoRa_close_fail')
 	def answer(tmo = 10):
 		try:
-			'''
-			asw = bytearray()
-			now = time.time()
-			while time.time() < now + tmo:
-				while LoRa.lor.in_waiting > 0:
-					tmp = LoRa.lor.read(100)
-					print(tmp)
-					# LoRa.lor.readinto(asw)
-					# print(asw)
-					time.sleep(.2)
-					if LoRa.lor.in_waiting == 0:
-						return asw
-			print('LoRa_answer_timeout')
-			return ['fail']
-			'''
-			'''
-			asw = bytearray()
-			now = time.time()
-			print('Answer:')
-			while(time.time() < (now + tmo)):
-				while(LoRa.lor.in_waiting > 0):
-					#print(LoRa.lor.in_waiting)
-					asw = asw + LoRa.lor.read(LoRa.lor.in_waiting)
-					# print(asw)
-					time.sleep(.1)
-					if LoRa.lor.in_waiting <= 0:
-						return asw
-					if(time.time() > (now + tmo)):
-						return ['fail']
-			'''
-			
 			buf = bytearray()
 			chk = bytearray()
 			now = time.time()
@@ -554,52 +545,42 @@ class LoRa:
 								buf = buf[i + 4 + payload_size:]
 							else:
 								buf = bytearray()
-						
-				# do stuff with the data
 						return asw
 			return bytearray()
-		
 		except:
 			print('LoRa_answer_fail')
 			LoRa.init()
 			return bytearray()
 	def average_payload():
 		try:
-			fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
-			txt = fil.readlines()	#aktueller inhalt
-			fil.close()
-			txtlen = len(txt)
+			# fil = open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'r')	#aktuelle datei
+			# txt = fil.readlines()	#aktueller inhalt
+			# fil.close()
+			# txtlen = len(txt)
 			# print(txt)
-			dat = []
-			for i in range(txtlen):
-				dat = dat + [txt[i].split(';')]
+			# dat = []
+			# for i in range(txtlen):
+			#	dat = dat + [txt[i].split(';')]
 			
 			#[datu, uhrz, mcor[0], mcor[1], mhei[0], volt[0], gyro[0], gyro[1], gyro[2], acce[0], acce[1], acce[2], ozon[0], pres[0], temp[0], humi[0], magn[0], magn[1], magn[2], uvse[0], uvse[1], mand[0], mxor[0]]
 			
 			avr = bytearray()	# avr = average
-			# -------- 1. upLinkSequnceNo -------
+			# -------- 0. upLinkSequnceNo -------
 			seq_no = LoRa.uplinkSequenceNo()						# uplinkSequenceNo hinzufügen
 			for b in seq_no:
 				avr.append(b)
 			
-			# -------- 2. Time Stamp -----------
-			tme = dat[txtlen - 1][1].strip().split(':')
+			# -------- 1. Time Stamp -----------
+			tme = datetime.utcnow().strftime('%H:%M:%S')
+			tmestr = tme.split(':')
+			sec = int(tmestr[0]) * 3600 + int(tmestr[1]) * 60 + int(float(tmestr[2]))
 			avr.append(0x01) # channel 1
-			avr.append(0x00) # data type 1 (digital output)
-			avr.append(int(tme[0]))
+			avr.append(0x02) # data type 2 (analog input)
+			avr.append(sec % (2**16) // (2**8))
+			avr.append(sec % (2**8))
 
-			avr.append(0x02) # channel 2
-			avr.append(0x00) # data type 1 (digital output)
-			avr.append(int(tme[1]))
-			
-			avr.append(0x03) # channel 3
-			avr.append(0x00) # data type 1 (digital output)
-			avr.append(int(float(tme[2])))
-
-			# --------- 3. GPS Position ----------
-			avr.append(0x04) # channel 4
-			avr.append(0x88) # gps position
-			if(dat[txtlen - 1][2].strip() == 'fail'):				# latitude hinzufügen
+			# --------- 2. GPS Position ----------
+			'''if(dat[txtlen - 1][2].strip() == 'fail'):				# latitude hinzufügen
 				lat = 0
 			else:
 				lat = int(float(dat[txtlen - 1][2].strip()) * 10000)
@@ -610,6 +591,8 @@ class LoRa:
 				lon = 0
 			else:
 				lon = int(float(dat[txtlen - 1][3].strip()) * 10000)
+			avr.append(0x02) # channel 2
+			avr.append(0x88) # gps position
 			avr.append(lon // (2**16))
 			avr.append((lon % (2**16)) // (2**8))
 			avr.append(lon % (2**8))
@@ -618,23 +601,85 @@ class LoRa:
 			else:
 				hei = int(float(dat[txtlen - 1][4].strip()) * 100) # in cm angegeben
 				if(hei < 0):
-					hei = 0
-			avr.append(hei // (2**16))
-			avr.append((hei % (2**16)) // (2**8))
-			avr.append(hei % (2**8))
+					hei = 0'''
 
-			# -------- 4. Akkuspannung ----------
-			avr.append(0x05) # channel 5
+			mcor = MuonPi.read_mcor()
+			mlat = int(float(mcor[0]) * 10000)
+			mlon = int(float(mcor[1]) * 10000)
+			mhei = int(float(MuonPi.read_mhei()[0]) * 100)
+			avr.append(0x02) # channel 2
+			avr.append(0x88) # gps position
+			avr.append((mlat % (2**24)) // (2**16))
+			avr.append((mlat % (2**16)) // (2**8))
+			avr.append(mlat % (2**8))
+			avr.append((mlon % (2**24)) // (2**16))
+			avr.append((mlon % (2**16)) // (2**8))
+			avr.append(mlon % (2**8))
+			avr.append((mhei % (2**24)) // (2**16))
+			avr.append((mhei % (2**16)) // (2**8))
+			avr.append(mhei % (2**8))
+			
+			# -------- 3. Akkuspannung ----------
+			'''avr.append(0x03) # channel 3
 			avr.append(0x02) # analog output
-			print(dat[txtlen - 1][5].strip())
 			if(dat[txtlen - 1][5].strip() == 'fail'):				# akkuspannung hinzufügen
 				vol = 0
 			else:
-				vol = int(dat[txtlen - 1][5].strip() / 32768 * 6.144 * 100) # in centivolt angegeben
-			avr.append(vol // (2**8))
-			avr.append(vol % (2**8))
-			print('voltage')
+				vol = int(float(dat[txtlen - 1][5].strip()) / 32768 * 6.144 * 100) # in centivolt angegeben'''
+			
 
+			# vol = int(float(dat[txtlen - 1][5].strip()) / 32768 * 6.144 * 100) # in centivolt angegeben
+
+			volt = int(average(read_file(filename('volt_raw', 'csv', 5), 'raw', 2, 5)) / 32768 * 6.144 * 100) # in centivolt angegeben
+			avr.append(0x03) # channel 3
+			avr.append(0x02) # analog output
+			avr.append((volt % (2**16)) // (2**8))
+			avr.append(volt % (2**8))
+
+			# ------- 4. XOR rate ------------
+			mxor = int(float(MuonPi.read_mxor()[0]) * 1000)
+			avr.append(0x04) # channel 4
+			avr.append(0x02) # analog input
+			avr.append((mxor % (2**16)) // (2**8))
+			avr.append(mxor % (2**8))
+
+			# ------- 5. AND rate ------------
+			mand = int(float(MuonPi.read_mand()[0]) * 1000)
+			avr.append(0x05) # channel 5
+			avr.append(0x02) # analog input
+			avr.append((mand % (2**16)) // (2**8))
+			avr.append(mand % (2**8))
+
+			# ------- 6. Counter rate ------------
+			'''print(MuonPi.read_coun())
+			coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
+			avr.append(0x06) # channel 6
+			avr.append(0x02) # analog input
+			avr.append((coun % (2**16)) // (2**8))
+			avr.append(coun % (2**8))''' # counter rate existiert noch nicht
+
+			# ---------- 7. Pressure --------------
+			pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 5672.25) # in Pa
+			avr.append(0x07) # channel 7
+			avr.append(0x02) # analog input
+			avr.append((pres % (2**16)) // (2**8))
+			avr.append(pres % (2**8))
+
+			# ---------- 8. Temperature Out ----------
+			temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) / 421158.4) # in K
+			avr.append(0x08) # channel 8
+			avr.append(0x02) # analog input
+			avr.append((temo % (2**16)) // (2**8))
+			avr.append(temo % (2**8))
+
+			# --------- 9. Temperature In ------------
+			'''temi = int(float(MuonPi.read_temi()) * 1000) # ist *1000 sinnvoll?
+			avr.append(0x09) # channel 9
+			avr.append(0x02) # analog input
+			avr.append((temi % (2**16)) // (2**8))
+			avr.append(temi % (2**8))'''
+			
+			print(avr)
 
 			'''
 			avr.append(past_seconds(dat[txtlen - 1][1].strip()))	# letzter zeitstempel aus payload file wird verwendet in sekunden
@@ -706,7 +751,7 @@ class LoRa:
 		sum1 = 0
 		sum2 = 0
 		for b in pld:
-			sum1 +=  b
+			sum1 += b
 			sum1 = sum1 % 256
 			sum2 += sum1
 			sum2 = sum2 % 256
@@ -863,21 +908,50 @@ def adc_read(adc, num, snt):					#snt=sensitivity
 #----------------- File Commands ----------------------
 
 def write_file(nam, dir, val):#, num = 1):		# name, value, number
-	pat	= "/home/pi/strato2/"+ dir + "/" + nam	# path
-	fil = open(pat,'a')
-	#fil.write("\n")
-	fil.write(datetime.utcnow().strftime('     %Y:%m:%d;   %H:%M:%S.%f')[:-3])
-	#if (num == 1):
-	#	fil.write(";%15s" % (val))
-	#else:
-	i = 0
-	while (i < len(val)):#num):
-		fil.write(";%15s" % (val[i]))
-		i += 1
-	fil.write(";")
-	fil.write("\n")
-	fil.close()
-	return 1
+	try:
+		pat	= "/home/pi/strato2/" + dir + "/" + nam	# path
+		fil = open(pat, 'a')
+		fil.write(datetime.utcnow().strftime('     %Y:%m:%d;   %H:%M:%S.%f')[:-3])
+		i = 0
+		while (i < len(val)):
+			fil.write(";%15s" % (val[i]))
+			i += 1
+		fil.write(";")
+		fil.write("\n")
+		fil.close()
+	except:
+		print('write_file_fail')
+
+
+
+def read_file(nam, dir, num = 2, cnt = 1):#, num = 1):		# name, value, number(arraystelle, die ausgelesen weden soll), count(anzahl, die zurück gegeben werden soll)
+	try:
+		pat	= "/home/pi/strato2/" + dir + "/" + nam	# path
+		fil = open(pat, 'r')
+		txt = fil.readlines()
+		fil.close()
+		val = []
+		for i in range(cnt):
+			val += [txt[len(txt) - 1 - i].split(';')[num].strip()]
+		return val
+	except:
+		print('read_file_fail')
+		return ['fail']
+
+
+
+def average(dat): # dat muss array sein
+	res = 0
+	n = len(dat)
+	for i in range(n):
+		try:
+			res += float(dat[i])
+		except:
+			n -= 1
+	if(n == 0):
+		return 0
+	res = res / n
+	return res
 
 
 
@@ -920,7 +994,7 @@ def read_logfile(pat, atr):			# dateipfad, attribut welches ausgegeben werden so
 		if txt[i][20:20+len(atr)] == atr:
 			#print("detected")
 			fil.close()
-			ret = txt[i][21+len(atr):-1]
+			ret = txt[i][21+len(atr):-1].strip()
 			return ret
 	fil.close()
 	ret = 'fail'
