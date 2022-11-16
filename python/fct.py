@@ -174,8 +174,8 @@ class BME280:
 
 			e5 = read_byte(0x76, 0xE5)
 			BME280.dig_H4 = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x07)
-			if (BME280.dig_H5 >= 0x8000):
-				BME280.dig_H4 = -((65535 - BME280.dig_H5) + 1)
+			if (BME280.dig_H4 >= 0x8000):
+				BME280.dig_H4 = -((65535 - BME280.dig_H4) + 1)
 			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
 			if (BME280.dig_H5 >= 0x8000):
 				BME280.dig_H5 = -((65535 - BME280.dig_H5) + 1)
