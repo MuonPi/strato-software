@@ -29,8 +29,7 @@ while(True):
 
 	# --------------- LoRa ------------------
 	
-	fct.LoRa.init()
-	asw = fct.LoRa.answer(5)
+	#fct.LoRa.init()
 	
 	pld = fct.LoRa.average_payload()
 	msg = fct.LoRa.create_message(pld)
@@ -42,7 +41,7 @@ while(True):
 	fct.LoRa.send_message(msg)
 
 	print('answer: ')
-	for i in range(3):
+	for i in range(6):
 		asw = fct.LoRa.answer()
 		print(asw)
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
@@ -56,4 +55,4 @@ while(True):
 	
 	#----------------- END ------------------------
 	
-	fct.sleep_until(20)
+	fct.sleep_until(60)

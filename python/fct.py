@@ -504,11 +504,12 @@ class LoRa:
 				print('LoRa_handle_closed')
 			except:
 				None
-			open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
+			# open("/home/pi/strato2/raw/" + filename('payl_raw', 'csv', 5), 'a').close()
 			LoRa.lor = serial.Serial('/dev/' + prt, 115200)
 			#print(LoRa.answer())
 			time.sleep(.2)
 			LoRa.lor.reset_input_buffer()
+			print(LoRa.answer(5))
 			#### fehlt ####################
 			print('LoRa_init_done')
 		except:
@@ -669,7 +670,6 @@ class LoRa:
 			avr.append(mand % (2**8))
 
 			# ------- 6. Counter rate ------------
-			'''
 			try:
 				coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
 			except:
@@ -678,11 +678,11 @@ class LoRa:
 			avr.append(0x06) # channel 6
 			avr.append(0x02) # analog input
 			avr.append((coun % (2**16)) // (2**8))
-			avr.append(coun % (2**8))''' # counter rate existiert noch nicht
+			avr.append(coun % (2**8)) # counter rate existiert noch nicht
 
 			# ---------- 7. Pressure --------------
 			try:
-				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 5672.25) # in Pa
+				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 52) # in Pa
 			except:
 				print('send_pres_fail')
 				pres = 0
@@ -870,7 +870,7 @@ class LoRa:
 		except:
 			print('LoRa_send_fail')
 			LoRa.init()
-			return ['fail']
+			# return ['fail']
 
 
 
