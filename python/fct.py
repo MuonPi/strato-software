@@ -152,6 +152,7 @@ class BME280:
 	dig_H3 = None
 	dig_H4 = None
 	dig_H5 = None
+	dig_H6 = None
 	def init():
 		try:
 			write_byte(0x76, 0xF2, 0b00000010)  # oversampling humidity)
@@ -179,6 +180,7 @@ class BME280:
 			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
 			if (BME280.dig_H5 >= 0x8000):
 				BME280.dig_H5 = -((65535 - BME280.dig_H5) + 1)
+			BME280.dig_H6 = read_byte_2c(0x76, 0xE7)
 
 			print('BME280_init_done')
 		except:
