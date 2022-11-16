@@ -74,10 +74,41 @@ while True:
 	
 	#------------- BME-280 ----------------------
 	
-	pres = fct.BME280.read_pres()
-	temp = fct.BME280.read_temp()
-	humi = fct.BME280.read_humi()
-	
+	temp = []
+	adc_T = float(fct.BME280.read_temp()[0])
+	var1 = ((adc_T/16384.0 - float(fct.BME280.dig_T1)/1024.0)) * float(fct.BME280.dig_T2)
+	var2 = ((adc_T / 131072.0 - float(fct.BME280.dig_T1) / 8192.0) * (adc_T / 131072.0 - float(fct.BME280.dig_T1) / 8192.0)) * float(fct.BME280.dig_T3)
+	t_fine = var1 + var2 # as BME280_S32_t (signed 32bit)
+	temp = [(var1 + var2) / 5120.0]
+
+	pres = [0.0]
+	adc_P = float(fct.BME280.read_pres()[0])
+	var1 = t_fine / 2.0 - 64000.0
+	var2 = var1 * var1 * float(fct.BME280.dig_P6) / 32768.0
+	var2 = var2 + var1 * float(fct.BME280.dig_P5) * 2.0
+	var2 = (var2 / 4.0) + float(fct.BME280.dig_P4) * 65536.0
+	var1 = (float(fct.BME280.dig_P3) * var1 * var1 / 524288.0 + float(fct.BME280.dig_P2) * var1 ) / 524288.0
+	if var1 != 0.0:
+		pres = 1048576.0 - adc_P
+		pres = (pres - var2 / 4096.0) * 6250.0 / var1
+		var1 = float(fct.BME280.dig_P9) * pres * pres / 2147483648.0
+		var2 = pres * fct.BME280.dig_P8 / 32768.0
+		pres = pres + (var1 + var2 + float(fct.BME280.dig_P7)) / 16.0
+		pres = [pres]
+
+	humi = []
+	adc_H = float(fct.BME280.read_humi()[0])
+	var_H = t_fine - 76800.0
+	var_H = (adc_H - (fct.BME280.dig_H4 * 64.0 + fct.BME280.dig_H5 / 16384.0 *
+	var_H)) * (fct.BME280.dig_H2 / 65536.0 * (1.0 + fct.BME280.dig_H6 /
+	67108864.0 * var_H * (1.0 + fct.BME280.dig_H3 / 67108864.0 * var_H)))
+	var_H = var_H * (1.0 - fct.BME280.dig_H1 * var_H / 524288.0)
+	if (var_H > 100.0):
+		var_H = 100.0
+	elif var_H < 0.0:
+		var_H= 0.0
+	humi = [var_H]
+
 	fct.BME280.save_pres(pres)
 	fct.BME280.save_temp(temp)
 	fct.BME280.save_humi(humi)

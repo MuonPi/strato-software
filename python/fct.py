@@ -135,10 +135,51 @@ class SEN0321:
 
 
 class BME280:
+	dig_T1 = None
+	dig_T2 = None
+	dig_T3 = None
+	dig_P1 = None
+	dig_P2 = None
+	dig_P3 = None
+	dig_P4 = None
+	dig_P5 = None
+	dig_P6 = None
+	dig_P7 = None
+	dig_P8 = None
+	dig_P9 = None
+	dig_H1 = None
+	dig_H2 = None
+	dig_H3 = None
+	dig_H4 = None
+	dig_H5 = None
 	def init():
 		try:
 			write_byte(0x76, 0xF2, 0b00000010)  # oversampling humidity)
 			write_byte(0x76, 0xF4, 0b01001011)  # oversampling temperature, oversampling pressure, mode
+			dig_T1 = read_2byte_hl(0x76, 0x88)
+			dig_T2 = read_2byte_hl_2c(0x76, 0x8A)
+			dig_T3 = read_2byte_hl_2c(0x76, 0x8C)
+			dig_P1 = read_2byte_hl(0x76, 0x8E)
+			dig_P2 = read_2byte_hl_2c(0x76, 0x90)
+			dig_P3 = read_2byte_hl_2c(0x76, 0x92)
+			dig_P4 = read_2byte_hl_2c(0x76, 0x94)
+			dig_P5 = read_2byte_hl_2c(0x76, 0x96)
+			dig_P6 = read_2byte_hl_2c(0x76, 0x98)
+			dig_P7 = read_2byte_hl_2c(0x76, 0x9A)
+			dig_P8 = read_2byte_hl_2c(0x76, 0x8C)
+			dig_P9 = read_2byte_hl_2c(0x76, 0x9E)
+			dig_H1 = read_byte(0x76, 0xA1)
+			dig_H2 = read_2byte_hl_2c(0x76, 0xE1)
+			dig_H3 = read_byte(0x76, 0xE3)
+
+			e5 = read_byte(0x76, 0xE5)
+			tmp = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x07)
+			if (tmp >= 0x8000):
+				dig_H4 = -((65535 - tmp) + 1)
+			tmp = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
+			if (tmp >= 0x8000):
+				dig_H5 = -((65535 - tmp) + 1)
+			
 			print('BME280_init_done')
 		except:
 			print('BME280_init_fail')
@@ -682,7 +723,7 @@ class LoRa:
 
 			# ---------- 7. Pressure --------------
 			try:
-				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 52) # in Pa
+				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) * 100) # in Pa
 			except:
 				print('send_pres_fail')
 				pres = 0
@@ -693,7 +734,7 @@ class LoRa:
 
 			# ---------- 8. Temperature Out ----------
 			try:
-				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) / 421158.4) # in K
+				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) * 100) # in K
 			except:
 				print('send_temo_fail')
 				temo = 0
