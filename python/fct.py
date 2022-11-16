@@ -173,13 +173,13 @@ class BME280:
 			BME280.dig_H3 = read_byte(0x76, 0xE3)
 
 			e5 = read_byte(0x76, 0xE5)
-			tmp = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x07)
-			if (tmp >= 0x8000):
-				BME280.dig_H4 = -((65535 - tmp) + 1)
-			tmp = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
-			if (tmp >= 0x8000):
-				BME280.dig_H5 = -((65535 - tmp) + 1)
-			
+			BME280.dig_H4 = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x07)
+			if (BME280.dig_H5 >= 0x8000):
+				BME280.dig_H4 = -((65535 - BME280.dig_H5) + 1)
+			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
+			if (BME280.dig_H5 >= 0x8000):
+				BME280.dig_H5 = -((65535 - BME280.dig_H5) + 1)
+
 			print('BME280_init_done')
 		except:
 			print('BME280_init_fail')

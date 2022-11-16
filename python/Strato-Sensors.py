@@ -99,9 +99,7 @@ while True:
 	humi = []
 	adc_H = float(fct.BME280.read_humi()[0])
 	var_H = t_fine - 76800.0
-	var_H = (adc_H - (fct.BME280.dig_H4 * 64.0 + fct.BME280.dig_H5 / 16384.0 *
-	var_H)) * (fct.BME280.dig_H2 / 65536.0 * (1.0 + fct.BME280.dig_H6 /
-	67108864.0 * var_H * (1.0 + fct.BME280.dig_H3 / 67108864.0 * var_H)))
+	var_H = (adc_H - (fct.BME280.dig_H4 * 64.0 + fct.BME280.dig_H5 / 16384.0 * var_H)) * (fct.BME280.dig_H2 / 65536.0 * (1.0 + fct.BME280.dig_H6 / 67108864.0 * var_H * (1.0 + fct.BME280.dig_H3 / 67108864.0 * var_H)))
 	var_H = var_H * (1.0 - fct.BME280.dig_H1 * var_H / 524288.0)
 	if (var_H > 100.0):
 		var_H = 100.0
