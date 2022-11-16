@@ -88,6 +88,7 @@ while True:
 	var2 = var2 + var1 * float(fct.BME280.dig_P5) * 2.0
 	var2 = (var2 / 4.0) + float(fct.BME280.dig_P4) * 65536.0
 	var1 = (float(fct.BME280.dig_P3) * var1 * var1 / 524288.0 + float(fct.BME280.dig_P2) * var1 ) / 524288.0
+	var1 = (1.0 + var1 / 32768.0) * float(fct.BME280.dig_P1)
 	if var1 != 0.0:
 		pres = 1048576.0 - adc_P
 		pres = (pres - var2 / 4096.0) * 6250.0 / var1
