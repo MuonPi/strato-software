@@ -18,6 +18,8 @@ from python import fct
 print('Strato-Sensors_starting_...')
 
 fct.set_starttime()
+
+NUMBER = 0
 	
 fct.init_sensors()
 time.sleep(1)
@@ -31,15 +33,15 @@ while True:
 	
 	#-------------- MuonPi -----------------------
 	
-	mcor = fct.MuonPi.read_mcor()
-	mhei = fct.MuonPi.read_mhei()
-	mand = fct.MuonPi.read_mand()
-	mxor = fct.MuonPi.read_mxor()
+	# mcor = fct.MuonPi.read_mcor()
+	# mhei = fct.MuonPi.read_mhei()
+	# mand = fct.MuonPi.read_mand()
+	# mxor = fct.MuonPi.read_mxor()
 	
-	fct.MuonPi.save_mcor(mcor)
-	fct.MuonPi.save_mhei(mhei)
-	fct.MuonPi.save_mand(mand)
-	fct.MuonPi.save_mxor(mxor)
+	# fct.MuonPi.save_mcor(mcor)
+	# fct.MuonPi.save_mhei(mhei)
+	# fct.MuonPi.save_mand(mand)
+	# fct.MuonPi.save_mxor(mxor)
 	
 	
 	
@@ -137,6 +139,11 @@ while True:
 	
 	#----------------- END ------------------------
 	
+	NUMBER += 1
+	if(NUMBER >= 60):
+		sys.stdout.flush()
+		NUMBER = 0
+
 	fct.sleep_until(1)
 	
 	
