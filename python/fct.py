@@ -174,14 +174,19 @@ class BME280:
 			BME280.dig_H3 = read_byte(0x76, 0xE3)
 
 			e5 = read_byte(0x76, 0xE5)
-			BME280.dig_H4 = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x07)
+			BME280.dig_H4 = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x0F)
 			if (BME280.dig_H4 >= 0x8000):
 				BME280.dig_H4 = -((65535 - BME280.dig_H4) + 1)
-			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + (e5 & 0x70)
+			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + ((e5 & 0xF0) >> 4)
 			if (BME280.dig_H5 >= 0x8000):
 				BME280.dig_H5 = -((65535 - BME280.dig_H5) + 1)
 			BME280.dig_H6 = read_byte_2c(0x76, 0xE7)
 
+			print("BME280 compensation values: ", [
+													BME280.dig_T1, BME280.dig_T2, BME280.dig_T3, BME280.dig_P1, BME280.dig_P2, BME280.dig_P3,
+													BME280.dig_P4, BME280.dig_P5, BME280.dig_P6, BME280.dig_P7, BME280.dig_P8, BME280.dig_P9,
+													BME280.dig_H1, BME280.dig_H2, BME280.dig_H3, BME280.dig_H4, BME280.dig_H5, BME280.dig_H6
+												])
 			print('BME280_init_done')
 		except:
 			print('BME280_init_fail')
@@ -692,7 +697,7 @@ class LoRa:
 
 			# ------- 4. XOR rate ------------
 			try:
-				mxor = int(float(MuonPi.read_mxor()[0]) * 1000)
+				mxor = int(float(MuonPi.read_mxor()[0]) * 100)
 			except:
 				print('send_mxor_fail')
 				mxor = 0
@@ -703,7 +708,7 @@ class LoRa:
 
 			# ------- 5. AND rate ------------
 			try:
-				mand = int(float(MuonPi.read_mand()[0]) * 1000)
+				mand = int(float(MuonPi.read_mand()[0]) * 100)
 			except:
 				print('send_mand_fail')
 				mand = 0
@@ -714,7 +719,7 @@ class LoRa:
 
 			# ------- 6. Counter rate ------------
 			try:
-				coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
+				coun = int(float(MuonPi.read_coun()[0]) * 100) # ist *1000 sinnvoll?
 			except:
 				print('send_coun_fail')
 				coun = 0
@@ -725,7 +730,7 @@ class LoRa:
 
 			# ---------- 7. Pressure --------------
 			try:
-				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) * 100) # in Pa
+				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5))) # in Pa
 			except:
 				print('send_pres_fail')
 				pres = 0
@@ -736,7 +741,7 @@ class LoRa:
 
 			# ---------- 8. Temperature Out ----------
 			try:
-				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) * 100) # in K
+				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5))) # in K
 			except:
 				print('send_temo_fail')
 				temo = 0
