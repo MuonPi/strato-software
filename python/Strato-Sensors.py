@@ -116,7 +116,7 @@ while True:
 	temp = [0]
 	adc_T = fct.BME280.read_temp()[0]
 	var1 = ((((adc_T>>3) - (fct.BME280.dig_T1<<1))) * fct.BME280.dig_T2) >> 11
-	var2 = (((((adc_T>>4) - fct.BME280.dig_T1) * ((fct.BME280.adc_T>>4) - fct.BME280.dig_T1))>> 12) * fct.BME280.dig_T3) >> 14
+	var2 = (((((adc_T>>4) - fct.BME280.dig_T1) * ((adc_T>>4) - fct.BME280.dig_T1))>> 12) * fct.BME280.dig_T3) >> 14
 	t_fine = var1 + var2
 	temp = (t_fine * 5 + 128) >> 8
 	temp = [temp]
