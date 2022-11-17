@@ -7,6 +7,7 @@ import serial
 import pynmea2
 import random
 import os
+import numpy as np
 #import sched
 sys.path.insert(0, '/home/pi/strato2')
 from python import fct
@@ -113,49 +114,50 @@ while True:
 	# humi = [var_H]
 
 	# --- with integer calculation:
-	# temp = [0]
-	# adc_T = fct.BME280.read_temp()[0]
-	# var1 = ((((adc_T>>3) - (fct.BME280.dig_T1<<1))) * fct.BME280.dig_T2) >> 11
-	# var2 = (((((adc_T>>4) - fct.BME280.dig_T1) * ((adc_T>>4) - fct.BME280.dig_T1))>> 12) * fct.BME280.dig_T3) >> 14
-	# t_fine = var1 + var2
-	# temp = (t_fine * 5 + 128) >> 8
-	# temp = [temp]
+	temp = [0]
+	adc_T = np.int32(fct.BME280.read_temp()[0])
+	var1 = np.int32(((((adc_T>>3) - (np.int32(fct.BME280.dig_T1)<<1))) * np.int32(fct.BME280.dig_T2)) >> 11)
+	var2 = np.int32((((((adc_T>>4) - np.int32(fct.BME280.dig_T1)) * ((adc_T>>4) - np.int32(fct.BME280.dig_T1)))>> 12) * np.int32(fct.BME280.dig_T3)) >> 14)
+	t_fine = np.int32(var1 + var2)
+	temp = (t_fine * 5 + 128) >> 8
+	temp = [temp]
 
-	# pres = [0]
-	# adc_P = fct.BME280.read_pres()[0]
-	# var1 = t_fine - 128000
-	# var2 = var1 * var1 * fct.BME280.dig_P6
-	# var2 = var2 + ((var1 * fct.BME280.dig_P5) << 17)
-	# var1 = ((var1 * var1 * fct.BME280.dig_P3)>>8) + ((var1 * fct.BME280.dig_P2)<<12)
-	# var1 = ((((1)<<47)+var1))*(fct.BME280.dig_P1)>>33
-	# if (var1 != 0):
-	# 	pres  = 1048576 - adc_P
-	# 	pres = (((pres<<31)-var2)*3125)//var1
-	# 	var1 = ((fct.BME280.dig_P9) * (pres>>13) * (pres>>13)) >> 25
-	# 	var2 = ((fct.BME280.dig_P8) * pres) >> 19
-	# 	pres = ((pres + var1 + var2) >> 8) + ((fct.BME280.dig_P7) << 4)
-	# 	pres = [pres]
+	pres = [0]
+	adc_P = np.int32(fct.BME280.read_pres()[0])
+	var1 = np.int64(t_fine) - 128000
+	var2 = np.int64(var1 * var1 * np.int64(fct.BME280.dig_P6))
+	var2 = np.int64(var2 + ((var1 * np.int64(fct.BME280.dig_P5)) << 17))
+	var1 = ((var1 * var1 * np.int64(fct.BME280.dig_P3))>>8) + ((var1 * np.int64(fct.BME280.dig_P2))<<12)
+	var1 = ((((np.int64(1)<<47)+var1))*(np.int64(fct.BME280.dig_P1)))>>33
+	if (var1 != 0):
+		pres  = np.int64(1048576 - adc_P)
+		pres = (((pres<<31)-var2)*3125)//var1
+		var1 = (np.int64(fct.BME280.dig_P9) * (pres>>13) * (pres>>13)) >> 25
+		var2 = (np.int64(fct.BME280.dig_P8) * pres) >> 19
+		pres = ((pres + var1 + var2) >> 8) + (np.int64(fct.BME280.dig_P7) << 4)
+		pres = [np.uint32(pres)]
 	
-	# humi = [0]
-	# adc_H = fct.BME280.read_humi()[0]
-	# v_x1_u32r = t_fine - 76800
-	# v_x1_u32r = (((((adc_H << 14) - (fct.BME280.dig_H4 << 20) - (fct.BME280.dig_H5 *
-	# 			v_x1_u32r)) + (16384)) >> 15) * (((((((v_x1_u32r *
-	# 			fct.BME280.dig_H6) >> 10) * (((v_x1_u32r * fct.BME280.dig_H3) >> 11) +
-	# 			32768)) >> 10) + 2097152) * fct.BME280.dig_H2 +
-	# 			8192) >> 14))
-	# v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) *
-	# 			fct.BME280.dig_H1) >> 4))
-	# v_x1_u32r = 0 if v_x1_u32r < 0 else v_x1_u32r
-	# v_x1_u32r = 419430400 if v_x1_u32r > 419430400 else v_x1_u32r
-	# v_x1_u32r = v_x1_u32r >> 12
-	# v_x1_u32r = (~v_x1_u32r +1) % (2**32) if v_x1_u32r < 0 else v_x1_u32r
-	# humi = [v_x1_u32r]
+	humi = [0]
+	adc_H = np.int32(fct.BME280.read_humi()[0])
+	v_x1_u32r = t_fine - np.int32(76800)
+	v_x1_u32r = (((((adc_H << 14) - (np.int32(fct.BME280.dig_H4) << 20) - (np.int32(fct.BME280.dig_H5) *
+				v_x1_u32r)) + (16384)) >> 15) * (((((((v_x1_u32r *
+				np.int32(fct.BME280.dig_H6)) >> 10) * (((v_x1_u32r * np.int32(fct.BME280.dig_H3)) >> 11) +
+				32768)) >> 10) + 2097152) * np.int32(fct.BME280.dig_H2) +
+				8192) >> 14))
+	v_x1_u32r = (v_x1_u32r - (((((v_x1_u32r >> 15) * (v_x1_u32r >> 15)) >> 7) *
+				np.int32(fct.BME280.dig_H1)) >> 4))
+	v_x1_u32r = 0 if v_x1_u32r < 0 else v_x1_u32r
+	v_x1_u32r = 419430400 if v_x1_u32r > 419430400 else v_x1_u32r
+	v_x1_u32r = v_x1_u32r >> 12
+	v_x1_u32r = (~v_x1_u32r +1) % (2**32) if v_x1_u32r < 0 else v_x1_u32r
+	humi = [np.uint32(v_x1_u32r)]
 
 	# --- raw
-	temp = fct.BME280.read_temp()
-	pres = fct.BME280.read_pres()
-	humi = fct.BME280.read_humi()
+	# temp = fct.BME280.read_temp()
+	# pres = fct.BME280.read_pres()
+	# humi = fct.BME280.read_humi()
+
 	fct.BME280.save_pres(pres)
 	fct.BME280.save_temp(temp)
 	fct.BME280.save_humi(humi)

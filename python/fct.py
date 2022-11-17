@@ -57,7 +57,7 @@ def read_3byte_hlx(adr, reg, bus = smbus.SMBus(1)):
 	return tmp
 
 def read_3byte_hlx_2c(adr, reg, bus = smbus.SMBus(1)):
-	tmp = read_3byte(adr, reg)
+	tmp = read_3byte_hlx(adr, reg)
 	if (tmp >= 0x800000):
 		return -((16777215 - tmp) + 1)
 	else:
@@ -719,7 +719,7 @@ class LoRa:
 
 			# ------- 6. Counter rate ------------
 			try:
-				coun = int(float(MuonPi.read_coun()[0]) * 100) # ist *1000 sinnvoll?
+				coun = int(float(MuonPi.read_coun()[0]))
 			except:
 				print('send_coun_fail')
 				coun = 0
