@@ -50,7 +50,7 @@ while(True):
 		print('answer timeout')
 		fct.LoRa.init()
 
-	# exit(1)
+	sys.stdout.flush() # delete this line if you don't want to write output every 60 seconds
 
 	
 	
