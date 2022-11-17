@@ -46,7 +46,7 @@ while(True):
 		print(asw)
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
 			break
-	
+	sys.stdout.flush() # delete this line if you don't want to write output every 60 seconds
 	# exit(1)
 
 	
