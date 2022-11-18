@@ -140,8 +140,8 @@ class BME280:
 	def init():
 		try:
 			write_byte(0x76, 0x0E, 0xB6)	    # reset
-			write_byte(0x76, 0xF2, 0b00000010)  # oversampling humidity)
-			write_byte(0x76, 0xF4, 0b01001011)  # oversampling temperature, oversampling pressure, mode
+			write_byte(0x76, 0xF2, 0b00000101)  # oversampling humidity)
+			write_byte(0x76, 0xF4, 0b10110111)  # oversampling temperature, oversampling pressure, mode
 			print("BME280 ID: ",hex(read_byte(0x76, 0xD0)))	    # print chip id
 			print("88-a1: ",smbus.SMBus(1).read_i2c_block_data(0x76,0x88, 26))
 			print("e1-f0: ",smbus.SMBus(1).read_i2c_block_data(0x76,0xE1, 7))
@@ -537,6 +537,7 @@ class LoRa:
 					buf += incomingByte
 				# print(buf)
 				if(len(buf) < 4):
+					time.sleep(0.1)
 					continue
 				for i in range(len(buf)):
 					if(buf[i] == 0xf9 and len(buf) >= i + 4): # header, size, data block, chkA, chkB => length >= 5
