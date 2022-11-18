@@ -46,7 +46,7 @@ while(True):
 		print(asw)
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
 			break
-		if i == 5:
+		if(i == 5):
 			print('answer timeout')
 			fct.LoRa.init()
 

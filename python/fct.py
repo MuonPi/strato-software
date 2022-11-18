@@ -325,7 +325,7 @@ class MuonPi:
 			print('rateXOR_save_fail')
 	def read_coun():
 		try:
-			return [read_logfile(muon_logfile(), "ubloxCounter")[:-2].strip()]
+			return [read_logfile(muon_logfile(), "ubloxCounter").strip()]
 		except:
 			print('ubloxCounter_read_fail')
 			return ['fail']#'fail'
@@ -553,7 +553,7 @@ class LoRa:
 							else:
 								buf = bytearray()
 						return asw
-				time.sleep(0.001)
+				time.sleep(0.1)
 			return bytearray()
 		except:
 			print('LoRa_answer_fail')
@@ -685,7 +685,7 @@ class LoRa:
 			avr.append(0x06) # channel 6
 			avr.append(0x02) # analog input
 			avr.append((coun % (2**16)) // (2**8))
-			avr.append(coun % (2**8)) # counter rate existiert noch nicht
+			avr.append(coun % (2**8))
 
 			# ---------- 7. Pressure --------------
 			try:
@@ -716,7 +716,7 @@ class LoRa:
 			avr.append((temi % (2**16)) // (2**8))
 			avr.append(temi % (2**8))'''
 			
-			print(avr)
+			# print(avr)
 
 			'''
 			avr.append(past_seconds(dat[txtlen - 1][1].strip()))	# letzter zeitstempel aus payload file wird verwendet in sekunden
@@ -1022,7 +1022,7 @@ def read_logfile(pat, atr):			# dateipfad, attribut welches ausgegeben werden so
 	txt = fil.readlines()
 	fil.close()
 	for i in range(-1, -50, -1):
-		if txt[i][20:20 + len(atr)] == atr:
+		if(txt[i][20:20 + len(atr)] == atr):
 			return txt[i].split(' ')[2].strip()
 	return 'fail'
 
