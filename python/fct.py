@@ -50,10 +50,12 @@ def read_2byte_lh_2c(adr, reg, bus = smbus.SMBus(1)):				#als 2er-komplement aus
 		return tmp
 
 def read_3byte_hlx(adr, reg, bus = smbus.SMBus(1)):
-	h = bus.read_byte_data(adr, reg)
-	l = bus.read_byte_data(adr, reg+1)
-	x = bus.read_byte_data(adr, reg+2)
-	tmp = (h << 16) + (l << 8) + x
+	dat = bus.read_i2c_block_data(adr, reg, 3)
+	#h = bus.read_byte_data(adr, reg)
+	#l = bus.read_byte_data(adr, reg+1)
+	#x = bus.read_byte_data(adr, reg+2)
+	#tmp = (h << 12) + (l << 4) + (x >> 4)
+	tmp = (dat[0] << 12) | (dat[1] << 4) | (dat[2] >> 4)
 	return tmp
 
 def read_3byte_hlx_2c(adr, reg, bus = smbus.SMBus(1)):
@@ -76,7 +78,7 @@ def write_byte(adr, reg, cmd, bus = smbus.SMBus(1)):            #cmd=command
 class MPU6050:
 	def init():
 		try:
-			write_byte(0x68, 0x6b, 0b00000000)  # countinues-mode
+			write_byte(0x68, 0x6b, 0b00000000)  	# countinues-mode
 			write_byte(0x68, 0x1b, 0b00001000)	# oversampling gyro
 			write_byte(0x68, 0x1c, 0b00000000)	# oversampling acce
 			print('MPU6050_init_done')
@@ -135,58 +137,14 @@ class SEN0321:
 
 
 class BME280:
-	dig_T1 = None
-	dig_T2 = None
-	dig_T3 = None
-	dig_P1 = None
-	dig_P2 = None
-	dig_P3 = None
-	dig_P4 = None
-	dig_P5 = None
-	dig_P6 = None
-	dig_P7 = None
-	dig_P8 = None
-	dig_P9 = None
-	dig_H1 = None
-	dig_H2 = None
-	dig_H3 = None
-	dig_H4 = None
-	dig_H5 = None
-	dig_H6 = None
 	def init():
 		try:
+			write_byte(0x76, 0x0E, 0xB6)	    # reset
 			write_byte(0x76, 0xF2, 0b00000010)  # oversampling humidity)
 			write_byte(0x76, 0xF4, 0b01001011)  # oversampling temperature, oversampling pressure, mode
-			BME280.dig_T1 = read_2byte_hl(0x76, 0x88)
-			BME280.dig_T2 = read_2byte_hl_2c(0x76, 0x8A)
-			BME280.dig_T3 = read_2byte_hl_2c(0x76, 0x8C)
-			BME280.dig_P1 = read_2byte_hl(0x76, 0x8E)
-			BME280.dig_P2 = read_2byte_hl_2c(0x76, 0x90)
-			BME280.dig_P3 = read_2byte_hl_2c(0x76, 0x92)
-			BME280.dig_P4 = read_2byte_hl_2c(0x76, 0x94)
-			BME280.dig_P5 = read_2byte_hl_2c(0x76, 0x96)
-			BME280.dig_P6 = read_2byte_hl_2c(0x76, 0x98)
-			BME280.dig_P7 = read_2byte_hl_2c(0x76, 0x9A)
-			BME280.dig_P8 = read_2byte_hl_2c(0x76, 0x8C)
-			BME280.dig_P9 = read_2byte_hl_2c(0x76, 0x9E)
-			BME280.dig_H1 = read_byte(0x76, 0xA1)
-			BME280.dig_H2 = read_2byte_hl_2c(0x76, 0xE1)
-			BME280.dig_H3 = read_byte(0x76, 0xE3)
-
-			e5 = read_byte(0x76, 0xE5)
-			BME280.dig_H4 = (read_byte(0x76, 0xE4) << 4) + (e5 & 0x0F)
-			if (BME280.dig_H4 >= 0x8000):
-				BME280.dig_H4 = -((65535 - BME280.dig_H4) + 1)
-			BME280.dig_H5 = (read_2byte_hl(0x76, 0xE6) << 4) + ((e5 & 0xF0) >> 4)
-			if (BME280.dig_H5 >= 0x8000):
-				BME280.dig_H5 = -((65535 - BME280.dig_H5) + 1)
-			BME280.dig_H6 = read_byte_2c(0x76, 0xE7)
-
-			print("BME280 compensation values: ", [
-													BME280.dig_T1, BME280.dig_T2, BME280.dig_T3, BME280.dig_P1, BME280.dig_P2, BME280.dig_P3,
-													BME280.dig_P4, BME280.dig_P5, BME280.dig_P6, BME280.dig_P7, BME280.dig_P8, BME280.dig_P9,
-													BME280.dig_H1, BME280.dig_H2, BME280.dig_H3, BME280.dig_H4, BME280.dig_H5, BME280.dig_H6
-												])
+			print("BME280 ID: ",hex(read_byte(0x76, 0xD0)))	    # print chip id
+			print("88-a1: ",smbus.SMBus(1).read_i2c_block_data(0x76,0x88, 26))
+			print("e1-f0: ",smbus.SMBus(1).read_i2c_block_data(0x76,0xE1, 7))
 			print('BME280_init_done')
 		except:
 			print('BME280_init_fail')
@@ -595,6 +553,7 @@ class LoRa:
 							else:
 								buf = bytearray()
 						return asw
+				time.sleep(0.001)
 			return bytearray()
 		except:
 			print('LoRa_answer_fail')
