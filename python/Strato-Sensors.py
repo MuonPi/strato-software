@@ -93,8 +93,10 @@ while True:
 	#------------- QMC-5883L ----------------------
 	
 	magn = fct.QMC5883L.read_magn()
+	tmpi = fct.QMC5883L.read_tmpi()
 	
 	fct.QMC5883L.save_magn(magn)
+	fct.QMC5883L.save_tmpi(tmpi)
 	
 	
 	

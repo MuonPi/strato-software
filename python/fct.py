@@ -192,7 +192,7 @@ class BME280:
 class QMC5883L:
 	def init():
 		try:
-			write_byte(0x0d, 0x09, 0b10010101)  # samplerate=128Hz; fieldrange=8.1Ga; datarate=50Hz; continues-mode
+			write_byte(0x0d, 0x09, 0b00001101)  # samplerate=512Hz; fieldrange=2Ga; datarate=200Hz; continues-mode
 			write_byte(0x0d, 0x0a, 0b00000001)  # disable soft-reset; disable roll-over; disable interrupt
 			write_byte(0x0d, 0x0b, 0b00000001)  # set period
 			print('QMC5883L_init_done')
@@ -212,13 +212,25 @@ class QMC5883L:
 			write_file(filename("magn_raw", "csv", 5), "raw", dat)#, 3)
 		except:
 			print('QMC5883L_magn_save_fail')
+	def read_tmpi():
+		try:
+			return [read_2byte_lh(0x0d, 0x07)]
+		except:
+			print('QMC5883L_tmpi_read_fail')
+			QMC5883L.init()
+			return ['fail']
+	def save_tmpi(dat):
+		try:
+			write_file(filename("tmpi_raw", "csv", 5), "raw", dat)
+		except:
+			print('QMC5883L_tmpi_save_fail')
 
 
 
 class VEML6075:
 	def init():
 		try:
-			write_byte(0x10, 0x00, 0b00000000)  # integrationtime=50ms; normal dynamic; no trigger; no force-mode; continues-mode
+			write_byte(0x10, 0x00, 0b01001000)  # integrationtime=800ms; high dynamic; no trigger; no force-mode; continues-mode
 			print('VEML6075_init_done')
 		except:
 			print('VEML6075_init_fail')
