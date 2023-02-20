@@ -46,8 +46,11 @@ while(True):
 		print(asw)
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
 			break
-	
-	# exit(1)
+		if(i == 5):
+			print('answer timeout')
+			fct.LoRa.init()
+
+	sys.stdout.flush() # delete this line if you don't want to write output every 60 seconds
 
 	
 	
@@ -55,4 +58,5 @@ while(True):
 	
 	#----------------- END ------------------------
 	
+	sys.stdout.flush()
 	fct.sleep_until(60)

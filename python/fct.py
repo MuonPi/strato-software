@@ -50,14 +50,16 @@ def read_2byte_lh_2c(adr, reg, bus = smbus.SMBus(1)):				#als 2er-komplement aus
 		return tmp
 
 def read_3byte_hlx(adr, reg, bus = smbus.SMBus(1)):
-	h = bus.read_byte_data(adr, reg)
-	l = bus.read_byte_data(adr, reg+1)
-	x = bus.read_byte_data(adr, reg+2)
-	tmp = (h << 16) + (l << 8) + x
+	dat = bus.read_i2c_block_data(adr, reg, 3)
+	#h = bus.read_byte_data(adr, reg)
+	#l = bus.read_byte_data(adr, reg+1)
+	#x = bus.read_byte_data(adr, reg+2)
+	#tmp = (h << 12) + (l << 4) + (x >> 4)
+	tmp = (dat[0] << 12) | (dat[1] << 4) | (dat[2] >> 4)
 	return tmp
 
 def read_3byte_hlx_2c(adr, reg, bus = smbus.SMBus(1)):
-	tmp = read_3byte(adr, reg)
+	tmp = read_3byte_hlx(adr, reg)
 	if (tmp >= 0x800000):
 		return -((16777215 - tmp) + 1)
 	else:
@@ -76,7 +78,7 @@ def write_byte(adr, reg, cmd, bus = smbus.SMBus(1)):            #cmd=command
 class MPU6050:
 	def init():
 		try:
-			write_byte(0x68, 0x6b, 0b00000000)  # countinues-mode
+			write_byte(0x68, 0x6b, 0b00000000)  	# countinues-mode
 			write_byte(0x68, 0x1b, 0b00001000)	# oversampling gyro
 			write_byte(0x68, 0x1c, 0b00000000)	# oversampling acce
 			print('MPU6050_init_done')
@@ -137,8 +139,12 @@ class SEN0321:
 class BME280:
 	def init():
 		try:
-			write_byte(0x76, 0xF2, 0b00000010)  # oversampling humidity)
-			write_byte(0x76, 0xF4, 0b01001011)  # oversampling temperature, oversampling pressure, mode
+			write_byte(0x76, 0x0E, 0xB6)	    # reset
+			write_byte(0x76, 0xF2, 0b00000101)  # oversampling humidity)
+			write_byte(0x76, 0xF4, 0b10110111)  # oversampling temperature, oversampling pressure, mode
+			print("BME280 ID: ",hex(read_byte(0x76, 0xD0)))	    # print chip id
+			print("88-a1: ",smbus.SMBus(1).read_i2c_block_data(0x76,0x88, 26))
+			print("e1-f0: ",smbus.SMBus(1).read_i2c_block_data(0x76,0xE1, 7))
 			print('BME280_init_done')
 		except:
 			print('BME280_init_fail')
@@ -186,7 +192,7 @@ class BME280:
 class QMC5883L:
 	def init():
 		try:
-			write_byte(0x0d, 0x09, 0b10010101)  # samplerate=128Hz; fieldrange=8.1Ga; datarate=50Hz; continues-mode
+			write_byte(0x0d, 0x09, 0b00001101)  # samplerate=512Hz; fieldrange=2Ga; datarate=200Hz; continues-mode
 			write_byte(0x0d, 0x0a, 0b00000001)  # disable soft-reset; disable roll-over; disable interrupt
 			write_byte(0x0d, 0x0b, 0b00000001)  # set period
 			print('QMC5883L_init_done')
@@ -206,13 +212,25 @@ class QMC5883L:
 			write_file(filename("magn_raw", "csv", 5), "raw", dat)#, 3)
 		except:
 			print('QMC5883L_magn_save_fail')
+	def read_tmpi():
+		try:
+			return [read_2byte_lh(0x0d, 0x07)]
+		except:
+			print('QMC5883L_tmpi_read_fail')
+			QMC5883L.init()
+			return ['fail']
+	def save_tmpi(dat):
+		try:
+			write_file(filename("tmpi_raw", "csv", 5), "raw", dat)
+		except:
+			print('QMC5883L_tmpi_save_fail')
 
 
 
 class VEML6075:
 	def init():
 		try:
-			write_byte(0x10, 0x00, 0b00000000)  # integrationtime=50ms; normal dynamic; no trigger; no force-mode; continues-mode
+			write_byte(0x10, 0x00, 0b01001000)  # integrationtime=800ms; high dynamic; no trigger; no force-mode; continues-mode
 			print('VEML6075_init_done')
 		except:
 			print('VEML6075_init_fail')
@@ -319,7 +337,7 @@ class MuonPi:
 			print('rateXOR_save_fail')
 	def read_coun():
 		try:
-			return [read_logfile(muon_logfile(), "ubloxCounter")[:-2].strip()]
+			return [read_logfile(muon_logfile(), "ubloxCounter").strip()]
 		except:
 			print('ubloxCounter_read_fail')
 			return ['fail']#'fail'
@@ -531,6 +549,7 @@ class LoRa:
 					buf += incomingByte
 				# print(buf)
 				if(len(buf) < 4):
+					time.sleep(0.1)
 					continue
 				for i in range(len(buf)):
 					if(buf[i] == 0xf9 and len(buf) >= i + 4): # header, size, data block, chkA, chkB => length >= 5
@@ -547,6 +566,7 @@ class LoRa:
 							else:
 								buf = bytearray()
 						return asw
+				time.sleep(0.1)
 			return bytearray()
 		except:
 			print('LoRa_answer_fail')
@@ -649,7 +669,7 @@ class LoRa:
 
 			# ------- 4. XOR rate ------------
 			try:
-				mxor = int(float(MuonPi.read_mxor()[0]) * 1000)
+				mxor = int(float(MuonPi.read_mxor()[0]) * 100)
 			except:
 				print('send_mxor_fail')
 				mxor = 0
@@ -660,7 +680,7 @@ class LoRa:
 
 			# ------- 5. AND rate ------------
 			try:
-				mand = int(float(MuonPi.read_mand()[0]) * 1000)
+				mand = int(float(MuonPi.read_mand()[0]) * 100)
 			except:
 				print('send_mand_fail')
 				mand = 0
@@ -671,34 +691,33 @@ class LoRa:
 
 			# ------- 6. Counter rate ------------
 			try:
-				coun = int(float(MuonPi.read_coun()[0]) * 1000) # ist *1000 sinnvoll?
+				coun = int(float(MuonPi.read_coun()[0]))
 			except:
 				print('send_coun_fail')
 				coun = 0
 			avr.append(0x06) # channel 6
 			avr.append(0x02) # analog input
 			avr.append((coun % (2**16)) // (2**8))
-			avr.append(coun % (2**8)) # counter rate existiert noch nicht
+			avr.append(coun % (2**8))
 
 			# ---------- 7. Pressure --------------
 			try:
-				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5)) / 52) # in Pa
+				pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5))) # in Pa
 			except:
 				print('send_pres_fail')
 				pres = 0
 			avr.append(0x07) # channel 7
-			avr.append(0x02) # analog input
+			avr.append(0x71) # analog input
+			avr.append((pres % (2**24)) // (2**16))
 			avr.append((pres % (2**16)) // (2**8))
-			avr.append(pres % (2**8))
-
+			avr.append((pres % (2**8)))
 			# ---------- 8. Temperature Out ----------
 			try:
-				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5)) / 421158.4) # in K
+				temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5))) # in K
 			except:
 				print('send_temo_fail')
 				temo = 0
-			avr.append(0x08) # channel 8
-			avr.append(0x02) # analog input
+			avr.append((temo % (2**24)) // (2**16))
 			avr.append((temo % (2**16)) // (2**8))
 			avr.append(temo % (2**8))
 
@@ -710,7 +729,7 @@ class LoRa:
 			avr.append((temi % (2**16)) // (2**8))
 			avr.append(temi % (2**8))'''
 			
-			print(avr)
+			# print(avr)
 
 			'''
 			avr.append(past_seconds(dat[txtlen - 1][1].strip()))	# letzter zeitstempel aus payload file wird verwendet in sekunden
@@ -1016,7 +1035,7 @@ def read_logfile(pat, atr):			# dateipfad, attribut welches ausgegeben werden so
 	txt = fil.readlines()
 	fil.close()
 	for i in range(-1, -50, -1):
-		if txt[i][20:20 + len(atr)] == atr:
+		if(txt[i][20:20 + len(atr)] == atr):
 			return txt[i].split(' ')[2].strip()
 	return 'fail'
 

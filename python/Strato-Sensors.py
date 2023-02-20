@@ -7,15 +7,19 @@ import serial
 import pynmea2
 import random
 import os
+# import numpy as np
+# import warnings
 #import sched
 sys.path.insert(0, '/home/pi/strato2')
 from python import fct
 
-
+# warnings.filterwarnings('ignore')
 
 print('Strato-Sensors_starting_...')
 
 fct.set_starttime()
+
+NUMBER = 0
 	
 fct.init_sensors()
 time.sleep(1)
@@ -29,15 +33,15 @@ while True:
 	
 	#-------------- MuonPi -----------------------
 	
-	mcor = fct.MuonPi.read_mcor()
-	mhei = fct.MuonPi.read_mhei()
-	mand = fct.MuonPi.read_mand()
-	mxor = fct.MuonPi.read_mxor()
+	# mcor = fct.MuonPi.read_mcor()
+	# mhei = fct.MuonPi.read_mhei()
+	# mand = fct.MuonPi.read_mand()
+	# mxor = fct.MuonPi.read_mxor()
 	
-	fct.MuonPi.save_mcor(mcor)
-	fct.MuonPi.save_mhei(mhei)
-	fct.MuonPi.save_mand(mand)
-	fct.MuonPi.save_mxor(mxor)
+	# fct.MuonPi.save_mcor(mcor)
+	# fct.MuonPi.save_mhei(mhei)
+	# fct.MuonPi.save_mand(mand)
+	# fct.MuonPi.save_mxor(mxor)
 	
 	
 	
@@ -74,10 +78,11 @@ while True:
 	
 	#------------- BME-280 ----------------------
 	
-	pres = fct.BME280.read_pres()
+	# --- raw
 	temp = fct.BME280.read_temp()
+	pres = fct.BME280.read_pres()
 	humi = fct.BME280.read_humi()
-	
+
 	fct.BME280.save_pres(pres)
 	fct.BME280.save_temp(temp)
 	fct.BME280.save_humi(humi)
@@ -88,8 +93,10 @@ while True:
 	#------------- QMC-5883L ----------------------
 	
 	magn = fct.QMC5883L.read_magn()
+	tmpi = fct.QMC5883L.read_tmpi()
 	
 	fct.QMC5883L.save_magn(magn)
+	fct.QMC5883L.save_tmpi(tmpi)
 	
 	
 	
@@ -134,6 +141,11 @@ while True:
 	
 	#----------------- END ------------------------
 	
+	NUMBER += 1
+	if(NUMBER >= 60):
+		sys.stdout.flush()
+		NUMBER = 0
+
 	fct.sleep_until(1)
 	
 	
