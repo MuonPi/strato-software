@@ -41,8 +41,8 @@ while(True):
 	fct.LoRa.send_message(msg)
 
 	print('answer: ')
-	for i in range(6):
-		asw = fct.LoRa.answer()
+	for i in range(7):
+		asw = fct.LoRa.answer(10)
 		print(asw)
 		if(asw == bytearray(b'EV_TXCOMPLETE')):
 			break
