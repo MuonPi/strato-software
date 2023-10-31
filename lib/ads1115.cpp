@@ -1,4 +1,4 @@
-#include "hardware/i2c/ads1115.h"
+#include "include/ads1115.h"
 #include <future>
 #include <iomanip>
 #include <iostream>

@@ -1,4 +1,4 @@
-#include "hardware/i2c/qmc5883.h"
+#include "include/qmc5883.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -24,7 +24,7 @@
 
 bool QMC5883::init()
 {
-    uint8_t readBuf[1]; // 2 byte buffer to store the data read from the I2C device
+    uint8_t readBuf[3]; // 2 byte buffer to store the data read from the I2C device
 
     // init value 0 for gain
     fGain = 0;
@@ -54,7 +54,7 @@ bool QMC5883::init()
     return true;
 }
 
-bool HMC5883::readRDYBit()
+bool QMC5883::readRDYBit()
 {
     uint8_t readBuf[3]; // 2 byte buffer to store the data read from the I2C device
 
@@ -73,7 +73,7 @@ bool HMC5883::readRDYBit()
     return false;
 }
 
-bool HMC5883::getXYZRawValues(int& x, int& y, int& z)
+bool QMC5883::getXYZRawValues(int& x, int& y, int& z)
 {
     uint8_t readBuf[6];
 
@@ -104,7 +104,7 @@ bool HMC5883::getXYZRawValues(int& x, int& y, int& z)
     return false;
 }
 
-bool HMC5883::getXYZMagneticFields(double& x, double& y, double& z)
+bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
 {
     int xreg, yreg, zreg;
     bool ok = getXYZRawValues(xreg, yreg, zreg);
@@ -120,4 +120,24 @@ bool HMC5883::getXYZMagneticFields(double& x, double& y, double& z)
     }
 
     return ok;
+}
+
+bool QMC5883::getTemperatureRawValue(int& temperature)
+{
+    uint8_t readBuf[2];
+
+    n = readReg(TEMP_LSB_REG, readBuf, 2);
+    int16_t tempreg = (int16_t)(readBuf[0] | readBuf[1] << 8);
+
+    if (fDebugLevel > 1) {
+        printf("%d bytes read\n", n);
+        printf("tempreg: %d\n", tempreg);
+    }
+
+    temperature = tempreg;
+
+    if (tempreg >= -2048 && tempreg < 2048)
+        return true;
+
+    return false;
 }
