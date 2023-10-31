@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 import smbus
 import serial
-import pynmea2
+# import pynmea2
 import random
 import os
 #import cayenneLPP
