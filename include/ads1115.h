@@ -6,8 +6,8 @@
 #include <mutex>
 #include <thread>
 
-#include "hardware/device_types.h"
-#include "hardware/i2c/i2cdevice.h"
+// #include "hardware/device_types.h"
+#include "include/i2cdevice.h"
 
 // ADC ADS1x13/4/5 sampling readout delay
 constexpr unsigned int READ_WAIT_DELAY_US_INIT { 10 };

@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/Strato.dir/src/main.cpp.o -o ../bin/Strato 

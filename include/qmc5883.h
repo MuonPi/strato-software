@@ -1,28 +1,28 @@
-#ifndef _HMC5883_H_
-#define _HMC5883_H_
+#ifndef _QMC5883_H_
+#define _QMC5883_H_
 
-#include "hardware/i2c/i2cdevice.h"
+#include "i2cdevice.h"
 
-/* HMC5883  */
+/* QMC5883  */
 
-class HMC5883 : public i2cDevice {
+class QMC5883 : public i2cDevice {
 public:
     // Resolution for the 8 gain settings in mG/LSB
     static const double GAIN[8];
-    HMC5883()
+    QMC5883()
         : i2cDevice(0x1e)
     {
-        fTitle = "HMC5883";
+        fTitle = "QMC5883";
     }
-    HMC5883(const char* busAddress, uint8_t slaveAddress)
+    QMC5883(const char* busAddress, uint8_t slaveAddress)
         : i2cDevice(busAddress, slaveAddress)
     {
-        fTitle = "HMC5883";
+        fTitle = "QMC5883";
     }
-    HMC5883(uint8_t slaveAddress)
+    QMC5883(uint8_t slaveAddress)
         : i2cDevice(slaveAddress)
     {
-        fTitle = "HMC5883";
+        fTitle = "QMC5883";
     }
 
     bool init();
@@ -42,4 +42,4 @@ private:
     signed int fCalibParameters[11];
 };
 
-#endif // !_HMC5883_H_
+#endif // !_QMC5883_H_
