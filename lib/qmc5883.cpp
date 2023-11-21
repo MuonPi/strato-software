@@ -1,4 +1,4 @@
-#include "include/qmc5883.h"
+#include "qmc5883.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -3,9 +3,10 @@
 
 #include "i2cdevice.h"
 
-/* QMC5883  */
+/* QMC5883 */
 
-class QMC5883 : public i2cDevice {
+class QMC5883 : public i2cDevice
+{
 public:
     // Resolution for the 8 gain settings in mG/LSB
     static const double GAIN[8];
