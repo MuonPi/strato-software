@@ -1,3 +1,0 @@
-/home/nico/Projekte/Strato/strato2/build/CMakeFiles/Strato.dir
-/home/nico/Projekte/Strato/strato2/build/CMakeFiles/edit_cache.dir
-/home/nico/Projekte/Strato/strato2/build/CMakeFiles/rebuild_cache.dir
