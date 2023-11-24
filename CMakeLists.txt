@@ -33,9 +33,9 @@ set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/main.cpp"
 )
 
-add_executable(Strato ${STRATO_SOURCE_FILES})
+add_executable(strato-software ${STRATO_SOURCE_FILES})
 
-target_include_directories(Strato PUBLIC
+target_include_directories(strato-software PUBLIC
     ${PROJECT_INCLUDE_DIR}
 )
 
@@ -44,7 +44,7 @@ target_include_directories(Strato PUBLIC
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-target_link_libraries(Strato
+target_link_libraries(strato-software
     Threads::Threads
 )
 
