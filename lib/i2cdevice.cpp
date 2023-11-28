@@ -1,4 +1,4 @@
-#include "include/i2cdevice.h"
+#include "i2cdevice.h"
 #include <algorithm>
 #include <cstring>
 #include <fcntl.h> // open

@@ -3,6 +3,7 @@ project(STRATO LANGUAGES CXX C)
 
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(PROJECT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../bin")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -31,6 +32,8 @@ add_compile_options(
 # )
 set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/main.cpp"
+    "${PROJECT_LIB_DIR}/i2cdevice.cpp"
+    "${PROJECT_LIB_DIR}/qmc5883.cpp"
 )
 
 add_executable(strato-software ${STRATO_SOURCE_FILES})
