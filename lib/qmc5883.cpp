@@ -24,19 +24,22 @@
 
 bool QMC5883::init()
 {
-    uint8_t readBuf[3]; // 2 byte buffer to store the data read from the I2C device
+    std::cout << "QMC5883 INIT ..." << std::endl;
+    
+    uint8_t readBuf[3] = {0, 0, 0}; // 2 byte buffer to store the data read from the I2C device
 
     // init value 0 for gain
-    fGain = 0;
+    // fGain = 0;
 
-    readBuf[0] = 0;
+    // readBuf[0] = 0;
 
-    int n = readReg(ID_REG, readBuf, 1); // Read the id registers into readBuf
-
-    if (fDebugLevel > 1) {
-        printf("%d bytes read\n", n);
-        printf("id reg: 0x%x \n", readBuf[0]);
-    }
+    int n = readReg(ID_REG, readBuf, 3); // Read the id registers into readBuf
+    std::cout << unsigned(readBuf[0]) << std::endl;
+    // if (fDebugLevel > 1)
+    // {
+    //     printf("%d bytes read\n", n);
+    //     printf("id reg: 0x%x \n", readBuf[0]);
+    // }
 
     if (readBuf[0] != 0b11111111)   // das was im normalfall im id register stehen soll
         return false;
@@ -46,11 +49,12 @@ bool QMC5883::init()
     uint8_t cmd1 = 0b00001101;     // das was ins cmd register rein soll
     uint8_t cmd2 = 0b00000001;
     uint8_t cmd3 = 0b00000001;
+
     n = writeReg(CTL_REG_A, &cmd1, 1);
     n = writeReg(CTL_REG_B, &cmd2, 1);
     n = writeReg(PERIOD_REG, &cmd3, 1);
 
-    std::cout << "QMC5883_INIT_DONE";
+    std::cout << "QMC5883 INIT DONE" << std::endl;
 
     // setGain(fGain);
     return true;

@@ -11,7 +11,7 @@ public:
     // Resolution for the 8 gain settings in mG/LSB
     static const double GAIN[8];
     QMC5883()
-        : i2cDevice(0x1e)
+        : i2cDevice(0x0d)
     {
         fTitle = "QMC5883";
     }
