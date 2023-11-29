@@ -27,20 +27,22 @@ public:
     }
 
     bool init();
-    // gain range 0..7
-    void setGain(uint8_t gain);
-    uint8_t readGain();
-    bool getXYZRawValues(int& x, int& y, int& z);
-    bool getXYZMagneticFields(double& x, double& y, double& z);
     bool readRDYBit();
-    bool readLockBit();
-    bool calibrate(int& x, int& y, int& z);
+    // gain range 0..7
+    // void setGain(uint8_t gain);
+    // uint8_t readGain();
+    bool getXYZRawValues(uint16_t& x, uint16_t& y, uint16_t& z);
+    bool getXYZMagneticFields(double& x, double& y, double& z);
+    bool getTemperatureRawValue(uint16_t& temperature);
+    bool getTemperature(double& temperature);
+    // bool readLockBit();
+    // bool calibrate(int& x, int& y, int& z);
 
-private:
-    unsigned int fLastConvTime;
-    bool fCalibrationValid;
-    unsigned int fGain;
-    signed int fCalibParameters[11];
+// private:
+//     unsigned int fLastConvTime;
+//     bool fCalibrationValid;
+//     unsigned int fGain;
+//     signed int fCalibParameters[11];
 };
 
 #endif // !_QMC5883_H_

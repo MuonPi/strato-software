@@ -26,15 +26,15 @@ bool QMC5883::init()
 {
     std::cout << "QMC5883 INIT ..." << std::endl;
     
-    uint8_t readBuf[3] = {0, 0, 0}; // 2 byte buffer to store the data read from the I2C device
+    uint8_t readBuf[1]; // 2 byte buffer to store the data read from the I2C device
 
     // init value 0 for gain
     // fGain = 0;
 
     // readBuf[0] = 0;
 
-    int n = readReg(ID_REG, readBuf, 3); // Read the id registers into readBuf
-    std::cout << unsigned(readBuf[0]) << std::endl;
+    int n = readReg(ID_REG, readBuf, 1); // Read the id registers into readBuf
+
     // if (fDebugLevel > 1)
     // {
     //     printf("%d bytes read\n", n);
@@ -42,10 +42,14 @@ bool QMC5883::init()
     // }
 
     if (readBuf[0] != 0b11111111)   // das was im normalfall im id register stehen soll
+    {
+        std::cout << "QMC5883 INIT FAILED" << std::endl;
         return false;
+    }
 
     // addr config reg A (CRA)
     // 8 average, 15 Hz, single measurement: 0x70
+
     uint8_t cmd1 = 0b00001101;     // das was ins cmd register rein soll
     uint8_t cmd2 = 0b00000001;
     uint8_t cmd3 = 0b00000001;
@@ -60,90 +64,112 @@ bool QMC5883::init()
     return true;
 }
 
-// bool QMC5883::readRDYBit()
-// {
-//     uint8_t readBuf[3]; // 2 byte buffer to store the data read from the I2C device
+bool QMC5883::readRDYBit()
+{
+    uint8_t readBuf[1]; // 2 byte buffer to store the data read from the I2C device
 
-//     // addr status reg (SR)
-//     int n = readReg(STATUS_REG_A, readBuf, 1); // Read the status register into readBuf
+    // addr status reg (SR)
+    int n = readReg(STATUS_REG_A, readBuf, 1); // Read the status register into readBuf
 
-//     if (n != 1)
-//         return 0;
-//     uint8_t sr = readBuf[0];
-//     if (fDebugLevel > 1) {
-//         printf("%d bytes read\n", n);
-//         printf("status (read from device): 0x%x\n", sr);
-//     }
-//     if ((sr & 0x01) == 0x01)
-//         return true;
-//     return false;
-// }
+    if (n != 1)
+        return false;
+    
+    uint8_t sr = readBuf[0];
 
-// bool QMC5883::getXYZRawValues(int& x, int& y, int& z)
-// {
-//     uint8_t readBuf[6];
+    // if (fDebugLevel > 1)
+    // {
+    //     printf("%d bytes read\n", n);
+    //     printf("status (read from device): 0x%x\n", sr);
+    // }
 
-//     // uint8_t cmd = 0x01; // start single measurement
-//     // int n = writeReg(0x02, &cmd, 1); // addr mode reg (MR)
-//     // usleep(6000);
+    if ((sr & 0b00000001) == 0b00000001)
+    {
+        std::cout << "QMC5883 READY" << std::endl;
+        return true;
+    }
+    return false;
+}
 
-//     // Read the 3 data registers into readBuf starting from addr 0x03
-//     n = readReg(DATA_X_LSB_REG, readBuf, 6);
-//     int16_t xreg = (int16_t)(readBuf[0] | readBuf[1] << 8);
-//     int16_t yreg = (int16_t)(readBuf[2] | readBuf[3] << 8);
-//     int16_t zreg = (int16_t)(readBuf[4] | readBuf[5] << 8);
+bool QMC5883::getXYZRawValues(uint16_t& x, uint16_t& y, uint16_t& z)
+{
+    uint8_t readBuf[6];
 
-//     if (fDebugLevel > 1) {
-//         printf("%d bytes read\n", n);
-//         printf("xreg: %d\n", xreg);
-//         printf("yreg: %d\n", yreg);
-//         printf("zreg: %d\n", zreg);
-//     }
+    // uint8_t cmd = 0x01; // start single measurement
+    // int n = writeReg(0x02, &cmd, 1); // addr mode reg (MR)
+    // usleep(6000);
 
-//     x = xreg;
-//     y = yreg;
-//     z = zreg;
+    // Read the 3 data registers into readBuf starting from addr 0x03
+    int n = readReg(DATA_X_LSB_REG, readBuf, 6);
+    uint16_t xreg = (uint16_t)(readBuf[0] | readBuf[1] << 8);
+    uint16_t yreg = (uint16_t)(readBuf[2] | readBuf[3] << 8);
+    uint16_t zreg = (uint16_t)(readBuf[4] | readBuf[5] << 8);
 
-//     if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
-//         return true;
+    // if (fDebugLevel > 1) {
+    //     printf("%d bytes read\n", n);
+    //     printf("xreg: %d\n", xreg);
+    //     printf("yreg: %d\n", yreg);
+    //     printf("zreg: %d\n", zreg);
+    // }
 
-//     return false;
-// }
+    x = xreg;
+    y = yreg;
+    z = zreg;
 
-// bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
-// {
-//     int xreg, yreg, zreg;
-//     bool ok = getXYZRawValues(xreg, yreg, zreg);
-//     double lsbgain = GAIN[fGain];
-//     x = lsbgain * xreg / 1000.;
-//     y = lsbgain * yreg / 1000.;
-//     z = lsbgain * zreg / 1000.;
+    if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
+        return true;
 
-//     if (fDebugLevel > 1) {
-//         printf("x field: %f G\n", x);
-//         printf("y field: %f G\n", y);
-//         printf("z field: %f G\n", z);
-//     }
+    return false;
+}
 
-//     return ok;
-// }
+bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
+{
+    uint16_t xreg, yreg, zreg;
+    bool ok = getXYZRawValues(xreg, yreg, zreg);
+    // double lsbgain = GAIN[fGain];
+    x = /* lsbgain * */ xreg / 1000.;      // wrong factor?
+    y = /* lsbgain * */ yreg / 1000.;      // wrong factor?
+    z = /* lsbgain * */ zreg / 1000.;      // wrong factor?
 
-// bool QMC5883::getTemperatureRawValue(int& temperature)
-// {
-//     uint8_t readBuf[2];
+    // if (fDebugLevel > 1) {
+    //     printf("x field: %f G\n", x);
+    //     printf("y field: %f G\n", y);
+    //     printf("z field: %f G\n", z);
+    // }
 
-//     n = readReg(TEMP_LSB_REG, readBuf, 2);
-//     int16_t tempreg = (int16_t)(readBuf[0] | readBuf[1] << 8);
+    return ok;
+}
 
-//     if (fDebugLevel > 1) {
-//         printf("%d bytes read\n", n);
-//         printf("tempreg: %d\n", tempreg);
-//     }
+bool QMC5883::getTemperatureRawValue(uint16_t& temperature)
+{
+    uint8_t readBuf[2];
 
-//     temperature = tempreg;
+    int n = readReg(TEMP_LSB_REG, readBuf, 2);
+    uint16_t tempreg = (uint16_t)(readBuf[0] | readBuf[1] << 8);
 
-//     if (tempreg >= -2048 && tempreg < 2048)
-//         return true;
+    // if (fDebugLevel > 1) {
+    //     printf("%d bytes read\n", n);
+    //     printf("tempreg: %d\n", tempreg);
+    // }
 
-//     return false;
-// }
+    temperature = tempreg;
+
+    if (tempreg >= -2048 && tempreg < 2048)
+        return true;
+
+    return false;
+}
+
+bool QMC5883::getTemperature(double& temperature)
+{
+    uint16_t tempreg;
+    bool ok = getTemperatureRawValue(tempreg);
+    temperature = tempreg / 100.;      // wrong factor?
+
+    // if (fDebugLevel > 1) {
+    //     printf("x field: %f G\n", x);
+    //     printf("y field: %f G\n", y);
+    //     printf("z field: %f G\n", z);
+    // }
+
+    return ok;
+}
