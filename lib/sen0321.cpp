@@ -7,6 +7,8 @@
 * SEN0321 Ozone Sensor
 */
 
+// S E N S O R   I M   M O M E N T   D E F E K T   ! ! !
+
 #define MODE_REG 0x03
 #define DATA_MSB_REG 0x09
 #define DATA_LSB_REG 0x0A
@@ -22,7 +24,7 @@ bool SEN0321::init()
 
     // readBuf[0] = 0;
 
-    int n = readReg(MODE_REG, readBuf, 1); // Read the id registers into readBuf
+    int n;// = readReg(MODE_REG, readBuf, 1); // Read the id registers into readBuf
 
     // // if (fDebugLevel > 1)
     // // {
@@ -75,7 +77,7 @@ bool SEN0321::init()
 //     return false;
 // }
 
-bool SEN0321::getRawValue(uint16_t& ozone)
+bool SEN0321::getOzonRawValue(uint16_t& ozone)
 {
     uint8_t readBuf[2];
 
@@ -85,7 +87,7 @@ bool SEN0321::getRawValue(uint16_t& ozone)
 
     // Read the 3 data registers into readBuf starting from addr 0x03
     int n = readReg(DATA_MSB_REG, readBuf, 2);
-    uint16_t ozonereg = (uint16_t)(readBuf[0] | readBuf[1] << 8);
+    uint16_t ozonereg = (uint16_t)(readBuf[0] << 8 | readBuf[1]);
 
     // if (fDebugLevel > 1) {
     //     printf("%d bytes read\n", n);
@@ -105,7 +107,7 @@ bool SEN0321::getRawValue(uint16_t& ozone)
 bool SEN0321::getOzone(double& ozone)
 {
     uint16_t ozonereg;
-    bool ok = getRawValue(ozonereg);
+    bool ok = getOzonRawValue(ozonereg);
     // double lsbgain = GAIN[fGain];
     ozone = /* lsbgain * */ ozonereg / 1000.;      // wrong factor?
 

@@ -1,45 +1,45 @@
-#ifndef _HMC5883_H_
-#define _HMC5883_H_
+#ifndef _VEML6075_H_
+#define _VEML6075_H_
 
 #include "i2cdevice.h"
 
-/* HMC5883  */
+/* VEML6075 */
 
-class HMC5883 : public i2cDevice {
+class VEML6075 : public i2cDevice
+{
 public:
     // Resolution for the 8 gain settings in mG/LSB
-    static const double GAIN[8];
-    HMC5883()
-        : i2cDevice(0x1e)
+    VEML6075()
+        : i2cDevice(0x10)
     {
-        fTitle = "HMC5883";
+        fTitle = "VEML6075";
     }
-    HMC5883(const char* busAddress, uint8_t slaveAddress)
+    VEML6075(const char* busAddress, uint8_t slaveAddress)
         : i2cDevice(busAddress, slaveAddress)
     {
-        fTitle = "HMC5883";
+        fTitle = "VEML6075";
     }
-    HMC5883(uint8_t slaveAddress)
+    VEML6075(uint8_t slaveAddress)
         : i2cDevice(slaveAddress)
     {
-        fTitle = "HMC5883";
+        fTitle = "VEML6075";
     }
 
     bool init();
+    // bool readRDYBit();
     // gain range 0..7
-    void setGain(uint8_t gain);
-    uint8_t readGain();
-    bool getXYZRawValues(int& x, int& y, int& z);
-    bool getXYZMagneticFields(double& x, double& y, double& z);
-    bool readRDYBit();
-    bool readLockBit();
-    bool calibrate(int& x, int& y, int& z);
+    // void setGain(uint8_t gain);
+    // uint8_t readGain();
+    bool getUVRawValue(uint16_t& uva, uint16_t& uvb);
+    // bool getUV(double& uva, double& uvb);
+    // bool readLockBit();
+    // bool calibrate(int& x, int& y, int& z);
 
-private:
-    unsigned int fLastConvTime;
-    bool fCalibrationValid;
-    unsigned int fGain;
-    signed int fCalibParameters[11];
+// private:
+//     unsigned int fLastConvTime;
+//     bool fCalibrationValid;
+//     unsigned int fGain;
+//     signed int fCalibParameters[11];
 };
 
-#endif // !_HMC5883_H_
+#endif // !_VEML6075_H_

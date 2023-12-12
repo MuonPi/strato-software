@@ -31,7 +31,7 @@ public:
     // gain range 0..7
     // void setGain(uint8_t gain);
     // uint8_t readGain();
-    bool getRawValue(uint16_t& ozone);
+    bool getOzonRawValue(uint16_t& ozone);
     bool getOzone(double& ozone);
     // bool readLockBit();
     // bool calibrate(int& x, int& y, int& z);

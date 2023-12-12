@@ -35,6 +35,7 @@ set(STRATO_SOURCE_FILES
     "${PROJECT_LIB_DIR}/i2cdevice.cpp"
     "${PROJECT_LIB_DIR}/qmc5883.cpp"
     "${PROJECT_LIB_DIR}/sen0321.cpp"
+    "${PROJECT_LIB_DIR}/veml6075.cpp"
 )
 
 add_executable(strato-software ${STRATO_SOURCE_FILES})
