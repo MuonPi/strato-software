@@ -196,15 +196,33 @@ int i2cDevice::writeReg(uint8_t reg, uint8_t* buf, int nBytes)
     return n - 1;
 }
 
-int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)
+int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)       // NKRG
 {
     std::lock_guard<std::mutex> lock(fMutex);
-    int n = write(&reg, 1);
-    if (n != 1)
-        return -1;
-    n = read(buf, nBytes);
+    uint8_t reg2[3];
+    uint8_t reg3;
+    reg2[0] = 0x10 & 0b10000000;
+    reg2[1] = 0x00;
+    // reg2[2] = 0x80;
+    reg3 = 0x80;
+    int n = write(reg2, 2);
+    std::cout << "Rückgabewert write in readReg: " << n << std::endl;
+    // if (n != 1)
+    //     return -1;
+    n = read(buf, nBytes + 2);
     return n;
 }
+
+// ORIGINAL readReg:
+// int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)
+// {
+//     std::lock_guard<std::mutex> lock(fMutex);
+//     int n = write(&reg, 1);
+//     if (n != 1)
+//         return -1;
+//     n = read(buf, nBytes);
+//     return n;
+// }
 
 /** Read a single bit from an 8-bit device register.
 * @param regAddr Register regAddr to read from
