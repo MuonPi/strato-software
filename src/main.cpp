@@ -16,9 +16,7 @@
  * ******************************************************************************/
 
 #include "main.h"
-#include "muonpi_lmic.h"
-#include "serialhandler.h"
-#include <Arduino.h>
+#include "strato_lmic.h"
 
 // TTN *****************************
 // #define DEVICEID "eui-70B3D57ED0056189"
@@ -55,30 +53,22 @@ int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
 
 // ============================================================================
 
-MuonPiLMIC *muonpi_lmic;
-
-SerialHandler *serial_handler;
+StratoLMIC *strato_lmic;
 
 unsigned count{0};
 
-u4_t sequenceNo{1};
-uint8_t data[259];
+// u4_t sequenceNo{1};
+// uint8_t data[259];
 
 // ============================================================================
 
 void setup()
 {
-#ifndef SERIAL_BAUD
-    Serial.begin(9600, SERIAL_8N1);
-#else
-    Serial.begin(SERIAL_BAUD, SERIAL_8N1);
-#endif
     // str.reserve(255);
     delay(10);
-    serial_handler = new SerialHandler();
 
     // Create the LMIC object
-    muonpi_lmic = new MuonPiLMIC();
+    strato_lmic = new StratoLMIC();
 
     // Set static session parameters. Instead of dynamically establishing a session
     // by joining the network, precomputed session parameters are provided.
@@ -88,30 +78,28 @@ void setup()
     memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
 
     // Setup LMIC
-    muonpi_lmic->setup(DEVADDR, appskey, nwkskey, serial_handler);
+    strato_lmic->setup(DEVADDR, appskey, nwkskey);
 
     // process_work(&workjob);
-    Serial.flush();
 }
 
 // ============================================================================
 
-void loop()
+void loop(u4t sequenceNo, uint8_t *data, int len)
 {
-    auto data_avail = serial_handler->read(data);
     // serial_handler->send(String(data[3]));
-    if (data_avail>=4)
+    if (len>=4)
     {
         
         // serial_handler->send(String(data_avail));
 
-        sequenceNo = data[0];
-        sequenceNo = sequenceNo << 8;
-        sequenceNo |= data[1];
-        sequenceNo = sequenceNo << 8;
-        sequenceNo |= data[2];
-        sequenceNo = sequenceNo << 8;
-        sequenceNo |= data[3];
+        // sequenceNo = data[0];
+        // sequenceNo = sequenceNo << 8;
+        // sequenceNo |= data[1];
+        // sequenceNo = sequenceNo << 8;
+        // sequenceNo |= data[2];
+        // sequenceNo = sequenceNo << 8;
+        // sequenceNo |= data[3];
 
         // serial_handler->send(String(sequenceNo));
 
@@ -125,18 +113,29 @@ void loop()
         // serial_handler->send(String("SequenceNo: ") + String(sequenceNo));
         
         // serial_handler->send(pld, str.length()-4);
-        data_avail = data_avail - 4;
-        for (size_t i = 0; i < data_avail; i++){
-            data[i] = data[i+4];
-        }
+        // data_avail = data_avail - 4;
+        // for (size_t i = 0; i < data_avail; i++){
+        //     data[i] = data[i+4];
+        // }
         // serial_handler->send(data, data_avail);
         // serial_handler->send(str);
 		// bis hier alles ok
 
-        // muonpi_lmic->sendLoraPayload(1u, sequenceNo, str);
-        muonpi_lmic->sendLoraPayload(1u, sequenceNo, data, data_avail);
+        // strato_lmic->sendLoraPayload(1u, sequenceNo, str);
+        strato_lmic->sendLoraPayload(1u, sequenceNo, data, len);
     }
     os_runloop_once();
 }
 
 // ============================================================================
+
+uint8_t array[4] = [1,2,3,4]
+
+int main()
+{
+    setup();
+    while (true)
+    {
+        loop(array, 4);
+    }
+}
