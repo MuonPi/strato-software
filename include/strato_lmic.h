@@ -14,9 +14,9 @@
 #ifndef __StratoLMIC__
 #define __StratoLMIC__
 
-#include <Wire.h>
-#include <lmic.h>
-#include <hal/hal.h>
+// #include <Wire.h>
+// #include <lmic.h>
+// #include <hal/hal.h>
 
 #define LMIC_CLOCK_ERROR_PPM 30000
 

@@ -45,30 +45,35 @@ static const u4_t DEVADDR = 0x260BC37E;
 
 /********************************/
 
-osjob_t workjob;
+// osjob_t workjob;
 
-void(* resetFunc) (void) = 0;  //declare reset function at address 0
+// void(* resetFunc) (void) = 0;  //declare reset function at address 0
 
-int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
+// int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
 
 // ============================================================================
 
-StratoLMIC *strato_lmic;
+// StratoLMIC *strato_lmic;
 
-unsigned count{0};
+// unsigned count{0};
+
+uint8_t message[255]
+
 
 // u4_t sequenceNo{1};
 // uint8_t data[259];
 
 // ============================================================================
 
-void setup()
+int main()
 {
-    // str.reserve(255);
-    delay(10);
-
+    for (int i = 0; i < sizeof(message); i++)
+    {
+        message[i] = 0;
+    }
+    std::cout << sizeof(message) << std::endl;
     // Create the LMIC object
-    strato_lmic = new StratoLMIC();
+    // strato_lmic = new StratoLMIC();
 
     // Set static session parameters. Instead of dynamically establishing a session
     // by joining the network, precomputed session parameters are provided.
@@ -78,64 +83,13 @@ void setup()
     memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
 
     // Setup LMIC
-    strato_lmic->setup(DEVADDR, appskey, nwkskey);
+    // strato_lmic->setup(DEVADDR, appskey, nwkskey);
 
     // process_work(&workjob);
+
+    // Sending message
+    // strato_lmic->sendLoraPayload(1u, sequenceNo, data, len);
+    // os_runloop_once();
 }
 
 // ============================================================================
-
-void loop(u4t sequenceNo, uint8_t *data, int len)
-{
-    // serial_handler->send(String(data[3]));
-    if (len>=4)
-    {
-        
-        // serial_handler->send(String(data_avail));
-
-        // sequenceNo = data[0];
-        // sequenceNo = sequenceNo << 8;
-        // sequenceNo |= data[1];
-        // sequenceNo = sequenceNo << 8;
-        // sequenceNo |= data[2];
-        // sequenceNo = sequenceNo << 8;
-        // sequenceNo |= data[3];
-
-        // serial_handler->send(String(sequenceNo));
-
-        // auto test = str.c_str();
-        // uint8_t* pld = (uint8_t*)malloc(str.length()-4);
-        // for (size_t i = 4; i < str.length(); i++){
-        //     pld[i-4] = static_cast<uint8_t>(str.charAt(i));
-        // }
-        // serial_handler->send(String(strlen(test)));
-        // serial_handler->send(data,data_avail);
-        // serial_handler->send(String("SequenceNo: ") + String(sequenceNo));
-        
-        // serial_handler->send(pld, str.length()-4);
-        // data_avail = data_avail - 4;
-        // for (size_t i = 0; i < data_avail; i++){
-        //     data[i] = data[i+4];
-        // }
-        // serial_handler->send(data, data_avail);
-        // serial_handler->send(str);
-		// bis hier alles ok
-
-        // strato_lmic->sendLoraPayload(1u, sequenceNo, str);
-        strato_lmic->sendLoraPayload(1u, sequenceNo, data, len);
-    }
-    os_runloop_once();
-}
-
-// ============================================================================
-
-uint8_t array[4] = [1,2,3,4]
-
-int main()
-{
-    setup();
-    while (true)
-    {
-        loop(array, 4);
-    }
-}

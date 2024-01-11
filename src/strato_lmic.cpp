@@ -64,12 +64,11 @@ uint8_t StratoLMIC::data_size{};
 //     .spi_freq = 1000000 /* 1 MHz */
 // };
 
+
 // Strato-Board		//NKRG
 #define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on GPIO25 so P1 connector pin #22
 #define RF_IRQ_PIN RPI_V2_GPIO_P1_38 // DIO0 on GPIO20 so P1 connector pin #38
 #define RF_RST_PIN RPI_V2_GPIO_P1_40 // Reset on GPIO21 so P1 connector pin #40
-
-
 
 // Pin mapping		//NKRG
 const lmic_pinmap lmic_pins = { 
@@ -77,6 +76,9 @@ const lmic_pinmap lmic_pins = {
     .rxtx = LMIC_UNUSED_PIN,
     .rst  = RF_RST_PIN,
     .dio  = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN},
+    .rxtx_rx_active = 0,
+    .rssi_cal = 10,
+    .spi_freq = 1000000 /* 1 MHz */
 };
 
 
