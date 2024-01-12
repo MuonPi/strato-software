@@ -10,13 +10,12 @@
 
 //#include <Arduino.h>
 //#include <SPI.h>
-#include "SPI.h"
+#include "raspi-spi.h"
 #include "../lmic.h"
 #include "hal.h"
 #define _GNU_SOURCE 1 // For fopencookie
 #include <stdio.h>
 #undef _GNU_SOURCE
-
 // -----------------------------------------------------------------------------
 // I/O
 
@@ -272,11 +271,12 @@ void hal_init () {
 
 void hal_failed (const char *file, u2_t line) {
 #if defined(LMIC_FAILURE_TO)
-    LMIC_FAILURE_TO.println("FAILURE ");
-    LMIC_FAILURE_TO.print(file);
-    LMIC_FAILURE_TO.print(':');
-    LMIC_FAILURE_TO.println(line);
-    LMIC_FAILURE_TO.flush();
+    // LMIC_FAILURE_TO.println("FAILURE ");
+    // LMIC_FAILURE_TO.print(file);
+    // LMIC_FAILURE_TO.print(':');
+    // LMIC_FAILURE_TO.println(line);
+    // LMIC_FAILURE_TO.flush();
+    std::cout << "FAILURE " << file << ":" << line << std::endl;    // NKRG
 #endif
     hal_disableIRQs();
     while(1);

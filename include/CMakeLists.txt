@@ -27,7 +27,7 @@ set(STRATO_HEADER_FILES
     "${PROJECT_INCLUDE_DIR2}/lorabase.h"
     "${PROJECT_INCLUDE_DIR2}/oslmic.h"
     "${PROJECT_INCLUDE_DIR3}/hal.h"
-    "${PROJECT_INCLUDE_DIR3}/SPI.h"
+    "${PROJECT_INCLUDE_DIR3}/raspi-spi.h"
 )
 
 set(STRATO_SOURCE_FILES
@@ -53,7 +53,7 @@ find_package(Threads REQUIRED)
 
 target_link_libraries(ibm_lmic
     Threads::Threads
-    -lbcm2835
+    # -lbcm2835 // NKRG
 )
 
 
