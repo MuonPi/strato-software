@@ -1,0 +1,67 @@
+#include <chrono>
+#include <thread>
+#include <iostream>
+#include "lmic.h"
+
+
+//write manual arduino functions
+
+int Serial = 1;   // only temporary, should be removed, random value
+int OUTPUT = 1;   // only temporary, should be removed, random value
+int INPUT = 0;    // only temporary, should be removed, random value
+uint8_t MSBFIRST=8;   // only temporary, should be removed, random value
+uint8_t SPI_MODE0=8;  // only temporary, should be removed, random value
+
+auto start = std::chrono::high_resolution_clock::now();
+uint32_t micros();
+
+void delay(s4_t milliseconds);
+void delayMicroseconds(s4_t microseconds);
+
+void pinMode(u1_t x, int y);
+void digitalWrite(u1_t x, u1_t);
+bool digitalRead(u1_t x);
+
+void interrupts();
+void noInterrupts();
+
+class SPISettings
+{
+  public:
+    SPISettings(uint16_t divider, uint8_t bitOrder, uint8_t dataMode)
+    {
+        // init(divider, bitOrder, dataMode);
+    }
+    // SPISettings() {
+    //     init(BCM2835_SPI_CLOCK_DIVIDER_256, BCM2835_SPI_BIT_ORDER_MSBFIRST, BCM2835_SPI_MODE0);
+    // }
+  private:
+    void init(uint16_t divider, uint8_t bitOrder, uint8_t dataMode)
+    {
+    //   this->divider  = divider ; 
+    //   this->bitOrder = bitOrder;
+    //   this->dataMode = dataMode;
+    }
+
+    // uint16_t divider  ;
+    // uint8_t  bitOrder ;
+    // uint8_t  dataMode ;
+  friend class SPIClass;
+};
+
+class SPIClass  // other structure instead of SPISettings and SPIClass ??
+{
+  public:
+    static u1_t transfer(u1_t _data);
+    // SPI Configuration methods
+    static void begin(); // Default
+    // static void end();
+    static void beginTransaction(SPISettings settings);
+    static void endTransaction();
+    // static void setBitOrder(uint8_t);
+    // static void setDataMode(uint8_t);
+    // static void setClockDivider(uint16_t);
+};
+
+SPIClass SPI;
+

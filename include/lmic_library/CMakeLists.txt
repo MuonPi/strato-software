@@ -28,6 +28,7 @@ set(STRATO_HEADER_FILES
     "${PROJECT_INCLUDE_DIR2}/oslmic.h"
     "${PROJECT_INCLUDE_DIR3}/hal.h"
     "${PROJECT_INCLUDE_DIR3}/raspi-spi.h"
+    "${PROJECT_INCLUDE_DIR3}/raspi-spi.cpp"
 )
 
 set(STRATO_SOURCE_FILES
