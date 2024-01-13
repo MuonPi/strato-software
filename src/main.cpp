@@ -17,6 +17,11 @@
 
 #include "main.h"
 #include "strato_lmic.h"
+#include "lmic_library/src/lmic.h"
+#include "lmic_library/build/lib_lmic.so"
+
+u1_t hallo = 0;
+
 
 // TTN *****************************
 // #define DEVICEID "eui-70B3D57ED0056189"
@@ -57,7 +62,7 @@ static const u4_t DEVADDR = 0x260BC37E;
 
 // unsigned count{0};
 
-uint8_t message[255]
+uint8_t message[255];
 
 
 // u4_t sequenceNo{1};

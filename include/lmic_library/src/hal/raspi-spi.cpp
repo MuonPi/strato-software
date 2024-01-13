@@ -1,8 +1,10 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+// #include "bcm2835.h"
 #include "lmic.h"
 #include "raspi-spi.h"
+
 
 
 //write manual arduino functions
@@ -58,10 +60,10 @@ void noInterrupts()
 }
 
 
-void SPISettings::init(uint16_t divider, uint8_t bitOrder, uint8_t dataMode)
-{
-  // something to init SPI Settings
-}
+// void SPISettings::init(uint16_t divider, uint8_t bitOrder, uint8_t dataMode)
+// {
+//   // something to init SPI Settings
+// }
 
 
 u1_t SPIClass::transfer(u1_t _data)
