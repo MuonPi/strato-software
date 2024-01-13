@@ -37,7 +37,8 @@
 #include "strato_lmic.h"
 // #include "serialhandler.h"
 // #include <Arduino.h>
-#include <lmic.h>
+#include "lmic-library/src/lmic.h"
+#include <ibm_lmic.so>
 #include <hal/hal.h>
 #include <bcm2835.h>
 // #include <SPI.h>

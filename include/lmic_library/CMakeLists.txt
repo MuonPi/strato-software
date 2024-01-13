@@ -40,10 +40,10 @@ set(STRATO_SOURCE_FILES
     # "${PROJECT_SRC_DIR4}/lmic.c"
 )
 
-add_library(ibm_lmic SHARED ${STRATO_SOURCE_FILES})
+add_library(_lmic SHARED ${STRATO_SOURCE_FILES})
 # target_compile_definitions(arduino PUBLIC RASPBERRY_PI=1 __BASEFILE__="StratoSat" BCM2835_NO_DELAY_COMPATIBILITY=1)
 
-target_include_directories(ibm_lmic PUBLIC
+target_include_directories(_lmic PUBLIC
     ${PROJECT_INCLUDE_DIR1}
     ${PROJECT_INCLUDE_DIR2}
     ${PROJECT_INCLUDE_DIR3}
@@ -52,7 +52,7 @@ target_include_directories(ibm_lmic PUBLIC
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-target_link_libraries(ibm_lmic
+target_link_libraries(_lmic
     Threads::Threads
     # -lbcm2835 // NKRG
 )
