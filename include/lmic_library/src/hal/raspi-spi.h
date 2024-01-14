@@ -2,7 +2,7 @@
 #include <thread>
 #include <iostream>
 #include <bcm2835.h>
-#include "lmic.h"
+#include "../lmic.h"
 
 
 //write manual arduino functions
@@ -19,6 +19,7 @@
 #define INPUT 0
 #define MSBFIRST 8
 #define SPI_MODE0 8
+
 
 
 uint32_t micros();

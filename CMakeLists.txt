@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.10)
-project(STRATO LANGUAGES CXX C)
+
+project(STRATO
+    VERSION 0.1
+    LANGUAGES CXX C)
 
 # option(BUILD_TIDY "Use clang tidy to build" OFF)
 # option(BUILD_TOOLS "Build additional tools (like readout program) in addition to the library" ON)
@@ -8,6 +11,7 @@ project(STRATO LANGUAGES CXX C)
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 # set(PROJECT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+set(PROJECT_LMIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/lmic_library/build")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -27,12 +31,14 @@ target_include_directories(strato-software PUBLIC
     ${PROJECT_INCLUDE_DIR}
 )
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+# set(THREADS_PREFER_PTHREAD_FLAG ON)
+# find_package(Threads REQUIRED)
 
-target_link_libraries(strato-software
-    Threads::Threads
-)
+# target_link_libraries(strato-software
+#     Threads::Threads
+# )
+
+target_link_libraries(strato-software ${PROJECT_LMIC_DIR}/lib_lmic.so)  # NKRG
 
 #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
