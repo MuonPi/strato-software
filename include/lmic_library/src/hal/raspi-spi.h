@@ -1,19 +1,26 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-// #include "bcm2835.h"
+#include <bcm2835.h>
 #include "lmic.h"
 
 
 //write manual arduino functions
 
-int Serial = 1;   // only temporary, should be removed, random value
-int OUTPUT = 1;   // only temporary, should be removed, random value
-int INPUT = 0;    // only temporary, should be removed, random value
-uint8_t MSBFIRST=8;   // only temporary, should be removed, random value
-uint8_t SPI_MODE0=8;  // only temporary, should be removed, random value
 
-auto start = std::chrono::high_resolution_clock::now();
+// int Serial; // = 1;   // only temporary, should be removed, random value
+// int OUTPUT; // = 1;   // only temporary, should be removed, random value
+// int INPUT; // = 0;    // only temporary, should be removed, random value
+// uint8_t MSBFIRST; // = 8;   // only temporary, should be removed, random value
+// uint8_t SPI_MODE0; // = 8;  // only temporary, should be removed, random value
+
+#define Serial 1
+#define OUTPUT 1
+#define INPUT 0
+#define MSBFIRST 8
+#define SPI_MODE0 8
+
+
 uint32_t micros();
 
 void delay(s4_t milliseconds);
@@ -63,6 +70,4 @@ class SPIClass  // other structure instead of SPISettings and SPIClass ??
     // static void setDataMode(uint8_t);
     // static void setClockDivider(uint16_t);
 };
-
-SPIClass SPI;
 

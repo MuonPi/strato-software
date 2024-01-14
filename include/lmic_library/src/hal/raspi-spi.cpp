@@ -1,19 +1,32 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-// #include "bcm2835.h"
-#include "lmic.h"
+#include <bcm2835.h>
 #include "raspi-spi.h"
-
 
 
 //write manual arduino functions
 
 
+// int Serial = 1;   // only temporary, should be removed, random value
+// int OUTPUT = 1;   // only temporary, should be removed, random value
+// int INPUT = 0;    // only temporary, should be removed, random value
+// uint8_t MSBFIRST=8;   // only temporary, should be removed, random value
+// uint8_t SPI_MODE0=8;  // only temporary, should be removed, random value
+
+// #define Serial 1
+// #define OUTPUT 1
+// #define INPUT 0
+// #define MSBFIRST 8
+// #define SPI_MODE0 8
+
+
 uint32_t micros()
 {
-  auto elapsed = std::chrono::high_resolution_clock::now() - start;
+  auto global_start_time = std::chrono::high_resolution_clock::now();
+  auto elapsed = std::chrono::high_resolution_clock::now() - global_start_time;
   return std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+  // not completed
 }
 
 
@@ -66,7 +79,7 @@ void noInterrupts()
 // }
 
 
-u1_t SPIClass::transfer(u1_t _data)
+u1_t SPIClass::transfer(u1_t data)
 {
   // something to transfer
 }
@@ -85,3 +98,5 @@ void SPIClass::endTransaction()
 {
   // something to end transaction
 }
+
+
