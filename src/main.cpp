@@ -24,20 +24,20 @@
 
 u1_t hallo;
 
+// TTN *****************************
+// #define DEVICEID "eui-70B3D57ED0056189"
+// #define ABP_DEVICEID "eui-70B3D57ED0056189"
+
+// // The Network Session Key / DO NOT SHARE
+// static const PROGMEM u1_t NWKSKEY[16] = {0x83, 0xF0, 0xD0, 0x76, 0x4A, 0x2D, 0x4F, 0x80, 0x01, 0x8D, 0xF5, 0x49, 0xB2, 0x80, 0xB6, 0x2E};
+
+// // LoRaWAN AppSKey, application session key / DO NOT SHARE
+// static const u1_t PROGMEM APPSKEY[16] = {0x1E, 0xBB, 0x6D, 0x2C, 0x2C, 0x41, 0xFE, 0x3A, 0x79, 0x1E, 0x18, 0x05, 0xBB, 0x8A, 0x4C, 0x8A};
+
+// // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
+// static const u4_t DEVADDR = 0x260B6D09;
+
 // from here uncomment
-// // TTN *****************************
-// // #define DEVICEID "eui-70B3D57ED0056189"
-// // #define ABP_DEVICEID "eui-70B3D57ED0056189"
-
-// // // The Network Session Key / DO NOT SHARE
-// // static const PROGMEM u1_t NWKSKEY[16] = {0x83, 0xF0, 0xD0, 0x76, 0x4A, 0x2D, 0x4F, 0x80, 0x01, 0x8D, 0xF5, 0x49, 0xB2, 0x80, 0xB6, 0x2E};
-
-// // // LoRaWAN AppSKey, application session key / DO NOT SHARE
-// // static const u1_t PROGMEM APPSKEY[16] = {0x1E, 0xBB, 0x6D, 0x2C, 0x2C, 0x41, 0xFE, 0x3A, 0x79, 0x1E, 0x18, 0x05, 0xBB, 0x8A, 0x4C, 0x8A};
-
-// // // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-// // static const u4_t DEVADDR = 0x260B6D09;
-
 // #define DEVICEID "eui-70B3D57ED0056189"
 // #define ABP_DEVICEID "eui-70B3D57ED0056189"
 

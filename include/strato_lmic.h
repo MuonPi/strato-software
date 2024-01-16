@@ -15,32 +15,32 @@
 #define __StratoLMIC__
 
 // #include <Wire.h>
-// #include <lmic.h>
-// #include <hal/hal.h>
+#include <lmic.h>
+#include <hal/hal.h>
 
 #define LMIC_CLOCK_ERROR_PPM 30000
 
-// class StratoLMIC
-// {
-// public:
-//     bool setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey);
-//     void sendLoraPayload(u1_t port, u4_t sequenceNo, String &message); // port can be chosen at will
-//     void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
-//     static void do_send(osjob_t *sendjob);
-//     static void onEvent(void *pUserData, ev_t ev);
+class StratoLMIC
+{
+public:
+    bool setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey);
+    // void sendLoraPayload(u1_t port, u4_t sequenceNo, String &message); // port can be chosen at will
+    void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
+    static void do_send(osjob_t *sendjob);
+    static void onEvent(void *pUserData, ev_t ev);
 
-// private:
-//     static uint8_t *data;
-//     static uint8_t data_size;
-// };
+private:
+    static uint8_t *data;
+    static uint8_t data_size;
+};
 
-// #ifdef __cplusplus
-// extern "C"
-// {
-// #endif
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-// #ifdef __cplusplus
-// } // extern "C"
-// #endif
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif // __StratoLMIC__

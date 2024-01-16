@@ -41,7 +41,7 @@
 // #include "lmic_library/build/lib_lmic.so"
 // // #include <lib_lmic.so>
 #include <hal/hal.h>
-// // #include <bcm2835.h>
+// #include <bcm2835.h>
 #include <hal/raspi-spi.h>
 
 bool joined = false;
@@ -50,51 +50,50 @@ bool sleeping = false;
 // static osjob_t sendjob;
 static osjob_t sendjob;
 
-// from here uncomment
 uint32_t uplinkSequenceNo = 0; // aka FCnt
 
-// uint8_t* StratoLMIC::data;
-// uint8_t StratoLMIC::data_size{};
+uint8_t* StratoLMIC::data;
+uint8_t StratoLMIC::data_size{};
 
-// // arduino lmic pin mapping
-// // const lmic_pinmap lmic_pins = {
-// //     .nss = 10,
-// //     .rxtx = LMIC_UNUSED_PIN,
-// //     .rst = 9 // 7,
-// //     .dio = {/*dio0*/ 6, /*dio1*/ 7, /*dio2*/ 8}, // (8, 9, LMIC_UNUSED_PIN)
+// arduino lmic pin mapping
+// const lmic_pinmap lmic_pins = {
+//     .nss = 10,
+//     .rxtx = LMIC_UNUSED_PIN,
+//     .rst = 9 // 7,
+//     .dio = {/*dio0*/ 6, /*dio1*/ 7, /*dio2*/ 8} // (8, 9, LMIC_UNUSED_PIN)
 // //     .rxtx_rx_active = 0,
 // //     .rssi_cal = 10,
 // //     .spi_freq = 1000000 /* 1 MHz */
-// // };
-
-
-// // Strato-Board		//NKRG
-// #define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on GPIO25 so P1 connector pin #22
-// #define RF_IRQ_PIN RPI_V2_GPIO_P1_38 // DIO0 on GPIO20 so P1 connector pin #38
-// #define RF_RST_PIN RPI_V2_GPIO_P1_40 // Reset on GPIO21 so P1 connector pin #40
-
-// // Pin mapping		//NKRG
-// const lmic_pinmap lmic_pins = { 
-//     .nss  = RF_CS_PIN,
-//     .rxtx = LMIC_UNUSED_PIN,
-//     .rst  = RF_RST_PIN,
-//     .dio  = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN},
-//     .rxtx_rx_active = 0,
-//     .rssi_cal = 10,
-//     .spi_freq = 1000000 /* 1 MHz */
 // };
 
 
-// // ======================================================================================
+// Strato-Board		//NKRG
+#define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on GPIO25 so P1 connector pin #22
+#define RF_IRQ_PIN RPI_V2_GPIO_P1_38 // DIO0 on GPIO20 so P1 connector pin #38
+#define RF_RST_PIN RPI_V2_GPIO_P1_40 // Reset on GPIO21 so P1 connector pin #40
 
-// // SerialHandler *MuonPiLMIC::m_serial_handler{nullptr};
+// Pin mapping		//NKRG
+const lmic_pinmap lmic_pins = { 
+    .nss  = RF_CS_PIN,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst  = RF_RST_PIN,
+    .dio  = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN} //,
+    // .rxtx_rx_active = 0,
+    // .rssi_cal = 10,
+    // .spi_freq = 1000000 /* 1 MHz */
+};
 
-// void printEvent(ev_t ev){
 
-// }
-// // =========================================================================================================================================
-// // onEvent
-// // =========================================================================================================================================
+// ======================================================================================
+
+// SerialHandler *MuonPiLMIC::m_serial_handler{nullptr};
+
+void printEvent(ev_t ev){
+
+}
+// =========================================================================================================================================
+// onEvent
+// =========================================================================================================================================
 
 // void StratoLMIC::onEvent(void *pUserData, ev_t ev)
 // {
@@ -105,7 +104,7 @@ uint32_t uplinkSequenceNo = 0; // aka FCnt
 //         break;
 
 //     case EV_TXSTART:
-//         std::cout << to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
+//         std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
 //         break;
 //     case EV_JOIN_TXCOMPLETE:
 //         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
@@ -188,7 +187,8 @@ uint32_t uplinkSequenceNo = 0; // aka FCnt
 //     }
 // }
 
-// // ======================================================================================
+// from here uncomment
+// ======================================================================================
 
 // bool StratoLMIC::setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey)
 // {
