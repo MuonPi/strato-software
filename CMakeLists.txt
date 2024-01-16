@@ -10,8 +10,8 @@ project(STRATO
 
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-# set(PROJECT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
-set(PROJECT_LMIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/lmic_library/build")
+set(PROJECT_LMIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/lmic_library/src")
+set(PROJECT_LIB_LMIC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/lmic_library/build")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -27,8 +27,10 @@ set(STRATO_SOURCE_FILES
 
 add_executable(strato-software ${STRATO_SOURCE_FILES})
 
-target_include_directories(strato-software PUBLIC
+include_directories(strato-software PUBLIC
     ${PROJECT_INCLUDE_DIR}
+    ${PROJECT_LMIC_DIR}
+    ${PROJECT_LIB_LMIC_DIR}
 )
 
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -38,7 +40,9 @@ target_include_directories(strato-software PUBLIC
 #     Threads::Threads
 # )
 
-target_link_libraries(strato-software ${PROJECT_LMIC_DIR}/lib_lmic.so)  # NKRG
+target_link_libraries(strato-software
+    ${PROJECT_LIB_LMIC_DIR}/lib_lmic.so
+    bcm2835)  # NKRG
 
 #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")

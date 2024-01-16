@@ -4,7 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "~/../../usr/include/**"
+                "~/../../usr/include",
+                "${workspaceFolder}/include/lmic_library/src",
+                "${workspaceFolder}/include/lmic_library/src/hal",
+                "${workspaceFolder}/include/lmic_library/src/lmic"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
