@@ -1,9 +1,19 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <bcm2835.h>
+//#include <bcm2835.h>
 #include "raspi-spi.h"
-
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <memory>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include <linux/spi/spidev.h>
+#include <cstdint> //Luisa
+#include "gpio.h"
 
 //write manual arduino functions
 
@@ -19,7 +29,7 @@
 // #define INPUT 0
 // #define MSBFIRST 8
 // #define SPI_MODE0 8
-
+//gpio m_gpio{};
 
 uint32_t micros()
 {
@@ -42,26 +52,29 @@ void delayMicroseconds(s4_t microseconds)
 }
 
 
-void pinMode(u1_t x, int y)
+void pinMode(u1_t x, int y)//gpio
 {
     std::cout << "pinmode" << std::endl;
 }
 
 
-void digitalWrite(u1_t x, u1_t)
+void digitalWrite(u1_t x, u1_t y)//gpio
 {
-    std::cout << "digitalwrite" << std::endl;
+	m_gpio.write();
+	std::cout << "digitalwrite\n";
 }
 
 
-bool digitalRead(u1_t x)
+
+bool digitalRead(unsigned x)//gpio
 {
+	m_gpio.read(x);
     std::cout << "digitalread" << std::endl;
     return true;
 }
 
 
-void interrupts()
+void interrupts() 
 {
   // not possible to enable interrupts on raspi ??
 }
@@ -89,7 +102,7 @@ void SPIClass::begin()
   // something to begin
 }
 
-void SPIClass::beginTransaction(SPISettings settings)
+void SPIClass::beginTransaction(SPISettings settings)//aus arduino SPI lib
 {
   // something to begin transaction
 }

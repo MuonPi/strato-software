@@ -1,8 +1,12 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <bcm2835.h>
+//#include <bcm2835.h>
 #include "../lmic.h"
+#include <string>
+#include <vector>
+#include <cstdint> //Luisa
+#include "gpio.h"
 
 
 //write manual arduino functions
@@ -20,7 +24,7 @@
 #define MSBFIRST 8
 #define SPI_MODE0 8
 
-
+static gpio m_gpio;
 
 uint32_t micros();
 
@@ -71,4 +75,3 @@ class SPIClass  // other structure instead of SPISettings and SPIClass ??
     // static void setDataMode(uint8_t);
     // static void setClockDivider(uint16_t);
 };
-

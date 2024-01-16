@@ -4,10 +4,13 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/run/user/1000/gvfs/sftp:host=192.168.238.127/usr/include",
                 "~/../../usr/include",
                 "${workspaceFolder}/include/lmic_library/src",
                 "${workspaceFolder}/include/lmic_library/src/hal",
-                "${workspaceFolder}/include/lmic_library/src/lmic"
+                "${workspaceFolder}/include/lmic_library/src/lmic",
+                "${workspaceFolder}/include/lmic_library/src/hal",
+                "${workspaceFolder}/include/lmic_library/src/hal"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

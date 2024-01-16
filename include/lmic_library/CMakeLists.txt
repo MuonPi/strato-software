@@ -58,7 +58,7 @@ target_include_directories(_lmic PUBLIC
 # set(THREADS_PREFER_PTHREAD_FLAG ON)
 # find_package(Threads REQUIRED)
 
-target_link_libraries(_lmic bcm2835) # NKRG
+target_link_libraries(_lmic bcm2835 gpiod) # NKRG
 
 # target_link_libraries(_lmic
 #     Threads::Threads
