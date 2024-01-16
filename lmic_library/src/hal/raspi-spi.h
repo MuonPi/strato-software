@@ -1,7 +1,7 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include <bcm2835.h>
+// #include <bcm2835.h>
 #include "../lmic.h"
 
 
@@ -19,6 +19,8 @@
 #define INPUT 0
 #define MSBFIRST 8
 #define SPI_MODE0 8
+#define HIGH 1
+#define LOW 0
 
 
 

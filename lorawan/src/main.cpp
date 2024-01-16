@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "main.h"
 #include "strato_lmic.h"
 #include "lmic.h"
 #include "lmic/oslmic.h"
