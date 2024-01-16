@@ -20,7 +20,10 @@
 #include "main.h"
 #include "strato_lmic.h"
 #include "lmic.h"
+#include "lmic/oslmic.h"
 // #include "lib_lmic.so"
+
+#define __AVR__
 
 u1_t hallo;
 
@@ -38,16 +41,16 @@ u1_t hallo;
 // static const u4_t DEVADDR = 0x260B6D09;
 
 // from here uncomment
-// #define DEVICEID "eui-70B3D57ED0056189"
-// #define ABP_DEVICEID "eui-70B3D57ED0056189"
+#define DEVICEID "eui-70B3D57ED0056189"
+#define ABP_DEVICEID "eui-70B3D57ED0056189"
 
-// // The Network Session Key / DO NOT SHARE
+// The Network Session Key / DO NOT SHARE
 // static const PROGMEM u1_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
 
-// // LoRaWAN AppSKey, application session key / DO NOT SHARE
+// LoRaWAN AppSKey, application session key / DO NOT SHARE
 // static const u1_t PROGMEM APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
 
-// // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
+// LoRaWAN end-device address (DevAddr) / DO NOT SHARE
 // static const u4_t DEVADDR = 0x260BC37E;
 
 

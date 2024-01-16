@@ -102,7 +102,7 @@ void printEvent(ev_t ev){
 //     case EV_RXSTART:
 //         // Do not print anything for this event or it will mess up timing.
 //         break;
-
+// 
 //     case EV_TXSTART:
 //         std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
 //         break;
@@ -193,14 +193,14 @@ void printEvent(ev_t ev){
 // bool StratoLMIC::setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey)
 // {
 //     os_init(); // LMIC init
-
+// 
 //     std::cout << "Starting" << std::endl;
 //     LMIC_reset(); // Reset the MAC state. Session and pending data transfers will be discarded.
-
+// 
 //     // network ID 0x01 = Expiremental
 //     // network ID 0x13 = The Things Network
 //     LMIC_setSession(0x13, devaddr, nwkskey, appskey);
-
+// 
 //     LMIC_setupChannel(0, 868100000, DR_RANGE_MAP(DR_SF12, DR_SF7), BAND_CENTI);  // g-band
 //     LMIC_setupChannel(1, 868300000, DR_RANGE_MAP(DR_SF12, DR_SF7B), BAND_CENTI); // g-band
 //     LMIC_setupChannel(2, 868500000, DR_RANGE_MAP(DR_SF12, DR_SF7), BAND_CENTI);  // g-band
@@ -210,21 +210,21 @@ void printEvent(ev_t ev){
 //     LMIC_setupChannel(6, 867700000, DR_RANGE_MAP(DR_SF12, DR_SF7), BAND_CENTI);  // g-band
 //     LMIC_setupChannel(7, 867900000, DR_RANGE_MAP(DR_SF12, DR_SF7), BAND_CENTI);  // g-band
 //     LMIC_setupChannel(8, 868800000, DR_RANGE_MAP(DR_FSK,  DR_FSK), BAND_MILLI);   // g2-band
-
+// 
 //     // Disable link check validation
 //     LMIC_setLinkCheckMode(0);
-
+// 
 //     // TTN uses SF9 for its RX2 window.
 //     LMIC.dn2Dr = DR_SF9;
-
+// 
 //     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
 //     LMIC_setDrTxpow(static_cast<dr_t>(DR_SF10), static_cast<s1_t>(20)); // spreading factor 10
-
+// 
 //     LMIC_setAdrMode(true); // adr on
-
+// 
 //     uint32_t clockError = (LMIC_CLOCK_ERROR_PPM / 100) * (MAX_CLOCK_ERROR / 100) / 100;
 //     LMIC_setClockError(clockError);
-
+// 
 //     LMIC_registerEventCb(&onEvent, nullptr);
 //     return true;
 // }
@@ -259,3 +259,4 @@ void printEvent(ev_t ev){
 
 //     os_setCallback(&sendjob, do_send);
 // }
+
