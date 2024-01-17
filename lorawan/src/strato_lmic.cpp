@@ -40,9 +40,12 @@
 #include "lmic.h"
 // #include "lmic_library/build/lib_lmic.so"
 // // #include <lib_lmic.so>
-#include <hal/hal.h>
+#include "hal/hal.h"
 // #include <bcm2835.h>
-#include <hal/raspi-spi.h>
+#include "hal/raspi-spi.h"
+// #include "lmic/oslmic.h"
+// #include "lmic/oslmic.c"
+#include "lmic/lmic.h"
 
 bool joined = false;
 bool sleeping = false;
@@ -68,25 +71,23 @@ uint8_t StratoLMIC::data_size{};
 
 
 // Strato-Board		//NKRG
-#define RF_CS_PIN  RPI_V2_GPIO_P1_24 // Slave Select on GPIO25 so P1 connector pin #22
-#define RF_IRQ_PIN RPI_V2_GPIO_P1_38 // DIO0 on GPIO20 so P1 connector pin #38
-#define RF_RST_PIN RPI_V2_GPIO_P1_40 // Reset on GPIO21 so P1 connector pin #40
+#define RF_CS_PIN  0x24 // RPI_V2_GPIO_P1_24 // Slave Select on GPIO25 so P1 connector pin #24
+#define RF_IRQ_PIN 0x38 // RPI_V2_GPIO_P1_38 // DIO0 on GPIO20 so P1 connector pin #38
+#define RF_RST_PIN 0x40 // RPI_V2_GPIO_P1_40 // Reset on GPIO21 so P1 connector pin #40
 
 // Pin mapping		//NKRG
 const lmic_pinmap lmic_pins = { 
     .nss  = RF_CS_PIN,
     .rxtx = LMIC_UNUSED_PIN,
     .rst  = RF_RST_PIN,
-    .dio  = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN} //,
-    // .rxtx_rx_active = 0,
-    // .rssi_cal = 10,
-    // .spi_freq = 1000000 /* 1 MHz */
+    .dio  = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN},
+    .rxtx_rx_active = 0,
+    .rssi_cal = 10,
+    .spi_freq = 1000000 /* 1 MHz */
 };
 
 
 // ======================================================================================
-
-// SerialHandler *MuonPiLMIC::m_serial_handler{nullptr};
 
 void printEvent(ev_t ev){
 
@@ -95,97 +96,97 @@ void printEvent(ev_t ev){
 // onEvent
 // =========================================================================================================================================
 
-// void StratoLMIC::onEvent(void *pUserData, ev_t ev)
-// {
-//     switch (ev)
-//     {
-//     case EV_RXSTART:
-//         // Do not print anything for this event or it will mess up timing.
-//         break;
-// 
-//     case EV_TXSTART:
-//         std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
-//         break;
-//     case EV_JOIN_TXCOMPLETE:
-//         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
-//     case EV_TXCANCELED:
-//         std::cout << "EV_TXCANCELLED" << std::endl;
-//         break;
-//     case EV_SCAN_TIMEOUT:
-//         std::cout << "EV_SCAN_TIMEOUT" << std::endl;
-//         break;
-//     case EV_BEACON_FOUND:
-//         std::cout << "EV_BEACON_FOUND" << std::endl;
-//         break;
-//     case EV_BEACON_MISSED:
-//         std::cout << "EV_BEACON_MISSED" << std::endl;
-//         break;
-//     case EV_BEACON_TRACKED:
-//         std::cout << "EV_BEACON_TRACKED" << std::endl;
-//         break;
-//     case EV_JOINING:
-//         std::cout << "EV_JOINING" << std::endl;
-//         break;
-//     case EV_JOINED:
-//         std::cout << "EV_JOINED" << std::endl;
-//         break;
-//     /*
-//     || This event is defined but not used in the code. No
-//     || point in wasting codespace on it.
-//     ||
-//     || case EV_RFU1:
-//     ||     m_serial_handler->send(F("EV_RFU1"));
-//     ||     break;
-//     */
-//     case EV_JOIN_FAILED:
-//         std::cout << "EV_JOIN_FAILED" << std::endl;
-//         break;
-//     case EV_REJOIN_FAILED:
-//         std::cout << "EV_REJOIN_FAILED" << std::endl;
-//         break;
-//     case EV_TXCOMPLETE:
-//         std::cout << "EV_TXCOMPLETE" << std::endl;
-//         if (LMIC.txrxFlags & TXRX_ACK)
-//             std::cout << "Received ack" << std::endl;
-//         if (LMIC.dataLen)
-//         {
-//             std::cout << "Received ";
-//             std::cout << static_cast<int>(LMIC.dataLen);
-//             std::cout << " bytes of payload" << std::endl;
-//         }
-//         // Schedule next transmission
-//         // will be called by main loop
-//         break;
-//     case EV_LOST_TSYNC:
-//         std::cout << "EV_LOST_TSYNC" << std::endl;
-//         break;
-//     case EV_RESET:
-//         std::cout << "EV_RESET" << std::endl;
-//         break;
-//     case EV_RXCOMPLETE:
-//         // data received in ping slot
-//         std::cout << "EV_RXCOMPLETE" << std::endl;
-//         break;
-//     case EV_LINK_DEAD:
-//         std::cout << "EV_LINK_DEAD" << std::endl;
-//         break;
-//     case EV_LINK_ALIVE:
-//         std::cout << "EV_LINK_ALIVE" << std::endl;
-//         break;
-//     /*
-//     || This event is defined but not used in the code. No
-//     || point in wasting codespace on it.
-//     ||
-//     || case EV_SCAN_FOUND:
-//     ||    m_serial_handler->send(F("EV_SCAN_FOUND"));
-//     ||    break;
-//     */
-//     default:
-//         std::cout << "Unknown event: " << std::endl;
-//         // m_serial_handler->send((unsigned)ev);
-//         break;
-//     }
-// }
+void StratoLMIC::onEvent(void *pUserData, ev_t ev)
+{
+    switch (ev)
+    {
+    case EV_RXSTART:
+        // Do not print anything for this event or it will mess up timing.
+        break;
+
+    case EV_TXSTART:
+        // std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
+        break;
+    case EV_JOIN_TXCOMPLETE:
+        std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
+    case EV_TXCANCELED:
+        std::cout << "EV_TXCANCELLED" << std::endl;
+        break;
+    case EV_SCAN_TIMEOUT:
+        std::cout << "EV_SCAN_TIMEOUT" << std::endl;
+        break;
+    case EV_BEACON_FOUND:
+        std::cout << "EV_BEACON_FOUND" << std::endl;
+        break;
+    case EV_BEACON_MISSED:
+        std::cout << "EV_BEACON_MISSED" << std::endl;
+        break;
+    case EV_BEACON_TRACKED:
+        std::cout << "EV_BEACON_TRACKED" << std::endl;
+        break;
+    case EV_JOINING:
+        std::cout << "EV_JOINING" << std::endl;
+        break;
+    case EV_JOINED:
+        std::cout << "EV_JOINED" << std::endl;
+        break;
+    /*
+    || This event is defined but not used in the code. No
+    || point in wasting codespace on it.
+    ||
+    || case EV_RFU1:
+    ||     m_serial_handler->send(F("EV_RFU1"));
+    ||     break;
+    */
+    case EV_JOIN_FAILED:
+        std::cout << "EV_JOIN_FAILED" << std::endl;
+        break;
+    case EV_REJOIN_FAILED:
+        std::cout << "EV_REJOIN_FAILED" << std::endl;
+        break;
+    case EV_TXCOMPLETE:
+        std::cout << "EV_TXCOMPLETE" << std::endl;
+        // if (LMIC.txrxFlags & TXRX_ACK)
+            std::cout << "Received ack" << std::endl;
+        // if (LMIC.dataLen)
+        {
+            std::cout << "Received ";
+            // std::cout << static_cast<int>(LMIC.dataLen);
+            std::cout << " bytes of payload" << std::endl;
+        }
+        // Schedule next transmission
+        // will be called by main loop
+        break;
+    case EV_LOST_TSYNC:
+        std::cout << "EV_LOST_TSYNC" << std::endl;
+        break;
+    case EV_RESET:
+        std::cout << "EV_RESET" << std::endl;
+        break;
+    case EV_RXCOMPLETE:
+        // data received in ping slot
+        std::cout << "EV_RXCOMPLETE" << std::endl;
+        break;
+    case EV_LINK_DEAD:
+        std::cout << "EV_LINK_DEAD" << std::endl;
+        break;
+    case EV_LINK_ALIVE:
+        std::cout << "EV_LINK_ALIVE" << std::endl;
+        break;
+    /*
+    || This event is defined but not used in the code. No
+    || point in wasting codespace on it.
+    ||
+    || case EV_SCAN_FOUND:
+    ||    m_serial_handler->send(F("EV_SCAN_FOUND"));
+    ||    break;
+    */
+    default:
+        std::cout << "Unknown event: " << std::endl;
+        // m_serial_handler->send((unsigned)ev);
+        break;
+    }
+}
 
 // from here uncomment
 // ======================================================================================

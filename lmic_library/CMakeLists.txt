@@ -7,7 +7,7 @@ project(lmic LANGUAGES CXX C)
 # option(BUILD_DOCS "Build doxygen files" OFF)
 
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-# set(PROJECT_SRC_DIR_AES "${CMAKE_CURRENT_SOURCE_DIR}/src/aes")
+set(PROJECT_SRC_DIR_AES "${CMAKE_CURRENT_SOURCE_DIR}/src/aes")
 set(PROJECT_SRC_DIR_HAL "${CMAKE_CURRENT_SOURCE_DIR}/src/hal")
 set(PROJECT_SRC_DIR_LMIC "${CMAKE_CURRENT_SOURCE_DIR}/src/lmic")
 
@@ -35,6 +35,9 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_LMIC}/oslmic.c"
     "${PROJECT_SRC_DIR_LMIC}/oslmic.h"
     "${PROJECT_SRC_DIR_LMIC}/radio.c"
+    "${PROJECT_SRC_DIR_AES}/lmic.c"
+    "${PROJECT_SRC_DIR_AES}/other.c"
+    "${PROJECT_SRC_DIR_AES}/ideetron/AES-128_V10.cpp"
 )
 
 add_compile_options(

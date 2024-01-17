@@ -39,44 +39,43 @@ u1_t hallo;
 // // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
 // static const u4_t DEVADDR = 0x260B6D09;
 
-// from here uncomment
 #define DEVICEID "eui-70B3D57ED0056189"
 #define ABP_DEVICEID "eui-70B3D57ED0056189"
 
 // The Network Session Key / DO NOT SHARE
-// static const PROGMEM u1_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
+static const u1_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
 
 // LoRaWAN AppSKey, application session key / DO NOT SHARE
-// static const u1_t PROGMEM APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
+static const u1_t APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
 
 // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-// static const u4_t DEVADDR = 0x260BC37E;
+static const u4_t DEVADDR = 0x260BC37E;
 
 
-// /********************************/
+/********************************/
 
-// // osjob_t workjob;
+// osjob_t workjob;
 
-// // void(* resetFunc) (void) = 0;  //declare reset function at address 0
+// void(* resetFunc) (void) = 0;  //declare reset function at address 0
 
-// // int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
+// int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
 
-// // ============================================================================
+// ============================================================================
 
-// // StratoLMIC *strato_lmic;
+// StratoLMIC *strato_lmic;
 
-// // unsigned count{0};
+// unsigned count{0};
 
-// uint8_t message[255];
+uint8_t message[255];
+u4_t sequenceNo{1};
+uint8_t data[259];
 
-
-// // u4_t sequenceNo{1};
-// // uint8_t data[259];
-
-// // ============================================================================
+// ============================================================================
 
 int main()
 {
+
+// from here uncomment
 //     for (int i = 0; i < sizeof(message); i++)
 //     {
 //         message[i] = 0;

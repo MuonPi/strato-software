@@ -54,7 +54,8 @@ void os_init() {
 }
 
 ostime_t os_getTime () {
-    return hal_ticks();
+    // return hal_ticks();  // NKRG
+    return 10;              // NKRG
 }
 
 // unlink job from queue, return if removed
