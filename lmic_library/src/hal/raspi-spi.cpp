@@ -128,7 +128,37 @@ void interrupts()
 
 void noInterrupts()
 {
-  // not possible to disable interrupts on raspi ??
+   int mem_fd = open("/dev/mem", O_RDWR|O_SYNC);
+    if (mem_fd < 0) {
+        std::cerr << "Error opening /dev/mem" << std::endl;
+        return 1;
+    }
+
+    void* gpio_map = mmap(
+        NULL,             // Any adddress in our space will do
+        4096,             // Map length
+        PROT_READ|PROT_WRITE, // Enable reading & writting to mapped memory
+        MAP_SHARED,       // Shared with other processes
+        mem_fd,           // File to map
+        GPIO_BASE         // Offset to GPIO peripheral
+    );
+
+    close(mem_fd); // No need to keep mem_fd open after mmap
+
+    if (gpio_map == MAP_FAILED) {
+        std::cerr << "Error mapping the physical address" << std::endl;
+        return 1;
+    }
+
+    // Set the pin as input (for example, GPIO pin 17)
+    volatile unsigned int* gpio = (volatile unsigned int*)gpio_map;
+    *(gpio + GPFSEL0/4) &= ~(7<<21);  // Clear bits for pin 17
+
+    // Disable edge detection (for example, GPIO pin 17)
+    *(gpio + GPREN0/4) &= ~(1<<17);  // Disable rising edge detection
+    *(gpio + GPFEN0/4) &= ~(1<<17);  // Disable falling edge detection
+
+   
 }
 
 

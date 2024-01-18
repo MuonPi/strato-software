@@ -1,11 +1,8 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-<<<<<<< HEAD:include/lmic_library/src/hal/raspi-spi.h
 //#include <bcm2835.h>
-=======
 // #include <bcm2835.h>
->>>>>>> cd543e7aef382cb59117c708a158f7b789248296:lmic_library/src/hal/raspi-spi.h
 #include "../lmic.h"
 #include <string>
 #include <vector>
