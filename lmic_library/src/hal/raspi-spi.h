@@ -35,7 +35,7 @@ void delay(s4_t milliseconds);
 void delayMicroseconds(s4_t microseconds);
 
 void pinMode(u1_t x, int y);
-void digitalWrite(u1_t x, u1_t);
+void digitalWrite(u1_t pin, u1_t value);
 bool digitalRead(u1_t x);
 
 void interrupts();

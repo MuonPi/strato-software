@@ -27,6 +27,8 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_HAL}/hal.cpp"
     "${PROJECT_SRC_DIR_HAL}/raspi-spi.h"
     "${PROJECT_SRC_DIR_HAL}/raspi-spi.cpp"
+    "${PROJECT_SRC_DIR_HAL}/gpio.cpp"
+    "${PROJECT_SRC_DIR_HAL}/gpio.h"
     "${PROJECT_SRC_DIR_LMIC}/config.h"
     "${PROJECT_SRC_DIR_LMIC}/hal.h"
     "${PROJECT_SRC_DIR_LMIC}/lmic.c"
