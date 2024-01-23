@@ -61,14 +61,7 @@ target_include_directories(lmic_objlib PUBLIC
     ${PROJECT_SRC_DIR_LMIC}
 )
 
-<<<<<<< HEAD:include/lmic_library/CMakeLists.txt
-# set(THREADS_PREFER_PTHREAD_FLAG ON)
-# find_package(Threads REQUIRED)
-
-target_link_libraries(_lmic bcm2835 gpiod) # NKRG
-=======
 set_property(TARGET lmic_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
->>>>>>> cd543e7aef382cb59117c708a158f7b789248296:lmic_library/CMakeLists.txt
 
 # set_target_properties(
 # lmic
@@ -76,7 +69,7 @@ set_property(TARGET lmic_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 # SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
 # )
 
-target_link_libraries(lmic gpiod) # NKRG
+target_link_libraries(lmic) # NKRG
 
 #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
 #set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
