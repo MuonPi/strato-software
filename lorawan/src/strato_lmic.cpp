@@ -42,8 +42,8 @@
 // #include "hal/raspi-spi.h"   // dont include, dont ask why
 #include "lmic/oslmic.h"
 #include "lmic/lmic.h"
-#include "hal/gpio.h"
-#include <gpiod.h>
+// #include "hal/gpio.h"
+// #include <gpiod.h>
 
 bool joined = false;
 bool sleeping = false;
