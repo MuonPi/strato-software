@@ -19,6 +19,8 @@
 #include "hal.h"
 // we may need some things from stdio.
 #include <stdio.h>
+#include <wiringPi.h>//luisa
+
 
 // -----------------------------------------------------------------------------
 // I/O

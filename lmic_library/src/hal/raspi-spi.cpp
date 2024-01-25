@@ -5,7 +5,8 @@
 #include <iostream>
 // #include <bcm2835.h>
 #include "raspi-spi.h"
-#include "gpio.h"
+#include "gpio_M.h"
+#include <gpiod.h>
 
 //write manual arduino functions
 static std::unique_ptr<gpio> x_gpio{nullptr};
@@ -21,8 +22,8 @@ gpio my_gpio;
 // #define Serial 1
 // #define OUTPUT 1
 // #define INPUT 0
-// #define MSBFIRST 8
-// #define SPI_MODE0 8
+#define MSBFIRST 8
+#define SPI_MODE0 8
 
 //gpiod_chip *chip{nullptr};
 // gpiod_line_request *output_line_request{nullptr};
@@ -53,11 +54,11 @@ gpio my_gpio;
 
 bool init_gpio()
 {
-  x_gpio = std::make_unique<gpio>();
-  gpio::setting pin_setting{};
-  pin_setting.gpio_pins={20};
-  callback = x_gpio->list_callback(pin_setting);
-  x_gpio->start();
+  // x_gpio = std::make_unique<gpio>();
+  // gpio::setting pin_setting{};
+  // pin_setting.gpio_pins={20};
+  // callback = x_gpio->list_callback(pin_setting);
+  // x_gpio->start();
 
   // chip = gpiod_chip_open("/dev/gpiochip0");
   // if (chip == nullptr){
@@ -68,9 +69,10 @@ bool init_gpio()
   // const unsigned int output_pins[n_output_pins] = {1u, 13u, 23u};
 
   // gpiod_line_request_config *request_config = gpiod_request_config_new();
-  // gpio_v2_line_config *line_config = gpiod_line_iter_new();
+  // gpiod_line *line_config = gpiod_line_iter_new();
   // gpiod_line_set_flags *default_output = gpiod_line_iter_new();
-  // gpiod_line_config_add_line_settings(line_config, output_pins, n_output_pins, default_output_low());
+  // // gpiod_line_config_add_line_settings(line_config, output_pins, n_output_pins, default_output_low()); //luisa
+  // gpiod_line_set_config(line_config, output_pins*, n_output_pins, nullptr);
   // gpiod_line_request = gpiod_chip_get_lines(chip, request_config, line_config);
   // if (gpiod_line_request == nullptr){
   //   throw std::runtime_error("could not request lines");
