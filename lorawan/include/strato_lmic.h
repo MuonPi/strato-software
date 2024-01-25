@@ -17,7 +17,7 @@
 // #include <Wire.h>
 #include <lmic.h>
 #include <hal/hal.h>
-#include "hal/gpio.h"
+// #include "hal/gpio.h"
 
 #define LMIC_CLOCK_ERROR_PPM 30000
 
