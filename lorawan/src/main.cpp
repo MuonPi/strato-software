@@ -24,8 +24,6 @@
 
 #define __AVR__
 
-u1_t hallo;
-
 // TTN *****************************
 // #define DEVICEID "eui-70B3D57ED0056189"
 // #define ABP_DEVICEID "eui-70B3D57ED0056189"

@@ -38,6 +38,7 @@ target_link_directories(lorawan PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/../lib/")
 # find_library(LIBGPIOD libgpiod REQUIRED)
 
 target_link_libraries(lorawan
+    gpiod
     lmic_static
 )  # NKRG
 

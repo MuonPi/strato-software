@@ -79,7 +79,7 @@ public:
     : m_consumer{std::move(consumer)}
     , m_chipname{std::move(chipname)}
     {};
-    virtual ~gpio();
+    ~gpio() = default;
 
     void start();
 
