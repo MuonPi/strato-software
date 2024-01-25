@@ -10,6 +10,7 @@
 //write manual arduino functions
 static std::unique_ptr<gpio> x_gpio{nullptr};
 static std::shared_ptr<gpio::callback> callback{nullptr};
+gpio my_gpio;
 
 // int Serial = 1;   // only temporary, should be removed, random value
 // int OUTPUT = 1;   // only temporary, should be removed, random value
@@ -108,7 +109,9 @@ void pinMode(u1_t x, int y)
 
 void digitalWrite(u1_t pin, u1_t value)
 {
-//     std::cout << "digitalwrite" << std::endl;
+  u1_t x = 8;
+     std::cout << "digitalwrite" << std::endl;
+     my_gpio.write(x);
 //     unsigned int offsets[1] = {pin};
 //     gpiod_line_name line_value = gpiod_line_value::GPIOD_LINE_VALUE_INACTIVE;
 //     if (value == 1){
@@ -125,6 +128,7 @@ bool digitalRead(u1_t x)
 {
   // Wie in digitalWrite
     std::cout << "digitalread" << std::endl;
+
     return true;
 }
 

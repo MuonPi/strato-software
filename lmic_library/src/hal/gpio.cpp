@@ -121,15 +121,15 @@ auto gpio::callback::wait(std::chrono::milliseconds timeout) -> event
 	return m_event;
 }
 
-auto gpio::callback::write_async(const event& e) -> std::future<bool>
-{
-	return std::async(std::launch::async, [&] { return write(e); });
-}
+// auto gpio::callback::write_async(const event& e) -> std::future<bool>
+// {
+// 	return std::async(std::launch::async, [&] { return write(e); });
+// }luisa
 
-auto gpio::callback::write(const event& e) -> bool
-{
-	return m_handler.write(e);
-}
+// auto gpio::callback::write(const event& e) -> bool
+// {
+// 	return m_handler.write(e);
+// }luisa
 
 auto gpio::callback::read(unsigned pin_num) -> int {
 	return m_handler.read(pin_num);
@@ -234,14 +234,16 @@ auto gpio::shutdown() -> int
 		chip = nullptr;
 	}
 	return 0;
+
 }
 
-auto gpio::write() -> bool //Übergabeparameter gelöscht luisa
+auto gpio::write(u1_t val) -> bool //Übergabeparameter gelöscht luisa
 {
-	if (!m_result.valid()) {
-		return false;
-	}
-	//std::cout << "requested write pin " << e.pin << " to " << e.type; //luisa
+	//std::cout << val;
+	// if (!m_result.valid()) {
+	// 	return false;
+	// }
+	//std::cout << "requested write pin " << e.pin << " to " << e.type;
 	//gpiod_line* line =
 	//gpiod_line_set_value(line, 1);
 	//gpiod_line_request_output();

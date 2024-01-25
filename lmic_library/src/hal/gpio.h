@@ -9,6 +9,7 @@
 #include <memory>
 #include <linux/gpio.h>
 #include <gpiod.h>
+#include "lmic.h"
 
 // TODO: check correctness of mutex'
 // TODO: implement and check init, step, shutdown, write functions
@@ -58,8 +59,8 @@ public:
         [[nodiscard]] auto wait_async(std::chrono::milliseconds timeout)->std::future<event>;
         [[nodiscard]] auto wait(std::chrono::milliseconds timeout)->event;
 
-        [[nodiscard]] auto write_async(const event& e)->std::future<bool>;
-        [[nodiscard]] auto write(const event& e) -> bool;
+        [[nodiscard]] auto write_async(const event& e)->std::future<bool>;//luisa
+        [[nodiscard]] auto write(const event& e) -> bool; //luisa
         [[nodiscard]] auto read(unsigned pin_num) -> int;
 
         callback(setting s, gpio& handler);
@@ -89,7 +90,7 @@ public:
 
     [[nodiscard]] auto list_callback(setting s)->std::shared_ptr<callback>;
     void remove_callback(std::size_t id);
-    auto write() -> bool; //luisa
+    auto write(u1_t val) -> bool; //luisa
     auto read(unsigned pin_num) -> int;//luisa
 
 private:
