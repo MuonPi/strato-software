@@ -38,7 +38,6 @@
 #include "lmic.h"
 #include <iostream>
 #include "hal/hal.h"
-// #include <bcm2835.h>
 // #include "hal/raspi-spi.h"   // dont include, dont ask why
 #include "lmic/oslmic.h"
 #include "lmic/lmic.h"
@@ -84,6 +83,7 @@ const lmic_pinmap lmic_pins = {
     .spi_freq = 1000000 /* 1 MHz */
 };
 
+ostime_t os_getTime();  // why does this work
 
 // ======================================================================================
 

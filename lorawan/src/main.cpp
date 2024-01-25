@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "strato_lmic.h"
-#include "lmic.h"
-#include "lmic/oslmic.h"
+// #include "lmic.h"
+// #include "lmic/oslmic.h"
 // #include "lib_lmic.so"
 
 #define __AVR__
