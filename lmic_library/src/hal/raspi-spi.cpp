@@ -3,10 +3,14 @@
 #include <memory>
 #include <vector>
 #include <iostream>
-// #include <bcm2835.h>
+#include <unistd.h> //wegen close()
+//#include <cstdint>
+//#include <bcm2835.h>
 #include "raspi-spi.h"
-#include "gpio_M.h"
+//#include "gpio_M.h"
 #include <gpiod.h>
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
 
 //write manual arduino functions
 static std::unique_ptr<gpio> x_gpio{nullptr};
@@ -188,19 +192,83 @@ u1_t SPIClass::transfer(u1_t data)
   // something to transfer
 }
 
+// const int SCK = 23;   // GPIO11
+// const int MOSI = 19;  // GPIO10
+// const int SS = 24;    // GPIO8
+
+// #define GPIO_BASE_ADDRESS 0x3F200000
+
+// void SPIClass::begin()
+// {
+
+//  // Set SCK, MOSI, and SS pins as outputs
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 6);  // SCK as output
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 3);  // MOSI as output
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x00) |= (1 << 24);  // SS as output
+
+//     // Pull SCK and MOSI low, and SS high
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x08) &= ~(1 << 6);  // Clear SCK bit
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x08) &= ~(1 << 3);  // Clear MOSI bit
+//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 24);   // Set SS bit high
+// } //to directly manipulate the registers
+
 void SPIClass::begin()
 {
-  // something to begin
-}
+  wiringPiSetup();  // Initialize the wiringPi library
+
+    // Set SPI pins as outputs
+    pinMode(11, OUTPUT);  // SCK as output (wiringPi pin 14)
+    pinMode(10, OUTPUT);  // MOSI as output (wiringPi pin 12)
+    pinMode(8, OUTPUT);  // SS as output (wiringPi pin 10)
+
+    // Pull SCK and MOSI low, and SS high
+    digitalWrite(11, LOW);   // Pull SCK low
+    digitalWrite(10, LOW);   // Pull MOSI low
+    digitalWrite(8, HIGH);  // Pull SS high
+
+} //using wiringpi
+
+// void SPIClass::begin()
+// {
+//   if (!bcm2835_init()) {
+//         // Handle initialization error
+//     }
+
+//     // Set SPI pins as outputs
+//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_23, BCM2835_GPIO_FSEL_OUTP);  // SCK as output
+//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_19, BCM2835_GPIO_FSEL_OUTP);  // MOSI as output
+//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_24, BCM2835_GPIO_FSEL_OUTP);  // SS as output
+
+//     // Additional configuration can be added here, such as setting the clock frequency
+
+//     // Initialize SPI
+//     bcm2835_spi_begin();
+// } //using the bcm2835
+
+
+// void SPIClass::beginTransaction(SPISettings settings)
+// {
+//  // Set SPI configuration
+//     bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST); // Set MSB first
+//     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0); // Set SPI mode 0
+//     bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); // Set clock speed (change as needed)
+//     bcm2835_spi_chipSelect(BCM2835_SPI_CS0); // Set chip select}
+// } //using bcm2835
 
 void SPIClass::beginTransaction(SPISettings settings)
 {
-  // something to begin transaction
-}
+  wiringPiSPISetupMode(0, 1000000, 0);  // Set up SPI channel 0 with a speed of 1,000,000 Hz and mode 0
+} //using wiringpi
+
+// void SPIClass::endTransaction()
+// {
+//     bcm2835_spi_end();
+// } //using bcm2835
 
 void SPIClass::endTransaction()
 {
-  // something to end transaction
-}
+  //was genau muss diese Funktion können?
+  close(wiringPiSPIGetFd(0));//ist nicht unbedingt das was wir wollen
+} //using wiringpi
 
 
