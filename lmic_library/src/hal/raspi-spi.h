@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 #include <cstdint> //Luisa
-#include "gpio_M.h"
+// #include "gpio_M.h"
 #include <gpiod.h>
 
 
@@ -20,24 +20,24 @@
 // uint8_t MSBFIRST; // = 8;   // only temporary, should be removed, random value
 // uint8_t SPI_MODE0; // = 8;  // only temporary, should be removed, random value
 
-// #define Serial 1
-// #define OUTPUT 1
-// #define INPUT 0
+#define Serial 1
+#define OUTPUT 1
+#define INPUT 0
  #define MSBFIRST 8
  #define SPI_MODE0 8
-// #define HIGH 1
-// #define LOW 0
+#define HIGH 1
+#define LOW 0
 
 // static gpio m_gpio;
 
-// uint32_t micros();
+uint32_t micros();
 
-// void delay(s4_t milliseconds);
-// void delayMicroseconds(s4_t microseconds);
+void delay(s4_t milliseconds);
+void delayMicroseconds(s4_t microseconds);
 
-// void pinMode(u1_t x, int y);
-// void digitalWrite(u1_t pin, u1_t value);
-// bool digitalRead(u1_t x);
+void pinMode(u1_t x, int y);
+void digitalWrite(u1_t pin, u1_t value);
+bool digitalRead(u1_t x);
 
  void interrupts();
  void noInterrupts();

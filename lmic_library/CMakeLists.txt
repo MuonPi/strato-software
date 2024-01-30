@@ -27,8 +27,10 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_HAL}/hal.cpp"
     "${PROJECT_SRC_DIR_HAL}/raspi-spi.h"
     "${PROJECT_SRC_DIR_HAL}/raspi-spi.cpp"
-    "${PROJECT_SRC_DIR_HAL}/gpio_M.cpp"
-    "${PROJECT_SRC_DIR_HAL}/gpio_M.h"
+    "${PROJECT_SRC_DIR_HAL}/spidevice.cpp"
+    "${PROJECT_SRC_DIR_HAL}/spidevice.h"
+    # "${PROJECT_SRC_DIR_HAL}/gpio_M.cpp"
+    # "${PROJECT_SRC_DIR_HAL}/gpio_M.h"
     "${PROJECT_SRC_DIR_LMIC}/config.h"
     "${PROJECT_SRC_DIR_LMIC}/hal.h"
     "${PROJECT_SRC_DIR_LMIC}/lmic.c"
@@ -40,6 +42,7 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_AES}/lmic.c"
     "${PROJECT_SRC_DIR_AES}/other.c"
     "${PROJECT_SRC_DIR_AES}/ideetron/AES-128_V10.cpp"
+ 
 )
 
 add_compile_options(
