@@ -103,6 +103,7 @@ bool digitalRead(u1_t pin)
 
 SPI::spiDevice DEV;
 
+// has to be changed:
 std::string devAddress = "/dev/spidev0.0";
 int handle = -1;
 std::uint32_t speed = 61035;
