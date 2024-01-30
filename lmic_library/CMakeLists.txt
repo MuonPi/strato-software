@@ -10,6 +10,7 @@ set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_SRC_DIR_AES "${CMAKE_CURRENT_SOURCE_DIR}/src/aes")
 set(PROJECT_SRC_DIR_HAL "${CMAKE_CURRENT_SOURCE_DIR}/src/hal")
 set(PROJECT_SRC_DIR_LMIC "${CMAKE_CURRENT_SOURCE_DIR}/src/lmic")
+set(PROJECT_SRC_DIR_RASPI "${CMAKE_CURRENT_SOURCE_DIR}/src/raspi")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../lib")
@@ -25,12 +26,6 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR}/lmic.h"
     "${PROJECT_SRC_DIR_HAL}/hal.h"
     "${PROJECT_SRC_DIR_HAL}/hal.cpp"
-    "${PROJECT_SRC_DIR_HAL}/raspi-spi.h"
-    "${PROJECT_SRC_DIR_HAL}/raspi-spi.cpp"
-    "${PROJECT_SRC_DIR_HAL}/spidevice.cpp"
-    "${PROJECT_SRC_DIR_HAL}/spidevice.h"
-    # "${PROJECT_SRC_DIR_HAL}/gpio_M.cpp"
-    # "${PROJECT_SRC_DIR_HAL}/gpio_M.h"
     "${PROJECT_SRC_DIR_LMIC}/config.h"
     "${PROJECT_SRC_DIR_LMIC}/hal.h"
     "${PROJECT_SRC_DIR_LMIC}/lmic.c"
@@ -42,7 +37,12 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_AES}/lmic.c"
     "${PROJECT_SRC_DIR_AES}/other.c"
     "${PROJECT_SRC_DIR_AES}/ideetron/AES-128_V10.cpp"
- 
+    "${PROJECT_SRC_DIR_RASPI}/raspi.h" 
+    "${PROJECT_SRC_DIR_RASPI}/raspi.cpp" 
+    "${PROJECT_SRC_DIR_RASPI}/spidevice.cpp"
+    "${PROJECT_SRC_DIR_RASPI}/spidevice.h"
+    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.h" 
+    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.cpp" 
 )
 
 add_compile_options(
@@ -64,7 +64,7 @@ target_include_directories(lmic_objlib PUBLIC
     ${PROJECT_SRC_DIR_AES}
     ${PROJECT_SRC_DIR_HAL}
     ${PROJECT_SRC_DIR_LMIC}
-
+    ${PROJECT_SRC_DIR_RASPI}
 )
 
 set_property(TARGET lmic_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)

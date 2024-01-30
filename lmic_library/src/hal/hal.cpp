@@ -13,8 +13,9 @@
 // #include <Arduino.h>
 // #include <SPI.h>
 // include all the lmic header files, including ../lmic/hal.h
+#include "raspi.h"
 #include "raspi-spi.h"
-#include "../lmic.h"
+#include "lmic.h"
 // include the C++ hal.h
 #include "hal.h"
 // we may need some things from stdio.

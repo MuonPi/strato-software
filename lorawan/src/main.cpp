@@ -22,7 +22,7 @@
 // #include "lmic/oslmic.h"
 // #include "lib_lmic.so"
 
-#define __AVR__
+// #define __AVR__
 
 // TTN *****************************
 // #define DEVICEID "eui-70B3D57ED0056189"
@@ -52,17 +52,17 @@ static const u4_t DEVADDR = 0x260BC37E;
 
 /********************************/
 
-// osjob_t workjob;
+osjob_t workjob;
 
-// void(* resetFunc) (void) = 0;  //declare reset function at address 0
+void(* resetFunc) (void) = 0;  //declare reset function at address 0
 
-// int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
+int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
 
 // ============================================================================
 
-// StratoLMIC *strato_lmic;
+StratoLMIC *strato_lmic;
 
-// unsigned count{0};
+unsigned count{0};
 
 uint8_t message[255];
 u4_t sequenceNo{1};
@@ -74,23 +74,23 @@ int main()
 {
 
 // from here uncomment
-//     for (int i = 0; i < sizeof(message); i++)
-//     {
-//         message[i] = 0;
-//     }
-//     std::cout << sizeof(message) << std::endl;
-//     // Create the LMIC object
-//     // strato_lmic = new StratoLMIC();
+    for (int i = 0; i < sizeof(message); i++)
+    {
+        message[i] = 0;
+    }
+    std::cout << sizeof(message) << std::endl;
+    // Create the LMIC object
+    // strato_lmic = new StratoLMIC();
 
-//     // Set static session parameters. Instead of dynamically establishing a session
-//     // by joining the network, precomputed session parameters are provided.
-//     uint8_t appskey[sizeof(APPSKEY)];
-//     uint8_t nwkskey[sizeof(NWKSKEY)];
+    // Set static session parameters. Instead of dynamically establishing a session
+    // by joining the network, precomputed session parameters are provided.
+    uint8_t appskey[sizeof(APPSKEY)];
+    uint8_t nwkskey[sizeof(NWKSKEY)];
 //     memcpy_P(appskey, APPSKEY, sizeof(APPSKEY));
 //     memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
 
 //     // Setup LMIC
-//     // strato_lmic->setup(DEVADDR, appskey, nwkskey);
+    strato_lmic->setup(DEVADDR, appskey, nwkskey);
 
 //     // process_work(&workjob);
 
