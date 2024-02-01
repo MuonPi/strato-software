@@ -133,7 +133,7 @@ void hal_failed (const char *file, u2_t line);
  * set a custom hal failure handler routine. The default behaviour, defined in
  * hal_failed(), is to halt by looping infintely.
  */
-void hal_set_failure_handler(const hal_failure_handler_t* const);
+void hal_set_failure_handler(hal_failure_handler_t* const);		// NKRG kein const vor hal_failure_handler_t
 
 /*
  * get the calibration value for radio_rssi
