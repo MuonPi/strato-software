@@ -116,24 +116,6 @@ void SPIClass::begin()
   DEV.init(devAddress, speed, mode, bits);
 }
 
-// void SPIClass::begin()
-// {
-//   if (!bcm2835_init()) {
-//         // Handle initialization error
-//     }
-
-//     // Set SPI pins as outputs
-//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_23, BCM2835_GPIO_FSEL_OUTP);  // SCK as output
-//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_19, BCM2835_GPIO_FSEL_OUTP);  // MOSI as output
-//     bcm2835_gpio_fsel(RPI_V2_GPIO_P1_24, BCM2835_GPIO_FSEL_OUTP);  // SS as output
-
-//     // Additional configuration can be added here, such as setting the clock frequency
-
-//     // Initialize SPI
-//     bcm2835_spi_begin();
-// } //using the bcm2835
-
-
 u1_t SPIClass::transfer(u1_t data)
 {
   std::string datastr{};
@@ -146,40 +128,10 @@ u1_t SPIClass::transfer(u1_t data)
 // const int MOSI = 19;  // GPIO10
 // const int SS = 24;    // GPIO8
 
-// #define GPIO_BASE_ADDRESS 0x3F200000
-
-// void SPIClass::begin()
-// {
-
-//  // Set SCK, MOSI, and SS pins as outputs
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 6);  // SCK as output
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 3);  // MOSI as output
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x00) |= (1 << 24);  // SS as output
-
-//     // Pull SCK and MOSI low, and SS high
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x08) &= ~(1 << 6);  // Clear SCK bit
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x08) &= ~(1 << 3);  // Clear MOSI bit
-//     *(volatile uint32_t*)(GPIO_BASE_ADDRESS + 0x04) |= (1 << 24);   // Set SS bit high
-// } //to directly manipulate the registers
-
-
-// void SPIClass::beginTransaction(SPISettings settings)
-// {
-//  // Set SPI configuration
-//     bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST); // Set MSB first
-//     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0); // Set SPI mode 0
-//     bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_64); // Set clock speed (change as needed)
-//     bcm2835_spi_chipSelect(BCM2835_SPI_CS0); // Set chip select}
-// } //using bcm2835
-
 void SPIClass::beginTransaction(SPISettings settings)
 {
 
 }
-// void SPIClass::endTransaction()
-// {
-//     bcm2835_spi_end();
-// } //using bcm2835
 
 void SPIClass::endTransaction()
 {
