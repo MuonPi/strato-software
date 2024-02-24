@@ -22,7 +22,7 @@ using lmic_pinmap = Arduino_LMIC::HalPinmap_t;
 static const int NUM_DIO = lmic_pinmap::NUM_DIO;
 
 // Use this for any unused pins.
-const u1_t LMIC_UNUSED_PIN = lmic_pinmap::UNUSED_PIN;
+const uint8_t LMIC_UNUSED_PIN = lmic_pinmap::UNUSED_PIN;
 
 // Declared here, to be defined and initialized by the application.
 // Use os_init_ex() if you want not to use a const table, or if

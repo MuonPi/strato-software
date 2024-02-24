@@ -3,7 +3,7 @@
 Module:  lorawan_spec_compliance.h
 
 Function:
-        Details from the LoRaWAN specification for compliance.
+        Details from the LoRaWAN  for compliance.
 
 Copyright notice and license info:
         See LICENSE file accompanying this project.

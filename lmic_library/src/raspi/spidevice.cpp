@@ -9,7 +9,6 @@
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
-#include <cstdint> //Luisa
 
 using namespace SPI;
 
@@ -30,7 +29,7 @@ spiDevice::~spiDevice() {
 	}
 }
 
-auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, std::uint8_t bits)->bool {
+auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, uint8_t bits)->bool {
 	fNrBits = bits;
 	fSpeed = speed;
 
@@ -102,7 +101,7 @@ auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, std
 		std::cerr << "can't get max speed hz" << std::endl;
 	}
 
-	std::cout << "initialise successful\n"; //Luisa
+	std::cout << "spi initialise successful\n"; //Luisa
 
 	return true;
 }
@@ -111,57 +110,78 @@ auto spiDevice::devicePresent()->bool {
 	return false;
 }
 
-auto spiDevice::write(const std::string& data)->bool {
+auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool {
 	if (fHandle==-1) {
 		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
 		return false;
 	}
-	const std::size_t n = data.size();
+	const std::size_t n = data.size() + 1;
 
 	auto txBuf{ std::make_unique<std::uint8_t[]>(n) };
 	auto rxBuf{ std::make_unique<std::uint8_t[]>(n) };
-	//txBuf[0] = command;
-	for (std::size_t i = 0; i < n; i++) {
-		txBuf[i] = data[i];
+	txBuf[0] = command;
+	for (std::size_t i = 1; i < n; i++) {
+		txBuf[i] = data[i - 1];
 	}
 
 	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
+    std::cout << "write:\ntxbuf: ";
+	for (std::size_t i = 0; i < n ; i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
+	}
+	std::cout << "\nrxbuf: ";
+	for (std::size_t i = 0; i < n ; i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
+	}
+	std::cout << "\n";
+
 	if (status != static_cast<decltype(status)>(n)) {
 		std::cerr << "transfer size mismatch: spi_xfer returned " << status << " bytes transfered but should write" << n << " bytes." << std::endl;
 		return false;
 	}
-	std::cout << "write successful\n"; //Luisa
 	return true;
 }
 
-auto spiDevice::read( const std::size_t nBytes)->std::string {
+auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std::string {
 	if (fHandle == -1) {
 		std::cerr << "tried to read from spi without initialising." << std::endl;
 		return "";
 	}
-	//const std::size_t n = nBytes + 1;
+	const std::size_t n = nBytes + 1;
 
-	auto txBuf{ std::make_unique<std::uint8_t[]>(nBytes) };
-	auto rxBuf{ std::make_unique<std::uint8_t[]>(nBytes) };
-	//txBuf[0] = command;
+	auto txBuf{ std::make_unique<std::uint8_t[]>(n) };
+	auto rxBuf{ std::make_unique<std::uint8_t[]>(n) };
+	txBuf[0] = command;
 
-	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), nBytes);
-	if (status != static_cast<decltype(status)>(nBytes)) {
-		std::cerr << "transfer size mismatch: spi_xfer returned " << status <<" bytes but should read" << nBytes <<" bytes." << std::endl;
+	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
+    std::cout << "read:\ntxbuf: ";
+	for (std::size_t i = 0; i < n ; i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
+	}
+	std::cout << "\nrxbuf: ";
+	for (std::size_t i = 0; i < n ; i++)
+	{
+		std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
+	}
+	std::cout << "\n";
+
+	if (status != static_cast<decltype(status)>(n)) {
+		std::cerr << "transfer size mismatch: spi_xfer returned " << status <<" bytes but should read" << n <<" bytes." << std::endl;
 		return "";
 	}
 	std::string data;
-	for (std::size_t i = 0; i < nBytes; i++) {
+	for (std::size_t i = 1; i < n; i++) {
 		data += rxBuf[i];
 	}
-	std::cout << "read successful\n"; //Luisa
 	return data;
 }
 
-
-auto spiDevice::spi_xfer(const int handle, const std::uint32_t speed, const std::uint8_t mode, const std::uint8_t bits, const std::uint8_t* tx, std::uint8_t* rx, std::uint32_t nBytes)->int {
+auto spiDevice::spi_xfer(const int handle, const uint32_t speed, const uint8_t mode, const uint8_t bits, const uint8_t* tx, uint8_t* rx, uint32_t nBytes)->int {
 	int ret{};
-	std::uint16_t delay{};
+	uint16_t delay{};
 	spi_ioc_transfer tr = {
 		(unsigned long)tx, // tx_buf
 		(unsigned long)rx, // rx_buf

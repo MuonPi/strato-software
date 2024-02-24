@@ -42,7 +42,9 @@ static void acSetTimer(ostime_t);
 static void acSendUplinkBuffer(void);
 static void evActivate(void);
 static void evDeactivate(void);
+#ifndef DISABLE_JOIN
 static void evJoinCommand(void);
+#endif
 static void evMessage(const uint8_t *pMessage, size_t nMessage);
 static lmic_compliance_fsmstate_t fsmDispatch(lmic_compliance_fsmstate_t, bool);
 static void fsmEval(void);
@@ -288,7 +290,9 @@ static void evMessage(
             break;
         }
         case LORAWAN_COMPLIANCE_CMD_JOIN: {
+            #ifndef DISABLE_JOIN
             evJoinCommand();
+            #endif
             break;
         }
         default:
@@ -358,13 +362,14 @@ Returns:
 
 */
 
+#ifndef DISABLE_JOIN
 static void evJoinCommand(
     void
 ) {
     LMIC_unjoin();
     evDeactivate();
 }
-
+#endif
 /*
 
 Name:   evEchoCommand()

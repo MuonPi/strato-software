@@ -829,7 +829,9 @@ static void txlora () {
     writeReg(LORARegPayloadLength, LMIC.dataLen);
 
     // download buffer to the radio FIFO
+    printf("before RegFifo\n");
     writeBuf(RegFifo, LMIC.frame, LMIC.dataLen);
+    printf("after RegFifo\n");
 
     // enable antenna switch for TX
     hal_pin_rxtx(1);
@@ -890,7 +892,9 @@ static void starttx () {
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         txfsk();
     } else { // LoRa modem
+        printf("before txlora\n");
         txlora();
+        printf("after txlora\n");
     }
     // the radio will go back to STANDBY mode as soon as the TX is finished
     // the corresponding IRQ will inform us about completion.
@@ -1109,6 +1113,7 @@ int radio_init () {
     // some sanity checks, e.g., read version number
     u1_t v = readReg(RegVersion);
 #ifdef CFG_sx1276_radio
+    printf("v = %i\n", v);    //nkrg
     if(v != 0x12 )
         return 0;
 #elif CFG_sx1272_radio
@@ -1417,7 +1422,9 @@ void os_radio (u1_t mode) {
       case RADIO_TX:
         // transmit frame now
         LMIC.txend = 0;
+        printf("before starttx");
         starttx(); // buf=LMIC.frame, len=LMIC.dataLen
+        printf("after starttx");
         break;
 
       case RADIO_TX_AT:

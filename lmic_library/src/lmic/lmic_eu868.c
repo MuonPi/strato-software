@@ -369,10 +369,11 @@ void LMICeu868_setRx1Params(void) {
     LMIC.rps = dndr2rps(LMIC.dndr);
 }
 
-void
-LMICeu868_initJoinLoop(void) {
+#ifndef DISABLE_JOIN
+void LMICeu868_initJoinLoop(void) {
         LMICeulike_initJoinLoop(NUM_DEFAULT_CHANNELS, /* adr dBm */ EU868_TX_EIRP_MAX_DBM);
 }
+#endif
 
 //
 // END: EU868 related stuff

@@ -17,7 +17,7 @@ Author:
 #pragma once
 
 #ifndef _ARDUINO_LMIC_H_
-# define _ARDUINO_LMIC_H_
+#define _ARDUINO_LMIC_H_
 
 #ifdef __cplusplus
 extern "C"{

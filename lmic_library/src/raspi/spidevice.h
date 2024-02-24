@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <cstdint> //Luisa
+#include <cinttypes>
 
 namespace SPI {
 	enum class Mode {
@@ -26,7 +26,7 @@ namespace SPI {
 		* @param data
 		* @return
 		*/
-		auto write(const std::string& data)->bool;
+		auto write(const std::uint8_t command, const std::string& data)->bool;
 
 		/**
 		* Reads from physical device
@@ -34,23 +34,7 @@ namespace SPI {
 		* @param nBytes
 		* @return
 		*/
-		auto read(const std::size_t nBytes)->std::string;
-
-		/**
-		* Writes one byte to a register
-		* @param regAddr
-		* @param byte
-		* @return
-		*/
-		//virtual auto writeReg(const std::uint8_t regAddr, const std::uint8_t byte)->bool = 0;
-
-		/**
-		* Reads one byte from a register
-		* @param regAddr
-		* @param byte
-		* @return
-		*/
-		//virtual auto readReg(const std::uint8_t regAddr, std::uint8_t& byte)->bool = 0;
+		auto read(const std::uint8_t command, const std::size_t nBytes)->std::string;
 
 		virtual auto devicePresent()->bool;
 

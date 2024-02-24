@@ -6,5 +6,7 @@
 // #define LMIC_COUNTRY_CODE LMIC_COUNTRY_CODE_JP      /* for as923-JP; also define CFG_as923 */
 //#define CFG_kr920 1
 //#define CFG_in866 1
+#define DISABLE_BEACON 1
+#define DISABLE_JOIN 1
 #define CFG_sx1276_radio 1
-//#define LMIC_USE_INTERRUPTS
+// #define LMIC_USE_INTERRUPTS 1

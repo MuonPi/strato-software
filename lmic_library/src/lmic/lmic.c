@@ -2656,7 +2656,9 @@ static void engineUpdate_inner (void) {
             // limit power to value asked in adr
             LMIC.radio_txpow = LMIC.txpow > LMIC.adrTxPow ? LMIC.adrTxPow : LMIC.txpow;
             reportEventNoUpdate(EV_TXSTART);
+            printf("before os_radio\n");
             os_radio(RADIO_TX);
+            printf("after os_radio\n");
             return;
         }
         // Cannot yet TX
@@ -2734,7 +2736,9 @@ static void engineUpdate (void) {
     if (state == lmic_EngineUpdateState_idle) {
         LMIC.engineUpdateState = lmic_EngineUpdateState_busy;
         do  {
+            printf("before engineUpdate_inner");
             engineUpdate_inner();
+            printf("after engineUpdate_inner");
             state = LMIC.engineUpdateState - 1;
             LMIC.engineUpdateState = state;
             } while (state != lmic_EngineUpdateState_idle);
@@ -2913,7 +2917,9 @@ void LMIC_setTxData_strict (void) {
         LMIC.txCnt = 0;             // reset the confirmed uplink FSM
         LMIC.upRepeatCount = 0;     // reset the unconfirmed repeat FSM
     }
+    printf("before engineUpdate\n");
     engineUpdate();
+    printf("after engineUpdate\n");
 }
 
 
@@ -2936,7 +2942,9 @@ lmic_tx_error_t LMIC_setTxData2_strict (u1_t port, xref2u1_t data, u1_t dlen, u1
     LMIC.pendTxConf = confirmed;
     LMIC.pendTxPort = port;
     LMIC.pendTxLen  = dlen;
+    printf("LMIC_setTxData_strict after dlen\n");
     LMIC_setTxData_strict();
+    printf("LMIC_setTxData_strict after dings\n");
     if ( (LMIC.opmode & OP_TXDATA) == 0 ) {
         if (LMIC.txrxFlags & TXRX_LENERR) {
             return LMIC_ERROR_TX_NOT_FEASIBLE;

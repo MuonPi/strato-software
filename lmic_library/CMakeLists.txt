@@ -6,6 +6,7 @@ project(lmic LANGUAGES CXX C)
 # option(BUILD_TOOLS "Build additional tools (like readout program) in addition to the library" ON)
 # option(BUILD_DOCS "Build doxygen files" OFF)
 
+set(PROJECT_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/project_config")
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_SRC_DIR_AES "${CMAKE_CURRENT_SOURCE_DIR}/src/aes")
 set(PROJECT_SRC_DIR_HAL "${CMAKE_CURRENT_SOURCE_DIR}/src/hal")
@@ -22,27 +23,50 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(PROJECT_FILES
-    "${PROJECT_SRC_DIR}/lmic.h"
-    "${PROJECT_SRC_DIR_HAL}/hal.h"
-    "${PROJECT_SRC_DIR_HAL}/hal.cpp"
-    "${PROJECT_SRC_DIR_LMIC}/config.h"
-    "${PROJECT_SRC_DIR_LMIC}/hal.h"
-    "${PROJECT_SRC_DIR_LMIC}/lmic.c"
-    "${PROJECT_SRC_DIR_LMIC}/lmic.h"
-    "${PROJECT_SRC_DIR_LMIC}/lorabase.h"
-    "${PROJECT_SRC_DIR_LMIC}/oslmic.c"
-    "${PROJECT_SRC_DIR_LMIC}/oslmic.h"
-    "${PROJECT_SRC_DIR_LMIC}/radio.c"
+set(LMIC_SOURCE_FILES
     "${PROJECT_SRC_DIR_AES}/lmic.c"
     "${PROJECT_SRC_DIR_AES}/other.c"
     "${PROJECT_SRC_DIR_AES}/ideetron/AES-128_V10.cpp"
-    "${PROJECT_SRC_DIR_RASPI}/raspi.h" 
-    "${PROJECT_SRC_DIR_RASPI}/raspi.cpp" 
+    "${PROJECT_SRC_DIR_HAL}/hal.cpp"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_channelshuffle.c"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_compliance.c"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_eu_like.c"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_eu868.c"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_util.c"
+    "${PROJECT_SRC_DIR_LMIC}/lmic.c"
+    "${PROJECT_SRC_DIR_LMIC}/oslmic.c"
+    "${PROJECT_SRC_DIR_LMIC}/radio.c"
+    "${PROJECT_SRC_DIR_RASPI}/raspi.cpp"
     "${PROJECT_SRC_DIR_RASPI}/spidevice.cpp"
+)
+
+set(LMIC_HEADER_FILES
+    "${PROJECT_CONFIG_DIR}/lmic_project_config.h"
+    "${PROJECT_SRC_DIR_HAL}/hal.h"
+    "${PROJECT_SRC_DIR_LMIC}/config.h"
+    "${PROJECT_SRC_DIR_LMIC}/hal.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_bandplan_eu868.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_bandplan.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_compliance.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_config_preconditions.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_env.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_compat.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_eu_like.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic_util.h"
+    "${PROJECT_SRC_DIR_LMIC}/lmic.h"
+    "${PROJECT_SRC_DIR_LMIC}/lorabase_eu868.h"
+    "${PROJECT_SRC_DIR_LMIC}/lorabase.h"
+    "${PROJECT_SRC_DIR_LMIC}/lorawan_spec_compliance.h"
+    "${PROJECT_SRC_DIR_LMIC}/oslmic_types.h"
+    "${PROJECT_SRC_DIR_LMIC}/oslmic.h"
+    "${PROJECT_SRC_DIR_RASPI}/raspi.h"
     "${PROJECT_SRC_DIR_RASPI}/spidevice.h"
-    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.h" 
-    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.cpp" 
+    "${PROJECT_SRC_DIR}/arduino_lmic_hal_boards.h"
+    "${PROJECT_SRC_DIR}/arduino_lmic_hal_configuration.h"
+    "${PROJECT_SRC_DIR}/arduino_lmic_lorawan_compliance.h"
+    "${PROJECT_SRC_DIR}/arduino_lmic_user_configuration.h"
+    "${PROJECT_SRC_DIR}/arduino_lmic.h"
+    "${PROJECT_SRC_DIR}/lmic.h"
 )
 
 add_compile_options(
@@ -53,29 +77,28 @@ add_compile_options(
     -O3
 )
 
-add_definitions(-Dlmic_objlib_LIBRARY_EXPORT)
-add_library(lmic_objlib OBJECT ${PROJECT_FILES})
+add_library(lmic SHARED ${LMIC_SOURCE_FILES} ${LMIC_HEADER_FILES})
+target_compile_definitions(lmic PUBLIC lmic_LIBRARY_EXPORT)
+set_target_properties(lmic PROPERTIES POSITION_INDEPENDENT_CODE 1)
 
-add_library(lmic SHARED $<TARGET_OBJECTS:lmic_objlib>)
-add_library(lmic_static STATIC $<TARGET_OBJECTS:lmic_objlib>)
 
-target_include_directories(lmic_objlib PUBLIC
-    ${PROJECT_SRC_DIR}
-    ${PROJECT_SRC_DIR_AES}
-    ${PROJECT_SRC_DIR_HAL}
-    ${PROJECT_SRC_DIR_LMIC}
-    ${PROJECT_SRC_DIR_RASPI}
+target_include_directories(lmic PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SRC_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_SRC_DIR_AES}>
+    $<BUILD_INTERFACE:${PROJECT_SRC_DIR_HAL}>
+    $<BUILD_INTERFACE:${PROJECT_SRC_DIR_LMIC}>
+    $<BUILD_INTERFACE:${PROJECT_SRC_DIR_RASPI}>
+    $<BUILD_INTERFACE:${PROJECT_CONFIG_DIR}>
 )
 
-set_property(TARGET lmic_objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+set_target_properties(
+    lmic
+    PROPERTIES
+    SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
+)
 
-# set_target_properties(
-# lmic
-# PROPERTIES
-# SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}"
-# )
 
 target_link_libraries(lmic gpiod) # NKRG
 
-#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
-#set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")

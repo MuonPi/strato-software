@@ -86,7 +86,9 @@ bit_t LMICeulike_canMapChannels(u1_t chpage, u2_t chmap);
 bit_t LMICeulike_mapChannels(u1_t chpage, u2_t chmap);
 #define LMICbandplan_mapChannels(c, m)  LMICeulike_mapChannels(c, m)
 
+#ifndef DISABLE_JOIN
 void LMICeulike_initJoinLoop(u1_t nDefaultChannels, s1_t adrTxPow);
+#endif
 
 void LMICeulike_updateTx(ostime_t txbeg);
 #define LMICbandplan_updateTx(t)        LMICeulike_updateTx(t)

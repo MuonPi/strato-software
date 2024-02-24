@@ -41,6 +41,7 @@ static struct {
 int os_init_ex (const void *pintable) {
     memset(&OS, 0x00, sizeof(OS));
     hal_init_ex(pintable);
+    printf("radio_init = %i\n", radio_init());  //nkrg
     if (! radio_init())
         return 0;
     LMIC_init();
@@ -50,12 +51,12 @@ int os_init_ex (const void *pintable) {
 void os_init() {
     if (os_init_ex((const void *)&lmic_pins))
         return;
+    printf("os_init_not_okay\n");   //nkrg
     ASSERT(0);
 }
 
 ostime_t os_getTime () {
-    // return hal_ticks();  // NKRG
-    return 10;              // NKRG
+    return hal_ticks();
 }
 
 // unlink job from queue, return if removed
@@ -94,6 +95,7 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
     job->next = NULL;
     job->deadline = 0;
     job->func = cb;
+    printf("jetzt bekommt runnablejobs einen wert");
 
     // add to end of run queue
     for(pnext=&OS.runnablejobs; *pnext; pnext=&((*pnext)->next));
@@ -104,6 +106,7 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
 // schedule timed job
 void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
     osjob_t** pnext;
+    printf("start of os_settimedcallback\n\n\n");
 
     // special case time 0 -- it will be one tick late.
     if (time == 0)
@@ -138,16 +141,24 @@ void os_runloop () {
     }
 }
 
+int i = 0;
+
 void os_runloop_once() {
     osjob_t* j = NULL;
     hal_processPendingIRQs();
 
     hal_disableIRQs();
+    i++;
+    //printf("runnable job: %d\n\n", OS.runnablejobs);
     // check for runnable jobs
     if(OS.runnablejobs) {
+        printf("runnable job: %d\n runnablejobs.func: %d\ncount: %i\n", OS.runnablejobs, OS.runnablejobs->func, i);
+        printf("runnable job\n");
         j = OS.runnablejobs;
         OS.runnablejobs = j->next;
+        //ASSERT(0);
     } else if(OS.scheduledjobs && hal_checkTimer(OS.scheduledjobs->deadline)) { // check for expired timed jobs
+        printf("scheduled job\n");
         j = OS.scheduledjobs;
         OS.scheduledjobs = j->next;
     } else { // nothing pending
@@ -155,6 +166,7 @@ void os_runloop_once() {
     }
     hal_enableIRQs();
     if(j) { // run job callback
+        printf("run job callback\n");
         j->func(j);
     }
 }

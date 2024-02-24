@@ -25,21 +25,37 @@ set(STRATO_SOURCE_FILES
 )
 
 set(STRATO_HEADER_FILES
-    "${PROJECT_HEADER_DIR}/strato_lmic.h")
+    "${PROJECT_HEADER_DIR}/strato_lmic.h"
+    # "${CMAKE_CURRENT_SOURCE_DIR}/../lmic_library/project_config/lmic_project_config.h"
+)
 
 add_executable(lorawan ${STRATO_SOURCE_FILES} ${STRATO_HEADER_FILES})
 
-include_directories(lorawan PUBLIC
-    ${PROJECT_HEADER_DIR}
-    ${PROJECT_LMIC_DIR}
+add_executable(read_all_reg "${PROJECT_SRC_DIR}/read_all_reg.cpp")
+
+target_include_directories(lorawan PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_HEADER_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_LMIC_DIR}>
+)
+
+target_include_directories(read_all_reg PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_HEADER_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_LMIC_DIR}>
 )
 
 target_link_directories(lorawan PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/../lib/")
 # find_library(LIBGPIOD libgpiod REQUIRED)
 
+target_link_directories(read_all_reg PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/../lib/")
+
 target_link_libraries(lorawan
     gpiod
-    lmic_static
+    lmic
+)  # NKRG
+
+target_link_libraries(read_all_reg
+    gpiod
+    lmic
 )  # NKRG
 
 #set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -s")
