@@ -39,10 +39,10 @@ set(PROJECT_FILES
     "${PROJECT_SRC_DIR_AES}/ideetron/AES-128_V10.cpp"
     "${PROJECT_SRC_DIR_RASPI}/raspi.h" 
     "${PROJECT_SRC_DIR_RASPI}/raspi.cpp" 
-    # "${PROJECT_SRC_DIR_RASPI}/spidevice.cpp"
-    # "${PROJECT_SRC_DIR_RASPI}/spidevice.h"
-    # "${PROJECT_SRC_DIR_RASPI}/raspi-spi.h" 
-    # "${PROJECT_SRC_DIR_RASPI}/raspi-spi.cpp" 
+    "${PROJECT_SRC_DIR_RASPI}/spidevice.cpp"
+    "${PROJECT_SRC_DIR_RASPI}/spidevice.h"
+    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.h" 
+    "${PROJECT_SRC_DIR_RASPI}/raspi-spi.cpp" 
 )
 
 add_compile_options(

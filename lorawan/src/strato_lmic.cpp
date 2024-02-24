@@ -34,14 +34,14 @@
 //  *                DIO2                 -  Not needed for LoRa.
 //  *******************************************************************************/
 
-#include <iostream>
 #include "strato_lmic.h"
 #include "lmic.h"
+#include <iostream>
 #include "hal/hal.h"
 // #include "hal/raspi-spi.h"   // dont include, dont ask why
-// #include "lmic/oslmic.h"
-// #include "lmic/lmic.h"
-// #include <gpiod.h>
+#include "lmic/oslmic.h"
+#include "lmic/lmic.h"
+#include <gpiod.h>
 
 bool joined = false;
 bool sleeping = false;
@@ -82,20 +82,18 @@ const lmic_pinmap lmic_pins = {
     .spi_freq = 1000000 /* 1 MHz */
 };
 
-// ostime_t os_getTime();  // why does this work
+ostime_t os_getTime();  // why does this work
 
 // ======================================================================================
 
-void printEvent(ev_t ev)
-{
-
+void printEvent(ev_t ev){
 }
 
 // =========================================================================================================================================
 // onEvent
 // =========================================================================================================================================
 
-void onEvent(void *pUserData, ev_t ev)
+void StratoLMIC::onEvent(void *pUserData, ev_t ev)
 {
     switch (ev)
     {
@@ -104,7 +102,7 @@ void onEvent(void *pUserData, ev_t ev)
         break;
 
     case EV_TXSTART:
-        std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
+        // std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
         break;
     case EV_JOIN_TXCOMPLETE:
         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
@@ -190,7 +188,7 @@ void onEvent(void *pUserData, ev_t ev)
 // from here uncomment
 // ======================================================================================
 
-bool setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey)
+bool StratoLMIC::setup(devaddr_t devaddr, unsigned char *appskey, unsigned char *nwkskey)
 {
     // os_init(); // LMIC init
 

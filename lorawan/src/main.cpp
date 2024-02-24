@@ -15,8 +15,8 @@
  * licensed under Creative Commons Attribution-ShareAlike 3.0
  * ******************************************************************************/
 
-#include <iostream>
 #include <stdio.h>
+#include <iostream>
 #include "strato_lmic.h"
 // #include "lmic.h"
 // #include "lmic/oslmic.h"
@@ -54,13 +54,13 @@ static const u4_t DEVADDR = 0x260BC37E;
 
 osjob_t workjob;
 
-void (*resetFunc)(void) = 0;  //declare reset function at address 0
+void(* resetFunc) (void) = 0;  //declare reset function at address 0
 
 int sleepcycles = 1; // 130 X 8 seconds = ~17 mins sleep
 
 // ============================================================================
 
-// StratoLMIC *strato_lmic;
+StratoLMIC *strato_lmic;
 
 unsigned count{0};
 
@@ -90,7 +90,7 @@ int main()
 //     memcpy_P(nwkskey, NWKSKEY, sizeof(NWKSKEY));
 
 //     // Setup LMIC
-    setup(DEVADDR, appskey, nwkskey);
+    strato_lmic->setup(DEVADDR, appskey, nwkskey);
 
 //     // process_work(&workjob);
 
