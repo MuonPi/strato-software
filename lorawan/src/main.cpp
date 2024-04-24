@@ -81,6 +81,7 @@ static const u4_t DEVADDR = 0x260B51D0;
 uint8_t mydata[] = "Hello world!";
 const unsigned TX_INTERVAL = 60;
 uint32_t uplinkSequenceNo = 2;
+osjob_t workjob;
 
 
 
@@ -118,6 +119,7 @@ int main()
 
     init_gpio();
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
+    os_runloop_once();
 
     std::cout << "finished setup function" << std::endl;
 

@@ -95,7 +95,7 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
     job->next = NULL;
     job->deadline = 0;
     job->func = cb;
-    printf("jetzt bekommt runnablejobs einen wert");
+    printf("jetzt bekommt runnablejobs einen wert\n");
 
     // add to end of run queue
     for(pnext=&OS.runnablejobs; *pnext; pnext=&((*pnext)->next));
@@ -106,7 +106,8 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
 // schedule timed job
 void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
     osjob_t** pnext;
-    printf("start of os_settimedcallback\n\n\n");
+    printf("start of os_settimedcallback\n");
+    printf("pnext = %p\n", job);
 
     // special case time 0 -- it will be one tick late.
     if (time == 0)
@@ -116,6 +117,7 @@ void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
 
     // remove if job was already queued
     unlinkjob(getJobQueue(job), job);
+    printf("pnext = %p\n", job);
 
     // fill-in job
     job->next = NULL;
@@ -131,6 +133,7 @@ void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
         }
     }
     *pnext = job;
+    printf("pnext = %p\n", job);
     hal_enableIRQs();
 }
 
@@ -152,10 +155,11 @@ void os_runloop_once() {
     //printf("runnable job: %d\n\n", OS.runnablejobs);
     // check for runnable jobs
     if(OS.runnablejobs) {
-        printf("runnable job: %d\n runnablejobs.func: %d\ncount: %i\n", OS.runnablejobs, OS.runnablejobs->func, i);
+        // printf("runnable job: %d\n runnablejobs.func: %d\ncount: %i\n", OS.runnablejobs, OS.runnablejobs->func, i);
         printf("runnable job\n");
         j = OS.runnablejobs;
         OS.runnablejobs = j->next;
+        printf("runnable job: %d\n", j);
         //ASSERT(0);
     } else if(OS.scheduledjobs && hal_checkTimer(OS.scheduledjobs->deadline)) { // check for expired timed jobs
         printf("scheduled job\n");
@@ -167,6 +171,7 @@ void os_runloop_once() {
     hal_enableIRQs();
     if(j) { // run job callback
         printf("run job callback\n");
+        // printf("j->func = %p\n", j->func);
         j->func(j);
     }
 }

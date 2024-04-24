@@ -61,6 +61,8 @@ void printEvent(ev_t ev)
 
 void onEvent(void *pUserData, ev_t ev)
 {
+    std::cout << "onEvent start" << std::endl;
+    std::cout << std::dec << static_cast<int>(ev) << std::endl;
     switch (ev)
     {
     case EV_RXSTART:
@@ -193,6 +195,8 @@ bool setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned char *appsk
     LMIC_setClockError(clockError);
 
     LMIC_registerEventCb(&onEvent, nullptr);
+
+    std::cout << "setup end" << std::endl;
     return true;
 }
 
@@ -247,10 +251,12 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
 
     job_running = true;
     os_setCallback(&sendjob, do_send);
+    std::cout << "after os_setCallback" << std::endl;
     while (job_running)
     {
         os_runloop_once();
     }
+    std::cout << "after os_runloop_once" << std::endl;
 }
 
 u_int32_t SeqNoFile()
@@ -262,7 +268,7 @@ u_int32_t SeqNoFile()
     std::getline(readfile, line);
     readfile.close();
 
-    SeqNo = std::stoul(line);
+    SeqNo = 0;//std::stoul(line);
     SeqNo++;
     
     std::ofstream writefile;
