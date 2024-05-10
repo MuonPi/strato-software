@@ -7,19 +7,21 @@
 #include <gpiod.h>
 #include "raspi.h"
 #include "spidevice.h"
+#include "gpiodevice.h"
 #include "lmic.h"
 #include "hal.h"
 
-gpiod_chip *chip{nullptr};
-gpiod_line *dio0_line{nullptr};
-gpiod_line *reset_line{nullptr};
 
-void delay(s4_t milliseconds)
+
+bool gpio_init_state = 0;
+
+
+void delay(uint32_t milliseconds)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-void delayMicroseconds(s4_t microseconds)
+void delayMicroseconds(uint32_t microseconds)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(microseconds));
 }
@@ -50,85 +52,31 @@ void noInterrupts()
 
 // ====================================================================================================
 
-bool init_gpio()
+void pinMode(uint8_t pin, uint8_t mode)
 {
-    chip = gpiod_chip_open("/dev/gpiochip0");
-    if (chip == nullptr)
+    std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
+    if(gpio_init_state == 0)
     {
-        throw std::runtime_error("could not open gpiochip0");
+        init_gpio();
+        gpio_init_state = 1;
     }
-
-    int val{};
-
-    dio0_line = gpiod_chip_get_line(chip, lmic_pins.dio[0]);
-    if (dio0_line == nullptr)
-    {
-        throw std::runtime_error("Could not get line 20");
-    }
-    val = gpiod_line_request_input(dio0_line, "LoRa DIO0 pin");
-    if (val != 0)
-    {
-        throw std::runtime_error("could not set pin 20 direction input");
-    }
-
-    reset_line = gpiod_chip_get_line(chip, lmic_pins.rst);
-    if (reset_line == nullptr)
-    {
-        throw std::runtime_error("Could not get line 20");
-    }
-    val = gpiod_line_request_output(reset_line, "LoRa Reset", 0);
-    if (val != 0)
-    {
-        throw std::runtime_error("could not set pin 21 direction output");
-    }
-    usleep(100);
-    val = gpiod_line_set_value(reset_line, 1);
-    if (val != 0)
-    {
-        throw std::runtime_error("could not set pin 21 value");
-    }
-    return true;
-}
-
-void pinMode(u1_t pin, int value)
-{
-    std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(value) << std::endl;
-}
-
-void digitalWrite(uint8_t pin, uint8_t value)
-{
-    if (pin != lmic_pins.rst)
-    {
-        std::cerr << "Tried to write pin " << static_cast<unsigned>(pin) << " to value " << static_cast<unsigned>(value) << " - uninitialized pin, ignored.\n";
-        return;
-    }
-    if (reset_line == nullptr)
-    {
-        throw std::runtime_error("Nullpointer in reset_line");
-    }
-    auto val = gpiod_line_set_value(reset_line, value==1 ? 0 : 1);
-    if (val != 0)
-    {
-        throw std::runtime_error("Error trying to write reset line");
-    }
+    if(mode == INPUT)
+        set_line_input(pin);
+    else if(mode == OUTPUT)
+        set_line_output(pin);
 }
 
 bool digitalRead(uint8_t pin)
 {
-    if (pin != lmic_pins.dio[0])
-    {
-        throw std::runtime_error("Tried to read pin other than dio0");
-    }
-    if (dio0_line == nullptr)
-    {
-        throw std::runtime_error("Nullpointer in dio0_line");
-    }
-    auto val = gpiod_line_get_value(dio0_line);
-    if (val < 0)
-    {
-        throw std::runtime_error("Error trying to read dio0 line");
-    }
-    return val == 1;
+    std::cout << "digital Read" << std::endl;
+    read_line(pin);
+    std::cout << "after read line" << std::endl;
+}
+
+void digitalWrite(uint8_t pin, uint8_t value)
+{
+    std::cout << "digital Write" << std::endl;
+    write_line(pin, value);
 }
 
 // ====================================================================================================

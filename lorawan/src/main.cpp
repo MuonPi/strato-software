@@ -117,7 +117,7 @@ int main()
         appskey[i] = APPSKEY[i];
     }
 
-    init_gpio();
+    // init_gpio();
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
     os_runloop_once();
 
@@ -131,4 +131,5 @@ int main()
     // } while(val == 0);
     // std::cout << "digitalRead of dio0 = " << static_cast<unsigned>(val) << std::endl;
     // std::cout << "EV_TXCOMPLETE" << std::endl;
+    return 0;
 }

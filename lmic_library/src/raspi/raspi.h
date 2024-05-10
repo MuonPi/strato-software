@@ -29,11 +29,11 @@
 uint32_t micros();
 uint32_t millis();
 
-void delay(int32_t milliseconds);
-void delayMicroseconds(int32_t microseconds);
+void delay(uint32_t milliseconds);
+void delayMicroseconds(uint32_t microseconds);
 
 bool init_gpio();
-void pinMode(uint8_t pin, int mode);
+void pinMode(uint8_t pin, uint8_t mode);
 void digitalWrite(uint8_t pin, uint8_t value);
 bool digitalRead(uint8_t pin);
 

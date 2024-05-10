@@ -38,6 +38,7 @@ set(LMIC_SOURCE_FILES
     "${PROJECT_SRC_DIR_LMIC}/radio.c"
     "${PROJECT_SRC_DIR_RASPI}/raspi.cpp"
     "${PROJECT_SRC_DIR_RASPI}/spidevice.cpp"
+    "${PROJECT_SRC_DIR_RASPI}/gpiodevice.cpp"
 )
 
 set(LMIC_HEADER_FILES
@@ -61,6 +62,7 @@ set(LMIC_HEADER_FILES
     "${PROJECT_SRC_DIR_LMIC}/oslmic.h"
     "${PROJECT_SRC_DIR_RASPI}/raspi.h"
     "${PROJECT_SRC_DIR_RASPI}/spidevice.h"
+    "${PROJECT_SRC_DIR_RASPI}/gpiodevice.h"
     "${PROJECT_SRC_DIR}/arduino_lmic_hal_boards.h"
     "${PROJECT_SRC_DIR}/arduino_lmic_hal_configuration.h"
     "${PROJECT_SRC_DIR}/arduino_lmic_lorawan_compliance.h"

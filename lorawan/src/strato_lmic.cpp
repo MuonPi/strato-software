@@ -162,7 +162,6 @@ bool setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned char *appsk
 
     std::cout << "Starting" << std::endl;
     LMIC_reset(); // Reset the MAC state. Session and pending data transfers will be discarded.
-
     // network ID 0x01 = Expiremental
     // network ID 0x13 = The Things Network
     LMIC_setSession(0x13, devaddr, nwkskey, appskey);
@@ -255,6 +254,7 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
     while (job_running)
     {
         os_runloop_once();
+        usleep(1000);
     }
     std::cout << "after os_runloop_once" << std::endl;
 }
