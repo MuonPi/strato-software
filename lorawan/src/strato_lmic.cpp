@@ -38,6 +38,8 @@
 #include <unistd.h>
 #include <fstream>
 #include <string>
+#include <thread>
+#include <chrono>
 #include "strato_lmic.h"
 #include "hal/hal.h"
 #include "lmic.h"
@@ -251,10 +253,10 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
     job_running = true;
     os_setCallback(&sendjob, do_send);
     std::cout << "after os_setCallback" << std::endl;
-    while (job_running)
+    while(job_running)
     {
         os_runloop_once();
-        usleep(1000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     std::cout << "after os_runloop_once" << std::endl;
 }

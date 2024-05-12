@@ -68,9 +68,8 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 bool digitalRead(uint8_t pin)
 {
-    std::cout << "digital Read" << std::endl;
-    read_line(pin);
-    std::cout << "after read line" << std::endl;
+    return read_line(pin);
+    // std::cout << "after read line" << std::endl;
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)

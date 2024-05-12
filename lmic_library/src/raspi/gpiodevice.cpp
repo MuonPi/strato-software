@@ -61,6 +61,7 @@ bool set_line_output(int pin)
 
 bool read_line(int pin)
 {
+    std::cout << "digital Read line " << std::dec << static_cast<int>(pin) << std::endl;
     line = gpiod_chip_get_line(chip, pin);
     if (line == nullptr)
     {
@@ -71,7 +72,8 @@ bool read_line(int pin)
     {
         throw std::runtime_error("Error trying to read line");
     }
-    return 0;
+    std::cout << "Read Value: " << static_cast<bool>(val) << std::endl;
+    return static_cast<bool>(val);
 }
 
 
@@ -83,7 +85,7 @@ bool write_line(int pin, int level)
     {
         throw std::runtime_error("Nullpointer in writing line");
     }
-    int val = gpiod_line_set_value(line, level == 1 ? 0 : 1);
+    int val = gpiod_line_set_value(line, level); // level == 1 ? 0 : 1);
     if (val != 0)
     {
         throw std::runtime_error("Error trying to write line");

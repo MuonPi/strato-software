@@ -174,6 +174,7 @@ void os_runloop_once() {
         // printf("j->func = %p\n", j->func);
         j->func(j);
     }
+    printf("os_runloop_once\n");
 }
 
 // return true if there are any jobs scheduled within time ticks from now.
