@@ -218,7 +218,8 @@ void do_send(osjob_t *j)
         {
             std::cout << static_cast<char>(data[i]);
         }
-        std::cout << "\n";
+        std::cout << std::endl;
+        std::cout << "seqnoup: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
         LMIC_setTxData2(1, data, data_size, 0);
         std::cout << "Packet queued" << std::endl;
     }

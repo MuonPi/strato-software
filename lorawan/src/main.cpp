@@ -48,7 +48,9 @@ void os_getDevEui (u1_t* buf) { }
 void os_getDevKey (u1_t* buf) { }
 
 
-#define DISABLE_BEACON 1
+#define DISABLE_BEACONS 1
+#define DISABLE_JOIN 1
+#define DISABLE_PING 1
 
 // #define DEVICEID "eui-70b3d57ed0052abe"     // Arduino-Test-0
 // #define ABP_DEVICEID "eui-70b3d57ed0052abe"
@@ -80,7 +82,7 @@ static const u4_t DEVADDR = 0x260B51D0;
 
 uint8_t mydata[] = "Hello world!";
 const unsigned TX_INTERVAL = 60;
-uint32_t uplinkSequenceNo = 2;
+uint32_t uplinkSequenceNo = 16;
 osjob_t workjob;
 
 
@@ -109,7 +111,7 @@ int main()
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
-    uplinkSequenceNo = SeqNoFile();
+    // uplinkSequenceNo = SeqNoFile();
 
     for (int i = 0; i < 16; i++)
     {
