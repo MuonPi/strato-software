@@ -285,43 +285,41 @@ uint32_t SeqNoFile()
     return seqno;
 }
 
-uint8_t* PayloadFile()
+ uint8_t PayloadFile(uint8_t* payload)
 {
-    uint8_t* payload;
-    std::string line, lastline;
+    uint8_t payloadlen;
+    std::string line;
     char* path;
     char abspath[256];
-    char relpath[] = "/../raw/payl_lora.csv";
+    char relpath[] = "/../raw/lora_payload.txt";
 
     getcwd(abspath, 256);
     path = strcat(abspath, relpath);
 
     std::ifstream readfile(path);
-
-    while(std::getline(readfile, line))
-    {
-        lastline = line;
-    }
-    
+    std::getline(readfile, line);
     readfile.close();
 
-    std::vector<std::string> values;
-    std::istringstream iss(lastline);
-    std::string value;
-    while (std::getline(iss, value, ','))
+    // std::cout << line << std::endl;
+
+    std::vector<uint8_t> numbers;
+    std::istringstream iss(line);
+    std::string number;
+    while (std::getline(iss, number, ';'))
     {
-        value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
-        values.push_back(value);
+        numbers.push_back(static_cast<uint8_t>(std::stoi(number)));
     }
 
-    for (const auto& val : values)
+    for(const auto& num : numbers)
     {
-        std::cout << val << std::endl;
+        std::cout << static_cast<int>(num) << " ";
     }
+    std::cout << std::endl;
 
-    // payload = std::stoul(lastline);
+    payload = new uint8_t[numbers.size()];
+    std::copy(numbers.begin(), numbers.end(), payload);
+    
+    return static_cast<uint8_t>(numbers.size());
 
-    std::cout << payload << std::endl;
-
-    return payload;
+    // return numbers;
 }

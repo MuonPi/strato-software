@@ -650,7 +650,7 @@ class LoRa:
 
 	def save_payload(dat):
 		try:
-			write_file("payl_lora.csv", "raw", dat)#, 18)
+			write_file(filename("payl_raw", "csv", 5), "raw", dat)
 		except:
 			print('LoRa_save_payload_fail')
 
@@ -681,6 +681,30 @@ class LoRa:
 			fil.write(str(usn))
 			fil.close()
 			return usn
+	
+	def save_lora_payload(pld):
+		try:
+			fil = open(os.path.dirname(__file__) + "/../raw/lora_payload.txt", 'w')
+			for i in range(len(pld)):
+				fil.write(str(pld[i]))
+				fil.write(';')
+			fil.close()
+			return 0
+		except:
+			print('LoRa_save_lora_payload_fail')
+			try:
+				fil.close()
+				print('LoRa_lora_payload_closed')
+			except:
+				None
+			try:
+				os.remove(os.path.dirname(__file__) + "/../raw/lora_payload.txt")
+			except:
+				None
+			fil = open(os.path.dirname(__file__) + "/../raw/lora_payload.txt", 'w')
+			fil.write(str(pld))
+			fil.close()
+			return 0
 
 
 

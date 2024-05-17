@@ -136,6 +136,7 @@ while True:
 	
 	pld = fct.LoRa.average_payload()
 	fct.LoRa.save_payload(pld)
+	fct.LoRa.save_lora_payload(pld)
 
 	print("created msg: ")
 	print(" ".join("%02x" % b for b in pld))

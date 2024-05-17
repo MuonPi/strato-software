@@ -26,7 +26,7 @@ bool setup(devaddr_t devaddr, const lmic_pinmap& lmic_pins, unsigned char *appsk
 void do_send(osjob_t* j);
 void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
 uint32_t SeqNoFile();
-uint8_t* PayloadFile();
+uint8_t PayloadFile(uint8_t* payload);
 
 static uint8_t *data;
 static uint8_t data_size;

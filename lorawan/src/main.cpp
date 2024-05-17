@@ -82,7 +82,8 @@ static const u1_t APPSKEY[16] = {0x3F, 0x39, 0xB5, 0xFF, 0x34, 0x23, 0x44, 0xC4,
 static const u4_t DEVADDR = 0x260B51D0;
 
 
-uint8_t* payload;
+uint8_t payload[256];
+uint8_t len;
 const unsigned TX_INTERVAL = 60;
 uint32_t uplinkSequenceNo;
 osjob_t workjob;
@@ -114,7 +115,18 @@ int main()
     uint8_t appskey[sizeof(APPSKEY)];
 
     uplinkSequenceNo = SeqNoFile();
-    payload = PayloadFile();
+    len = PayloadFile(payload);
+    
+    std::cout << static_cast<int>(payload[0]) << std::endl;
+
+    // uint8_t len = sizeof(payload) / sizeof(payload[0]);
+    
+    std::cout << static_cast<int>(len) << std::endl;
+    for (size_t i = 0; i < len; i++)
+    {
+        std::cout << static_cast<int>(payload[i]) << " ";
+    }
+    std::cout << std::endl;
 
     for (int i = 0; i < 16; i++)
     {
@@ -128,7 +140,6 @@ int main()
 
     std::cout << "finished setup function" << std::endl;
 
-    uint8_t len = sizeof(payload);
     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
     for(size_t i; i < 5; i++)
