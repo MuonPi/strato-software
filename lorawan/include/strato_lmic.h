@@ -25,7 +25,8 @@ void onEvent(void *pUserData, ev_t ev);
 bool setup(devaddr_t devaddr, const lmic_pinmap& lmic_pins, unsigned char *appskey, unsigned char *nwkskey);
 void do_send(osjob_t* j);
 void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
-u_int32_t SeqNoFile();
+uint32_t SeqNoFile();
+uint8_t* PayloadFile();
 
 static uint8_t *data;
 static uint8_t data_size;

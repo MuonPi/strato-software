@@ -36,6 +36,8 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <chrono>
 #include <strato_lmic.h>
 #include <lmic.h>
 #include <hal/hal.h>
@@ -80,9 +82,9 @@ static const u1_t APPSKEY[16] = {0x3F, 0x39, 0xB5, 0xFF, 0x34, 0x23, 0x44, 0xC4,
 static const u4_t DEVADDR = 0x260B51D0;
 
 
-uint8_t mydata[] = "Hello world!";
+uint8_t* payload;
 const unsigned TX_INTERVAL = 60;
-uint32_t uplinkSequenceNo = 16;
+uint32_t uplinkSequenceNo;
 osjob_t workjob;
 
 
@@ -111,7 +113,8 @@ int main()
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
-    // uplinkSequenceNo = SeqNoFile();
+    uplinkSequenceNo = SeqNoFile();
+    payload = PayloadFile();
 
     for (int i = 0; i < 16; i++)
     {
@@ -125,13 +128,16 @@ int main()
 
     std::cout << "finished setup function" << std::endl;
 
-    uint8_t len = sizeof(mydata);
-    sendLoraPayload(1u, uplinkSequenceNo, mydata, len);
-    uint8_t val{};
-    // do{
-    //     val = digitalRead(lmic_pins.dio[0]);
-    // } while(val == 0);
-    // std::cout << "digitalRead of dio0 = " << static_cast<unsigned>(val) << std::endl;
-    // std::cout << "EV_TXCOMPLETE" << std::endl;
+    uint8_t len = sizeof(payload);
+    sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+
+    for(size_t i; i < 5; i++)
+    {
+        os_runloop_once();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    
+    std::cout << "EV_TXCOMPLETE" << std::endl;
+    
     return 0;
 }

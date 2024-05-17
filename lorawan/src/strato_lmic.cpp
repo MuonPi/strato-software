@@ -40,6 +40,13 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <libgen.h>
+#include <algorithm>
+#include <cctype>
 #include "strato_lmic.h"
 #include "hal/hal.h"
 #include "lmic.h"
@@ -254,32 +261,67 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
     job_running = true;
     os_setCallback(&sendjob, do_send);
     std::cout << "after os_setCallback" << std::endl;
-    while(job_running)
-    {
-        os_runloop_once();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
-    std::cout << "after os_runloop_once" << std::endl;
 }
 
-u_int32_t SeqNoFile()
+uint32_t SeqNoFile()
 {
-    u_int32_t SeqNo;
+    uint32_t seqno;
     std::string line;
+    char* path;
+    char abspath[256];
+    char relpath[] = "/../raw/uplinkSequenceNo.txt";
 
-    std::ifstream readfile("test.txt");
+    getcwd(abspath, 256);
+    path = strcat(abspath, relpath);
+
+    std::ifstream readfile(path);
     std::getline(readfile, line);
     readfile.close();
 
-    SeqNo = 0;//std::stoul(line);
-    SeqNo++;
+    seqno = std::stoul(line);
+
+    std::cout << seqno << std::endl;
+
+    return seqno;
+}
+
+uint8_t* PayloadFile()
+{
+    uint8_t* payload;
+    std::string line, lastline;
+    char* path;
+    char abspath[256];
+    char relpath[] = "/../raw/payl_lora.csv";
+
+    getcwd(abspath, 256);
+    path = strcat(abspath, relpath);
+
+    std::ifstream readfile(path);
+
+    while(std::getline(readfile, line))
+    {
+        lastline = line;
+    }
     
-    std::ofstream writefile;
-    writefile.open("test.txt", std::ofstream::trunc);
-    line = std::to_string(SeqNo);    
-    writefile << line;
-    writefile.close();
+    readfile.close();
 
-    return SeqNo;
+    std::vector<std::string> values;
+    std::istringstream iss(lastline);
+    std::string value;
+    while (std::getline(iss, value, ','))
+    {
+        value.erase(std::remove_if(value.begin(), value.end(), ::isspace), value.end());
+        values.push_back(value);
+    }
 
+    for (const auto& val : values)
+    {
+        std::cout << val << std::endl;
+    }
+
+    // payload = std::stoul(lastline);
+
+    std::cout << payload << std::endl;
+
+    return payload;
 }
