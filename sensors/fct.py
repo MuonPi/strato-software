@@ -228,7 +228,7 @@ class QMC5883L:
 class VEML6075:
 	def init():
 		try:
-			write_byte(0x10, 0x00, 0b01001000)  # integrationtime=800ms; high dynamic; no trigger; no force-mode; continues-mode
+			write_byte(0x10, 0x00, 0b00011000)  # integrationtime=100ms; high dynamic; no trigger; no force-mode; continues-mode
 			print('VEML6075_init_done')
 		except:
 			print('VEML6075_init_fail')
