@@ -267,12 +267,15 @@ uint32_t SeqNoFile()
 {
     uint32_t seqno;
     std::string line;
-    char* path;
+    std::string path;
     char abspath[256];
-    char relpath[] = "/../raw/uplinkSequenceNo.txt";
 
-    getcwd(abspath, 256);
-    path = strcat(abspath, relpath);
+    readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
+    path = std::string(abspath);
+    path = path.substr(0, path.find_last_of('/'));
+    path = path + "/../../raw/uplinkSequenceNo.txt";
+
+    std::cout << path << std::endl;
 
     std::ifstream readfile(path);
     std::getline(readfile, line);
@@ -280,21 +283,24 @@ uint32_t SeqNoFile()
 
     seqno = std::stoul(line);
 
-    std::cout << seqno << std::endl;
+    // std::cout << seqno << std::endl;
 
     return seqno;
 }
 
  uint8_t PayloadFile(uint8_t* payload)
 {
-    uint8_t payloadlen;
+    uint8_t payloadlen = 0;
     std::string line;
-    char* path;
+    std::string path;
     char abspath[256];
-    char relpath[] = "/../raw/lora_payload.txt";
 
-    getcwd(abspath, 256);
-    path = strcat(abspath, relpath);
+    readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
+    path = std::string(abspath);
+    path = path.substr(0, path.find_last_of('/'));
+    path = path + "/../../raw/lora_payload.txt";
+
+    std::cout << path << std::endl;
 
     std::ifstream readfile(path);
     std::getline(readfile, line);
@@ -302,24 +308,16 @@ uint32_t SeqNoFile()
 
     // std::cout << line << std::endl;
 
-    std::vector<uint8_t> numbers;
     std::istringstream iss(line);
-    std::string number;
-    while (std::getline(iss, number, ';'))
+    // std::vector<uint8_t> payloadstr;
+    std::string element;
+    while(std::getline(iss, element, ';'))
     {
-        numbers.push_back(static_cast<uint8_t>(std::stoi(number)));
+        payload[payloadlen] = static_cast<uint8_t>(std::stoi(element));
+        payloadlen++;
     }
 
-    for(const auto& num : numbers)
-    {
-        std::cout << static_cast<int>(num) << " ";
-    }
-    std::cout << std::endl;
+    // std::cout << payload[0] << std::endl;
 
-    payload = new uint8_t[numbers.size()];
-    std::copy(numbers.begin(), numbers.end(), payload);
-    
-    return static_cast<uint8_t>(numbers.size());
-
-    // return numbers;
+    return payloadlen;
 }

@@ -82,10 +82,10 @@ static const u1_t APPSKEY[16] = {0x3F, 0x39, 0xB5, 0xFF, 0x34, 0x23, 0x44, 0xC4,
 static const u4_t DEVADDR = 0x260B51D0;
 
 
+uint32_t uplinkSequenceNo;
 uint8_t payload[256];
 uint8_t len;
 const unsigned TX_INTERVAL = 60;
-uint32_t uplinkSequenceNo;
 osjob_t workjob;
 
 
@@ -114,13 +114,21 @@ int main()
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
-    uplinkSequenceNo = SeqNoFile();
-    len = PayloadFile(payload);
-    
-    std::cout << static_cast<int>(payload[0]) << std::endl;
+    for (int i = 0; i < 16; i++)
+    {
+        nwkskey[i] = NWKSKEY[i];
+        appskey[i] = APPSKEY[i];
+    }
 
-    // uint8_t len = sizeof(payload) / sizeof(payload[0]);
-    
+    setup(DEVADDR, lmic_pins, appskey, nwkskey);
+    os_runloop_once();
+
+    std::cout << "finished setup function" << std::endl;
+
+    uplinkSequenceNo = SeqNoFile();
+    std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+
+    len = PayloadFile(payload);
     std::cout << static_cast<int>(len) << std::endl;
     for (size_t i = 0; i < len; i++)
     {
@@ -128,27 +136,17 @@ int main()
     }
     std::cout << std::endl;
 
-    for (int i = 0; i < 16; i++)
-    {
-        nwkskey[i] = NWKSKEY[i];
-        appskey[i] = APPSKEY[i];
-    }
-
-    // init_gpio();
-    setup(DEVADDR, lmic_pins, appskey, nwkskey);
-    os_runloop_once();
-
-    std::cout << "finished setup function" << std::endl;
-
     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
-    for(size_t i; i < 5; i++)
+    for(size_t i; i < 3; i++)
     {
         os_runloop_once();
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     
-    std::cout << "EV_TXCOMPLETE" << std::endl;
+    std::cout << "EV_TXCOMPLETE manually" << std::endl;
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(60000));
     
     return 0;
 }
