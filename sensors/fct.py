@@ -637,11 +637,15 @@ class LoRa:
 			# ---------- 8. Temperature Out ----------
 		try:
 			temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5))) # in K
+			avr.append(0x08) # channel 8
+			avr.append(0x71) # analog input
 			avr.append((temo % (2**24)) // (2**16))
 			avr.append((temo % (2**16)) // (2**8))
 			avr.append(temo % (2**8))
 		except:
 			print("append temperature fail")
+			avr.append(0x08) # channel 8
+			avr.append(0x71) # analog input
 			avr.append(0x00)
 			avr.append(0x00)
 			avr.append(0x00)

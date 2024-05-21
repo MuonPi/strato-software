@@ -125,17 +125,17 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 	}
 
 	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
-    std::cout << "write:\ntxbuf: ";
-	for (std::size_t i = 0; i < n ; i++)
-	{
-		std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	}
-	std::cout << "\nrxbuf: ";
-	for (std::size_t i = 0; i < n ; i++)
-	{
-		std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	}
-	std::cout << "\n";
+    // std::cout << "write:\ntxbuf: ";
+	// for (std::size_t i = 0; i < n ; i++)
+	// {
+	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
+	// }
+	// std::cout << "\nrxbuf: ";
+	// for (std::size_t i = 0; i < n ; i++)
+	// {
+	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
+	// }
+	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {
 		std::cerr << "transfer size mismatch: spi_xfer returned " << status << " bytes transfered but should write" << n << " bytes." << std::endl;
@@ -156,17 +156,17 @@ auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std:
 	txBuf[0] = command;
 
 	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
-    std::cout << "read:\ntxbuf: ";
-	for (std::size_t i = 0; i < n ; i++)
-	{
-		std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	}
-	std::cout << "\nrxbuf: ";
-	for (std::size_t i = 0; i < n ; i++)
-	{
-		std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	}
-	std::cout << "\n";
+    // std::cout << "read:\ntxbuf: ";
+	// for (std::size_t i = 0; i < n ; i++)
+	// {
+	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
+	// }
+	// std::cout << "\nrxbuf: ";
+	// for (std::size_t i = 0; i < n ; i++)
+	// {
+	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
+	// }
+	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {
 		std::cerr << "transfer size mismatch: spi_xfer returned " << status <<" bytes but should read" << n <<" bytes." << std::endl;

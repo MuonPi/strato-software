@@ -138,8 +138,8 @@ while True:
 	fct.LoRa.save_payload(pld)
 	fct.LoRa.save_lora_payload(pld)
 
-	print("created msg: ")
-	print(" ".join("%02x" % b for b in pld))
+	# print("created msg: ")
+	# print(" ".join("%02x" % b for b in pld))
 
 	# fct.LoRa.send_message(msg)
 
