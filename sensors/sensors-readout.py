@@ -132,11 +132,14 @@ while True:
 	
 	#fct.LoRa.save_payload(fct.LoRa.create_payload(payload))
 	
-	usn = fct.LoRa.uplinkSequenceNo()
-	
-	pld = fct.LoRa.average_payload()
-	fct.LoRa.save_payload(pld)
-	fct.LoRa.save_lora_payload(pld)
+	NUMBER += 1
+	if(NUMBER >= 60):
+		fct.LoRa.uplinkSequenceNo()
+		pld = fct.LoRa.average_payload()
+		fct.LoRa.save_payload(pld)
+		fct.LoRa.save_lora_payload(pld)
+		sys.stdout.flush()
+		NUMBER = 0
 
 	# print("created msg: ")
 	# print(" ".join("%02x" % b for b in pld))
@@ -161,11 +164,6 @@ while True:
 	
 	
 	#----------------- END ------------------------
-	
-	NUMBER += 1
-	if(NUMBER >= 60):
-		sys.stdout.flush()
-		NUMBER = 0
 
 	fct.sleep_until(1)
 	
