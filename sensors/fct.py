@@ -622,14 +622,14 @@ class LoRa:
 		try:
 			pres = int(average(read_file(filename('pres_raw', 'csv', 5), 'raw', 2, 5))) # in Pa
 			avr.append(0x07) # channel 7
-			avr.append(0x71) # analog input
+			avr.append(0x71) # accelerometer
 			avr.append((pres % (2**24)) // (2**16))
 			avr.append((pres % (2**16)) // (2**8))
 			avr.append((pres % (2**8)))
 		except:
 			print("append pressure fail")
 			avr.append(0x07) # channel 7
-			avr.append(0x71) # analog input
+			avr.append(0x71) # accelerometer
 			avr.append(0x00)
 			avr.append(0x00)
 			avr.append(0x00)
@@ -637,15 +637,15 @@ class LoRa:
 			# ---------- 8. Temperature Out ----------
 		try:
 			temo = int(average(read_file(filename('temp_raw', 'csv', 5), 'raw', 2, 5))) # in K
-			avr.append(0x08) # channel 8
-			avr.append(0x71) # analog input
+			# avr.append(0x08) # channel 8
+			# avr.append(0x71) # accelerometer
 			avr.append((temo % (2**24)) // (2**16))
 			avr.append((temo % (2**16)) // (2**8))
 			avr.append(temo % (2**8))
 		except:
 			print("append temperature fail")
-			avr.append(0x08) # channel 8
-			avr.append(0x71) # analog input
+			# avr.append(0x08) # channel 8
+			# avr.append(0x71) # accelerometer
 			avr.append(0x00)
 			avr.append(0x00)
 			avr.append(0x00)
