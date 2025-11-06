@@ -43,6 +43,9 @@
 #include <hal/hal.h>
 #include <raspi/raspi.h>
 
+#include "spidevice.h"
+#include <iomanip>
+
 
 
 void os_getArtEui (u1_t* buf) { }
@@ -102,7 +105,7 @@ const lmic_pinmap lmic_pins =
     .nss = RF_CS_PIN,
     .rxtx = LMIC_UNUSED_PIN,
     .rst = RF_RST_PIN,
-    .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
+    .dio = {RF_IRQ_PIN, LMIC_UNUSED_PIN, LMIC_UNUSED_PIN},
     .rxtx_rx_active = 0,
     .rssi_cal = 10,
     .spi_freq = 1000000 /* 1 MHz */
@@ -111,6 +114,19 @@ const lmic_pinmap lmic_pins =
 
 int main()
 {
+
+
+    SPI::spiDevice spi_device{};
+    spi_device.init();
+    for (std::size_t i{0}; i < 0x64; i++)
+    {
+        auto ch = spi_device.read(i, 1)[0];
+        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    }
+
+
+
+
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
@@ -136,7 +152,16 @@ int main()
     }
     std::cout << std::endl;
 
+
+    for (std::size_t i{0}; i < 0x64; i++)
+    {
+        auto ch = spi_device.read(i, 1)[0];
+        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    }
+
     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     for(size_t i; i < 3; i++)
     {
@@ -145,6 +170,15 @@ int main()
     }
     
     std::cout << "EV_TXCOMPLETE manually" << std::endl;
+
+
+    // SPI::spiDevice spi_device{};
+    // spi_device.init();
+    for (std::size_t i{0}; i < 0x64; i++)
+    {
+        auto ch = spi_device.read(i, 1)[0];
+        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    }
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(60000));
     

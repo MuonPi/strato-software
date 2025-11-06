@@ -821,7 +821,8 @@ static void txlora () {
     // clear all radio IRQ flags
     writeReg(LORARegIrqFlags, 0xFF);
     // mask all IRQs but TxDone
-    writeReg(LORARegIrqFlagsMask, ~IRQ_LORA_TXDONE_MASK);
+    writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG
+    writeReg(LORARegIrqFlagsMask, 0x00);    // NKRG vorher: writeReg(LORARegIrqFlagsMask, ~IRQ_LORA_TXDONE_MASK);
 
     // initialize the payload size and address pointers
     writeReg(LORARegFifoTxBaseAddr, 0x00);
@@ -969,11 +970,13 @@ static void rxlora (u1_t rxmode) {
     writeReg(LORARegSyncWord, LORA_MAC_PREAMBLE);
 
     // configure DIO mapping DIO0=RxDone DIO1=RxTout DIO2=NOP
-    writeReg(RegDioMapping1, MAP_DIO0_LORA_RXDONE|MAP_DIO1_LORA_RXTOUT|MAP_DIO2_LORA_NOP);
+    writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG vorher: writeReg(RegDioMapping1, MAP_DIO0_LORA_RXDONE|MAP_DIO1_LORA_RXTOUT|MAP_DIO2_LORA_NOP);
+    printf("DIOMapping\n");   //NKRG
+    // writeReg(0x11, 0x00); // Unmask all IRQs (enable them for DIO output)   //NKRG
     // clear all radio IRQ flags
     writeReg(LORARegIrqFlags, 0xFF);
     // enable required radio IRQs
-    writeReg(LORARegIrqFlagsMask, ~TABLE_GET_U1(rxlorairqmask, rxmode));
+    writeReg(LORARegIrqFlagsMask, 0x00);    //NKRG vorher: writeReg(LORARegIrqFlagsMask, ~TABLE_GET_U1(rxlorairqmask, rxmode));
 
     // enable antenna switch for RX
     hal_pin_rxtx(0);
@@ -1345,7 +1348,8 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
 #endif
         }
         // mask all radio IRQs
-        writeReg(LORARegIrqFlagsMask, 0xFF);
+        writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG
+        writeReg(LORARegIrqFlagsMask, 0x00);    // NKRG vorher: writeReg(LORARegIrqFlagsMask, 0xFF);
         // clear radio IRQ flags
         writeReg(LORARegIrqFlags, 0xFF);
     } else { // FSK modem
