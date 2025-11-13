@@ -1,0 +1,9 @@
+[Unit]
+Description="Run the LoRaWAN uplink software at specific times"
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+
+[Install]
+WantedBy=multi-user.target

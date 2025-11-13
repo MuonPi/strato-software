@@ -1,0 +1,11 @@
+[Unit]
+Description=LoRaWAN uplink service for stratospheric balloon experiment
+
+[Service]
+User=@SERVICE_USER@
+Type=oneshot
+ExecStart=/bin/bash @BIN_INSTALL_DIR@/lorawan
+
+[Install]
+WantedBy=multi-user.target
+
