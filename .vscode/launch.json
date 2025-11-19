@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Remote Debug via gdbserver",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/lorawan",
+            "miDebuggerServerAddress": "192.168.43.197:1234",
+            "miDebuggerPath": "/usr/bin/gdb-multiarch",
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "sourceFileMap": {
+                "/home/user/strato-software/lorawan": "/run/user/1000/gvfs/sftp:host=192.168.43.197,user=user/home/user/strato-software/lorawan"
+            }
+        }
+    ]
+}
