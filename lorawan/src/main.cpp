@@ -38,10 +38,10 @@
 #include <string>
 #include <thread>
 #include <chrono>
-#include <strato_lmic.h>
-#include <lmic.h>
-#include <hal/hal.h>
-#include <raspi/raspi.h>
+#include "strato_lmic.h"
+#include "lmic.h"
+#include "hal/hal.h"
+#include "raspi/raspi.h"
 
 #include "spidevice.h"
 #include <iomanip>
@@ -116,13 +116,13 @@ int main()
 {
 
 
-    SPI::spiDevice spi_device{};
-    spi_device.init();
-    for (std::size_t i{0}; i < 0x64; i++)
-    {
-        auto ch = spi_device.read(i, 1)[0];
-        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
-    }
+    // SPI::spiDevice spi_device{};
+    // spi_device.init();
+    // for (std::size_t i{0}; i < 0x64; i++)
+    // {
+    //     auto ch = spi_device.read(i, 1)[0];
+    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    // }
 
 
 
@@ -137,7 +137,7 @@ int main()
     }
 
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
-    os_runloop_once();
+    // os_runloop_once();
 
     std::cout << "finished setup function" << std::endl;
 
@@ -153,32 +153,32 @@ int main()
     std::cout << std::endl;
 
 
-    for (std::size_t i{0}; i < 0x64; i++)
-    {
-        auto ch = spi_device.read(i, 1)[0];
-        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
-    }
+    // for (std::size_t i{0}; i < 0x64; i++)
+    // {
+    //     auto ch = spi_device.read(i, 1)[0];
+    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    // }
 
     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-    for(size_t i; i < 3; i++)
-    {
-        os_runloop_once();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    }
+    // for(size_t i = 0; i < 3; i++)
+    // {
+    //     os_runloop_once();
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    // }
+
+    os_runloop_once();
     
     std::cout << "EV_TXCOMPLETE manually" << std::endl;
 
 
-    // SPI::spiDevice spi_device{};
-    // spi_device.init();
-    for (std::size_t i{0}; i < 0x64; i++)
-    {
-        auto ch = spi_device.read(i, 1)[0];
-        std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
-    }
+    // for (std::size_t i{0}; i < 0x64; i++)
+    // {
+    //     auto ch = spi_device.read(i, 1)[0];
+    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    // }
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(60000));
     

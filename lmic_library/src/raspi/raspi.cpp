@@ -5,6 +5,8 @@
 #include <iostream>
 #include <unistd.h>
 #include <gpiod.h>
+#include <stdint.h>
+#include <time.h>
 #include "raspi.h"
 #include "spidevice.h"
 #include "gpiodevice.h"
@@ -28,16 +30,22 @@ void delayMicroseconds(uint32_t microseconds)
 
 uint32_t micros()
 {
-    // auto global_start_time = std::chrono::high_resolution_clock::now();
-    // auto elapsed = std::chrono::high_resolution_clock::now() - global_start_time;
-    // return std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    // not completed
-    return 0;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    uint64_t us = (uint64_t)ts.tv_sec * 1000000ULL + (uint64_t)ts.tv_nsec / 1000ULL;
+
+    return (uint32_t)(us & 0xFFFFFFFFULL);
 }
 
 uint32_t millis()
 {
-    return 0;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    uint64_t ms = (uint64_t)ts.tv_sec * 1000ULL + ts.tv_nsec / 1000000ULL;
+
+    return (uint32_t)ms;
 }
 
 void interrupts()

@@ -1,22 +1,23 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Raspberry Pi",
             "includePath": [
                 "${workspaceFolder}/**",
-                "~/../../usr/include",
-                "${workspaceFolder}/include/lmic_library/src",
-                "${workspaceFolder}/include/lmic_library/src/hal",
-                "${workspaceFolder}/include/lmic_library/src/lmic",
-                "${workspaceFolder}/include/lmic_library/src/hal",
-                "${workspaceFolder}/include/lmic_library/src/hal"
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceFolder}/lmic_library/src",
+                "${workspaceFolder}/lmic_library/src/hal",
+                "${workspaceFolder}/lmic_library/src/lmic",
+                "${workspaceFolder}/lmic_library/src/raspi",
+                "${workspaceFolder}/lorawan",
+                "${workspaceFolder}/lorawan/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

@@ -124,7 +124,7 @@ void hal_pollPendingIRQs_helper()
         if (plmic_pins->dio[i] == LMIC_UNUSED_PIN)
             continue;
 
-        if (dio_states[i] != digitalRead(plmic_pins->dio[i]))
+        if (dio_states[i] != digitalRead(plmic_pins->dio[i]))   // hier wird der interrupt ausgelesen
         {
             dio_states[i] = !dio_states[i];
             if (dio_states[i] && interrupt_time[i] == 0)
@@ -183,6 +183,7 @@ static void hal_interrupt_init()
 
 void hal_processPendingIRQs()
 {
+    // std::cout << "IRQ DIO0=%d\n", digitalRead(plmic_pins->dio[0]));
     uint8_t i;
     for (i = 0; i < NUM_DIO_INTERRUPT; ++i)
     {
@@ -200,9 +201,13 @@ void hal_processPendingIRQs()
         // edge that we'll otherwise miss. Not a problem in this
         // use case, as the radio won't release IRQs until we
         // explicitly clear them.
+        interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
         iTime = interrupt_time[i];
+        std::cout << "INTERRUPT FAKE" << std::endl;
+        // printf("iTime %d\n", iTime);
         if (iTime)
         {
+            std::cout << "iTime hat einen Wert" << std::endl;
             interrupt_time[i] = 0;
             radio_irq_handler_v2(i, iTime);
         }

@@ -1279,6 +1279,8 @@ void radio_irq_handler (u1_t dio) {
 }
 
 void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
+    printf("radio_irq_handler_v2\n");
+    // LMIC.txend = now; //NKRG
     LMIC_API_PARAMETER(dio);
 
 #if CFG_TxContinuousMode
@@ -1300,14 +1302,17 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
     ostime_t const entry = now;
 #endif
     if( (readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
+        printf("erstes if\n");
         u1_t flags = readReg(LORARegIrqFlags);
         LMIC.saveIrqFlags = flags;
         LMICOS_logEventUint32("radio_irq_handler_v2: LoRa", flags);
         LMIC_X_DEBUG_PRINTF("IRQ=%02x\n", flags);
         if( flags & IRQ_LORA_TXDONE_MASK ) {
+            printf("zweites if\n");
             // save exact tx time
             LMIC.txend = now - us2osticks(43); // TXDONE FIXUP
         } else if( flags & IRQ_LORA_RXDONE_MASK ) {
+            printf("zweites else if 1\n");
             // save exact rx time
             if(getBw(LMIC.rps) == BW125) {
                 now -= TABLE_GET_U2(LORA_RXDONE_FIXUP, getSf(LMIC.rps));
@@ -1339,6 +1344,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
             // ugh compatibility requires a biased range. RSSI
             LMIC.rssi = (s1_t) (RSSI_OFF + (rssi < -196 ? -196 : rssi > 63 ? 63 : rssi)); // RSSI [dBm] (-196...+63)
         } else if( flags & IRQ_LORA_RXTOUT_MASK ) {
+            printf("zweites else if 2\n");
             // indicate timeout
             LMIC.dataLen = 0;
 #if LMIC_DEBUG_LEVEL > 0
@@ -1353,6 +1359,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
         // clear radio IRQ flags
         writeReg(LORARegIrqFlags, 0xFF);
     } else { // FSK modem
+        printf("erstes else\n");
         u1_t flags1 = readReg(FSKRegIrqFlags1);
         u1_t flags2 = readReg(FSKRegIrqFlags2);
 
@@ -1384,10 +1391,13 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
         // in FSK, we need to put the radio in standby first.
         opmode(OPMODE_STANDBY);
     }
+    printf("nach den ifs\n");
+    LMIC.txend = now;   //NKRG
     // go from standby to sleep
     opmode(OPMODE_SLEEP);
     // run os job (use preset func ptr)
     os_setCallback(&LMIC.osjob, LMIC.osjob.func);
+    printf("Ende von radio_irq_handler_v2\n");
 #endif /* ! CFG_TxContinuousMode */
 }
 

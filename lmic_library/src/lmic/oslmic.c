@@ -100,6 +100,7 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
     // add to end of run queue
     for(pnext=&OS.runnablejobs; *pnext; pnext=&((*pnext)->next));
     *pnext = job;
+    printf("vor hal_enableIRQs\n");
     hal_enableIRQs();
 }
 
@@ -147,6 +148,7 @@ void os_runloop () {
 int i = 0;
 
 void os_runloop_once() {
+    printf("\n\nos_runloop_once\n");
     osjob_t* j = NULL;
     hal_processPendingIRQs();
 
@@ -160,7 +162,7 @@ void os_runloop_once() {
         j = OS.runnablejobs;
         OS.runnablejobs = j->next;
         printf("runnable job: %d\n", j);
-        //ASSERT(0);
+        // ASSERT(0);
     } else if(OS.scheduledjobs && hal_checkTimer(OS.scheduledjobs->deadline)) { // check for expired timed jobs
         printf("scheduled job\n");
         j = OS.scheduledjobs;
@@ -174,7 +176,6 @@ void os_runloop_once() {
         // printf("j->func = %p\n", j->func);
         j->func(j);
     }
-    printf("os_runloop_once\n");
 }
 
 // return true if there are any jobs scheduled within time ticks from now.

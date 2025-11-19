@@ -2328,6 +2328,7 @@ static bit_t processDnData_norx(void) {
 
 // this Class-A uplink-and-receive cycle is complete.
 static bit_t processDnData_txcomplete(void) {
+    printf("processDnData_txcomplete");
     LMIC.opmode &= ~(OP_TXDATA|OP_TXRXPEND);
     // turn off all the repeat stuff.
     LMIC.txCnt = LMIC.upRepeatCount = 0;
@@ -2933,12 +2934,14 @@ void LMIC_setTxData_strict (void) {
 
 // send a message, attempting to adjust TX data rate
 lmic_tx_error_t LMIC_setTxData2 (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
+    printf("LMIC_setTxData2\n");
     adjustDrForFrameIfNotBusy(dlen);
     return LMIC_setTxData2_strict(port, data, dlen, confirmed);
 }
 
 // send a message w/o callback; do not adjust data rate
 lmic_tx_error_t LMIC_setTxData2_strict (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
+    printf("LMIC_setTxData2_strict");
     if (isTxPathBusy()) {
         // already have a message queued
         return LMIC_ERROR_TX_BUSY;
