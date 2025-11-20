@@ -13,7 +13,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "sourceFileMap": {
-                "/home/user/strato-software/lorawan": "/run/user/1000/gvfs/sftp:host=192.168.43.197,user=user/home/user/strato-software/lorawan"
+                "/home/user/strato-software/": "/run/user/1000/gvfs/sftp:host=192.168.43.197,user=user/home/user/strato-software/"
             }
         }
     ]

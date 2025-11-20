@@ -1304,6 +1304,8 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
     if( (readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
         printf("erstes if\n");
         u1_t flags = readReg(LORARegIrqFlags);
+        flags = 0x08;   // NKRG INTERRUPT FAKE
+        // die Flags müssen gesetzt sein wenn der interrupt gekommen ist aber sie sind 0, es müsste 0x08 sein //NKRG
         LMIC.saveIrqFlags = flags;
         LMICOS_logEventUint32("radio_irq_handler_v2: LoRa", flags);
         LMIC_X_DEBUG_PRINTF("IRQ=%02x\n", flags);

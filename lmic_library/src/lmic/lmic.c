@@ -536,6 +536,7 @@ static void reportEventNoUpdate (ev_t ev) {
             }
 
             // notify the user.
+            fSuccess = (LMIC.txrxFlags & TXRX_ACK) != 0;    // NKRG
             pTxMessageCb(LMIC.client.txMessageUserData, fSuccess);
         }
     }
@@ -2665,6 +2666,7 @@ static void engineUpdate_inner (void) {
             // limit power to value asked in adr
             LMIC.radio_txpow = LMIC.txpow > LMIC.adrTxPow ? LMIC.adrTxPow : LMIC.txpow;
             reportEventNoUpdate(EV_TXSTART);
+            reportEventNoUpdate(EV_TXCOMPLETE); //NKRG
             printf("before os_radio\n");
             os_radio(RADIO_TX);
             printf("after os_radio\n");

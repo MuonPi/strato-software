@@ -216,6 +216,7 @@ void do_send(osjob_t *j)
     if (LMIC.opmode & OP_TXRXPEND)
     {
         std::cout << "OP_TXRXPEND, not sending" << std::endl;
+        return;
     }
     else
     {
