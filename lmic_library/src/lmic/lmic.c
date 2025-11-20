@@ -2648,8 +2648,6 @@ static void engineUpdate_inner (void) {
                     // App code might do some stuff after send unaware of RESET.
                     goto reset;
                 }
-                // bit_t nico = buildDataFrame();  // NKRG
-                // nico = 0;
                 if (! buildDataFrame()) {
                     printf("LMIC.opmode 3. if to not right EV_TXCOMPLETE\n");
                     // can't transmit this message. Report completion.
@@ -2659,7 +2657,7 @@ static void engineUpdate_inner (void) {
                     }
                     LMIC.opmode &= ~(OP_POLL|OP_RNDTX|OP_TXDATA|OP_TXRXPEND);
                     LMIC.dataBeg = LMIC.dataLen = 0;
-                    reportEventNoUpdate(EV_TXCOMPLETE);     //NKRG hier wird der zwar ausgelöst aber sagt trotzdem nicht aus ob senden geklappt hat
+                    reportEventNoUpdate(EV_TXCOMPLETE);     // hier wird der zwar ausgelöst aber sagt trotzdem nicht aus ob senden geklappt hat
                     return;
                 }
                 printf("hier gehts lang nach updataDone\n");
@@ -2672,7 +2670,6 @@ static void engineUpdate_inner (void) {
             // limit power to value asked in adr
             LMIC.radio_txpow = LMIC.txpow > LMIC.adrTxPow ? LMIC.adrTxPow : LMIC.txpow;
             reportEventNoUpdate(EV_TXSTART);
-            // reportEventNoUpdate(EV_TXCOMPLETE); //NKRG diese Zeile löst den EV_TXCOMPLETE manuell aus
             printf("before os_radio\n");
             os_radio(RADIO_TX);
             printf("after os_radio\n");

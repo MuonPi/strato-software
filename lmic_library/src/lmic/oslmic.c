@@ -41,7 +41,7 @@ static struct {
 int os_init_ex (const void *pintable) {
     memset(&OS, 0x00, sizeof(OS));
     hal_init_ex(pintable);
-    printf("radio_init = %i\n", radio_init());  //nkrg
+    printf("radio_init = %i\n", radio_init());
     if (! radio_init())
         return 0;
     LMIC_init();
@@ -51,7 +51,7 @@ int os_init_ex (const void *pintable) {
 void os_init() {
     if (os_init_ex((const void *)&lmic_pins))
         return;
-    printf("os_init_not_okay\n");   //nkrg
+    printf("os_init_not_okay\n");
     ASSERT(0);
 }
 

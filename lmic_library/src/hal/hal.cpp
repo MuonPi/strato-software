@@ -124,7 +124,7 @@ void hal_pollPendingIRQs_helper()
         if (plmic_pins->dio[i] == LMIC_UNUSED_PIN)
             continue;
         
-
+        // NKRG INTERRUPT FAKE
         int input;  // NKRG ab hier
         bool digitalReadFake = 0;
         std::cout << "Eingabe 1 um INTERRUPT FAKE für dio " << static_cast<int>(i) << " zu erzwingen: ";

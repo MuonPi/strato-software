@@ -821,8 +821,8 @@ static void txlora () {
     // clear all radio IRQ flags
     writeReg(LORARegIrqFlags, 0xFF);
     // mask all IRQs but TxDone
-    writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG
-    writeReg(LORARegIrqFlagsMask, 0x00);    // NKRG vorher: writeReg(LORARegIrqFlagsMask, ~IRQ_LORA_TXDONE_MASK);
+    // writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG diese Zeile existiert eigentlich nicht
+    writeReg(LORARegIrqFlagsMask, ~IRQ_LORA_TXDONE_MASK);
 
     // initialize the payload size and address pointers
     writeReg(LORARegFifoTxBaseAddr, 0x00);
@@ -970,13 +970,12 @@ static void rxlora (u1_t rxmode) {
     writeReg(LORARegSyncWord, LORA_MAC_PREAMBLE);
 
     // configure DIO mapping DIO0=RxDone DIO1=RxTout DIO2=NOP
-    writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG vorher: writeReg(RegDioMapping1, MAP_DIO0_LORA_RXDONE|MAP_DIO1_LORA_RXTOUT|MAP_DIO2_LORA_NOP);
-    printf("DIOMapping\n");   //NKRG
-    // writeReg(0x11, 0x00); // Unmask all IRQs (enable them for DIO output)   //NKRG
+    writeReg(RegDioMapping1, MAP_DIO0_LORA_RXDONE|MAP_DIO1_LORA_RXTOUT|MAP_DIO2_LORA_NOP);    //NKRG jetzt ist es wieder original aber das hatte ich mal probiert: writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);
+    printf("DIOMapping\n");
     // clear all radio IRQ flags
     writeReg(LORARegIrqFlags, 0xFF);
     // enable required radio IRQs
-    writeReg(LORARegIrqFlagsMask, 0x00);    //NKRG vorher: writeReg(LORARegIrqFlagsMask, ~TABLE_GET_U1(rxlorairqmask, rxmode));
+    writeReg(LORARegIrqFlagsMask, ~TABLE_GET_U1(rxlorairqmask, rxmode));     //NKRG jetzt ist es wieder original aber das hatte ich mal probiert: writeReg(LORARegIrqFlagsMask, 0x00);
 
     // enable antenna switch for RX
     hal_pin_rxtx(0);
@@ -1116,7 +1115,6 @@ int radio_init () {
     // some sanity checks, e.g., read version number
     u1_t v = readReg(RegVersion);
 #ifdef CFG_sx1276_radio
-    printf("v = %i\n", v);    //nkrg
     if(v != 0x12 )
         return 0;
 #elif CFG_sx1272_radio
@@ -1280,7 +1278,6 @@ void radio_irq_handler (u1_t dio) {
 
 void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
     printf("radio_irq_handler_v2\n");
-    // LMIC.txend = now; //NKRG
     LMIC_API_PARAMETER(dio);
 
 #if CFG_TxContinuousMode
@@ -1304,8 +1301,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
     if( (readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
         printf("erstes if\n");
         u1_t flags = readReg(LORARegIrqFlags);
-        flags = 0x08;   // NKRG INTERRUPT FAKE
-        // die Flags müssen gesetzt sein wenn der interrupt gekommen ist aber sie sind 0, es müsste 0x08 sein //NKRG
+        // NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: flags = 0x08;   die Flags müssen gesetzt sein wenn der interrupt gekommen ist aber sie sind 0, es müsste 0x08 sein
         LMIC.saveIrqFlags = flags;
         LMICOS_logEventUint32("radio_irq_handler_v2: LoRa", flags);
         LMIC_X_DEBUG_PRINTF("IRQ=%02x\n", flags);
@@ -1356,8 +1352,8 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
 #endif
         }
         // mask all radio IRQs
-        writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);   //NKRG
-        writeReg(LORARegIrqFlagsMask, 0x00);    // NKRG vorher: writeReg(LORARegIrqFlagsMask, 0xFF);
+        //NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);
+        writeReg(LORARegIrqFlagsMask, 0xFF);    // NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: writeReg(LORARegIrqFlagsMask, 0x00);
         // clear radio IRQ flags
         writeReg(LORARegIrqFlags, 0xFF);
     } else { // FSK modem
@@ -1394,7 +1390,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
         opmode(OPMODE_STANDBY);
     }
     printf("nach den ifs\n");
-    LMIC.txend = now;   //NKRG
+    // NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: LMIC.txend = now;
     // go from standby to sleep
     opmode(OPMODE_SLEEP);
     // run os job (use preset func ptr)
