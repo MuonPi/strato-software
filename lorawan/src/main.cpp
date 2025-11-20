@@ -57,7 +57,7 @@ void os_getDevKey (u1_t* buf) { }
 #define DISABLE_JOIN 1
 #define DISABLE_PING 1
 
-#define LMIC_ENABLE_user_events 1
+// #define LMIC_ENABLE_user_events 1
 
 #define DEVICEID "eui-70b3d57ed0052abe"     // Arduino-Test-0
 #define ABP_DEVICEID "eui-70b3d57ed0052abe"
@@ -164,18 +164,15 @@ int main()
     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
 
-    // for(size_t i = 0; i < 3; i++)
-    // {
-    //     os_runloop_once();
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    // }
+    while(1)
+    {
+        os_runloop_once();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
-    os_runloop_once();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
-    os_runloop_once();
-    os_runloop_once();
+
     
-    std::cout << "EV_TXCOMPLETE manually" << std::endl;
+    // std::cout << "EV_TXCOMPLETE manually" << std::endl;
 
 
     // for (std::size_t i{0}; i < 0x64; i++)

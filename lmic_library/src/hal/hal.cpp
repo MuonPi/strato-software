@@ -201,9 +201,23 @@ void hal_processPendingIRQs()
         // edge that we'll otherwise miss. Not a problem in this
         // use case, as the radio won't release IRQs until we
         // explicitly clear them.
-        interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
+
+        int input;  // NKRG ab hier
+        std::cout << "Eingabe 1 um INTERRUPT FAKE zu erzwingen: ";
+        std::cin >> input;
+        if (input == 1)
+        {
+            std::cout << "INTERRUPT FAKE" << std::endl;
+            interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
+        }
+        else
+        {
+            std::cout << "KEIN INTERRUPT FAKE" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }   // NKRG bis hier
+
         iTime = interrupt_time[i];
-        std::cout << "INTERRUPT FAKE" << std::endl;
         // printf("iTime %d\n", iTime);
         if (iTime)
         {

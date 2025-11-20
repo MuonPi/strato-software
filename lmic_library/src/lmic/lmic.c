@@ -536,7 +536,6 @@ static void reportEventNoUpdate (ev_t ev) {
             }
 
             // notify the user.
-            fSuccess = (LMIC.txrxFlags & TXRX_ACK) != 0;    // NKRG
             pTxMessageCb(LMIC.client.txMessageUserData, fSuccess);
         }
     }
@@ -1815,6 +1814,7 @@ static void setupRx2DnData (xref2osjob_t osjob) {
 
 
 static void processRx1DnData (xref2osjob_t osjob) {
+    printf("processRx1DnData startet\n");
     LMIC_API_PARAMETER(osjob);
 
     if( LMIC.dataLen == 0 || !processDnData() )
@@ -1823,16 +1823,19 @@ static void processRx1DnData (xref2osjob_t osjob) {
 
 
 static void setupRx1DnData (xref2osjob_t osjob) {
+    printf("setupRx1DnData startet\n");
     LMIC_API_PARAMETER(osjob);
 
     setupRx1(FUNC_ADDR(processRx1DnData));
 }
 
 
-static void updataDone (xref2osjob_t osjob) {
+static void updataDone (xref2osjob_t osjob) {   // muss durchlaufen werden
+    printf("updataDone startet\n");
     LMIC_API_PARAMETER(osjob);
 
     txDone(sec2osticks(LMIC.rxDelay), FUNC_ADDR(setupRx1DnData));
+    printf("updataDone endet\n");
 }
 
 // ========================================
@@ -2328,7 +2331,7 @@ static bit_t processDnData_norx(void) {
 }
 
 // this Class-A uplink-and-receive cycle is complete.
-static bit_t processDnData_txcomplete(void) {
+static bit_t processDnData_txcomplete(void) {   // hier müssen wir rein
     printf("processDnData_txcomplete");
     LMIC.opmode &= ~(OP_TXDATA|OP_TXRXPEND);
     // turn off all the repeat stuff.
@@ -2386,7 +2389,7 @@ static bit_t processDnData_txcomplete(void) {
         LMIC.opmode &= ~OP_LINKDEAD;
         reportEventNoUpdate(EV_LINK_ALIVE);
     }
-    reportEventAndUpdate(EV_TXCOMPLETE);
+    reportEventAndUpdate(EV_TXCOMPLETE);    // hier wollen wir hin
     // If we haven't heard from NWK in a while although we asked for a sign
     // assume link is dead - notify application and keep going
     if( LMIC.adrAckReq > LINK_CHECK_DEAD ) {
@@ -2645,8 +2648,10 @@ static void engineUpdate_inner (void) {
                     // App code might do some stuff after send unaware of RESET.
                     goto reset;
                 }
+                // bit_t nico = buildDataFrame();  // NKRG
+                // nico = 0;
                 if (! buildDataFrame()) {
-                    printf("LMIC.opmode 3. if to EV_TXCOMPLETE\n");
+                    printf("LMIC.opmode 3. if to not right EV_TXCOMPLETE\n");
                     // can't transmit this message. Report completion.
                     initTxrxFlags(__func__, TXRX_LENERR);
                     if (LMIC.pendTxConf || LMIC.txCnt) {
@@ -2654,10 +2659,11 @@ static void engineUpdate_inner (void) {
                     }
                     LMIC.opmode &= ~(OP_POLL|OP_RNDTX|OP_TXDATA|OP_TXRXPEND);
                     LMIC.dataBeg = LMIC.dataLen = 0;
-                    reportEventNoUpdate(EV_TXCOMPLETE);
+                    reportEventNoUpdate(EV_TXCOMPLETE);     //NKRG hier wird der zwar ausgelöst aber sagt trotzdem nicht aus ob senden geklappt hat
                     return;
                 }
-                LMIC.osjob.func = FUNC_ADDR(updataDone);
+                printf("hier gehts lang nach updataDone\n");
+                LMIC.osjob.func = FUNC_ADDR(updataDone);    // hier lang geht es zum richtigen txcomplete in updataDone
             } // end of else (not joining)
             LMIC.rps    = setCr(updr2rps(txdr), (cr_t)LMIC.errcr);
             LMIC.dndr   = txdr;  // carry TX datarate (can be != LMIC.datarate) over to txDone/setupRx1
@@ -2666,7 +2672,7 @@ static void engineUpdate_inner (void) {
             // limit power to value asked in adr
             LMIC.radio_txpow = LMIC.txpow > LMIC.adrTxPow ? LMIC.adrTxPow : LMIC.txpow;
             reportEventNoUpdate(EV_TXSTART);
-            reportEventNoUpdate(EV_TXCOMPLETE); //NKRG
+            // reportEventNoUpdate(EV_TXCOMPLETE); //NKRG diese Zeile löst den EV_TXCOMPLETE manuell aus
             printf("before os_radio\n");
             os_radio(RADIO_TX);
             printf("after os_radio\n");
