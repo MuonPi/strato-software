@@ -41,7 +41,7 @@ static void hal_io_init()
     // NSS and DIO0 are required, DIO1 is required for LoRa, DIO2 for FSK
     ASSERT(plmic_pins->nss != LMIC_UNUSED_PIN);
     ASSERT(plmic_pins->dio[0] != LMIC_UNUSED_PIN);
-    // ASSERT(plmic_pins->dio[1] != LMIC_UNUSED_PIN || plmic_pins->dio[2] != LMIC_UNUSED_PIN);      // NKRG Why should we test this? Do we need dio1 and dio2?
+    ASSERT(plmic_pins->dio[1] != LMIC_UNUSED_PIN || plmic_pins->dio[2] != LMIC_UNUSED_PIN);      // NKRG Why should we test this? Do we need dio1 and dio2?
 
     std::cout << "nss: " << static_cast<int>(plmic_pins->nss) << std::endl;
     std::cout << "rst: " << static_cast<int>(plmic_pins->rst) << std::endl;
@@ -123,8 +123,28 @@ void hal_pollPendingIRQs_helper()
     {
         if (plmic_pins->dio[i] == LMIC_UNUSED_PIN)
             continue;
+        
 
-        if (dio_states[i] != digitalRead(plmic_pins->dio[i]))   // hier wird der interrupt ausgelesen
+        int input;  // NKRG ab hier
+        bool digitalReadFake = 0;
+        std::cout << "Eingabe 1 um INTERRUPT FAKE für dio " << static_cast<int>(i) << " zu erzwingen: ";
+        std::cin >> input;
+        if (input == 1)
+        {
+            std::cout << "INTERRUPT FAKE" << std::endl;
+            digitalReadFake = 1;
+        }
+        else
+        {
+            std::cout << "KEIN INTERRUPT FAKE" << std::endl;
+            digitalReadFake = 0;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }   // NKRG bis hier
+        
+
+
+        if (dio_states[i] != digitalReadFake)   // NKRG hier wird der interrupt ausgelesen vorher: if (dio_states[i] != digitalRead(plmic_pins->dio[i]))
         {
             dio_states[i] = !dio_states[i];
             if (dio_states[i] && interrupt_time[i] == 0)
@@ -202,23 +222,22 @@ void hal_processPendingIRQs()
         // use case, as the radio won't release IRQs until we
         // explicitly clear them.
 
-        int input;  // NKRG ab hier
-        std::cout << "Eingabe 1 um INTERRUPT FAKE zu erzwingen: ";
-        std::cin >> input;
-        if (input == 1)
-        {
-            std::cout << "INTERRUPT FAKE" << std::endl;
-            interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
-        }
-        else
-        {
-            std::cout << "KEIN INTERRUPT FAKE" << std::endl;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }   // NKRG bis hier
+        // int input;  // NKRG ab hier
+        // std::cout << "Eingabe 1 um INTERRUPT FAKE zu erzwingen: ";
+        // std::cin >> input;
+        // if (input == 1)
+        // {
+        //     std::cout << "INTERRUPT FAKE" << std::endl;
+        //     interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
+        // }
+        // else
+        // {
+        //     std::cout << "KEIN INTERRUPT FAKE" << std::endl;
+        //     std::cin.clear();
+        //     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // }   // NKRG bis hier
 
         iTime = interrupt_time[i];
-        // printf("iTime %d\n", iTime);
         if (iTime)
         {
             std::cout << "iTime hat einen Wert" << std::endl;

@@ -132,6 +132,7 @@ void onEvent(void *pUserData, ev_t ev)
         }
         // Schedule next transmission
         // will be called by main loop
+        std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
         std::cout << "EV_LOST_TSYNC" << std::endl;

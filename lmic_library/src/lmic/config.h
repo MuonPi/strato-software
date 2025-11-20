@@ -94,7 +94,7 @@
 
 // Enable this to use interrupt handler routines listening for RISING signals.
 // Otherwise, the library polls digital input lines for changes.
-//#define LMIC_USE_INTERRUPTS
+// #define LMIC_USE_INTERRUPTS
 
 // If DISABLE_LMIC_FAILURE_TO is defined, runtime assertion failures
 // silently halt execution. Otherwise, LMIC_FAILURE_TO should be defined
