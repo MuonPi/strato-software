@@ -125,11 +125,15 @@ void hal_pollPendingIRQs_helper()
             continue;
         
         // NKRG INTERRUPT FAKE
-        int input;  // NKRG ab hier
+        // int input;  // NKRG ab hier
         bool digitalReadFake = 0;
-        std::cout << "Eingabe 1 um INTERRUPT FAKE für dio " << static_cast<int>(i) << " zu erzwingen: ";
-        std::cin >> input;
-        if (input == 1)
+        bool digitalReadValue = 0;
+        std::cout << "Anlegen von HIGH an dio" << static_cast<int>(i) << " um INTERRUPT FAKE zu erzwingen: ";
+        // std::cin.get();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+        digitalReadValue = digitalRead(plmic_pins->dio[i]);
+        if (digitalReadValue == 1)
         {
             std::cout << "INTERRUPT FAKE" << std::endl;
             digitalReadFake = 1;
@@ -138,13 +142,13 @@ void hal_pollPendingIRQs_helper()
         {
             std::cout << "KEIN INTERRUPT FAKE" << std::endl;
             digitalReadFake = 0;
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            // std::cin.clear();
+            // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }   // NKRG bis hier
         
 
 
-        if (dio_states[i] != digitalReadFake)   // NKRG hier wird der interrupt ausgelesen vorher: if (dio_states[i] != digitalRead(plmic_pins->dio[i]))
+        if (dio_states[i] != digitalReadValue)   // NKRG hier wird der interrupt ausgelesen vorher: if (dio_states[i] != digitalRead(plmic_pins->dio[i]))
         {
             dio_states[i] = !dio_states[i];
             if (dio_states[i] && interrupt_time[i] == 0)
@@ -221,21 +225,6 @@ void hal_processPendingIRQs()
         // edge that we'll otherwise miss. Not a problem in this
         // use case, as the radio won't release IRQs until we
         // explicitly clear them.
-
-        // int input;  // NKRG ab hier
-        // std::cout << "Eingabe 1 um INTERRUPT FAKE zu erzwingen: ";
-        // std::cin >> input;
-        // if (input == 1)
-        // {
-        //     std::cout << "INTERRUPT FAKE" << std::endl;
-        //     interrupt_time[i] = os_getTime();   //NKRG gefakter interrupt
-        // }
-        // else
-        // {
-        //     std::cout << "KEIN INTERRUPT FAKE" << std::endl;
-        //     std::cin.clear();
-        //     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        // }   // NKRG bis hier
 
         iTime = interrupt_time[i];
         if (iTime)
