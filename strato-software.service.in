@@ -2,9 +2,11 @@
 Description=LoRaWAN uplink service for stratospheric balloon experiment
 
 [Service]
+Type=simple
 User=@SERVICE_USER@
-Type=oneshot
-ExecStart=/bin/bash @BIN_INSTALL_DIR@/lorawan
+ExecStart=@BIN_INSTALL_DIR@/strato-software
+Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target

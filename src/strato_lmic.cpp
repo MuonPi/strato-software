@@ -278,17 +278,13 @@ uint32_t SeqNoFile()
     uint32_t seqno;
     std::string line;
     std::string path;
-    char abspath[256];
 
-    readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
-    path = std::string(abspath);
-    path = path.substr(0, path.find_last_of('/'));
-    path = path + "/../../uplinkSequenceNo.txt";
+    path = "/var/strato-software/uplinkSequenceNo.txt";
 
     if (!std::filesystem::exists(path))
     {
         std::ofstream createfile(path);
-        createfile << 1;
+        createfile << 0;
         createfile.close();
     }
 
@@ -306,7 +302,8 @@ uint32_t SeqNoFile()
     {
         throw std::runtime_error("uplinkSequenceNo.txt already opened");
     }
-    writefile << seqno + 1;
+    seqno++;
+    writefile << seqno;
     writefile.close();
 
     std::cout << seqno << std::endl;
@@ -321,14 +318,21 @@ uint8_t PayloadFile(uint8_t* payload)
     uint8_t payloadlen = 0;
     std::string line;
     std::string path;
-    char abspath[256];
 
-    readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
-    path = std::string(abspath);
-    path = path.substr(0, path.find_last_of('/'));
-    path = path + "/../../lora_payload.txt";
+    path = "/var/strato-software/lora_payload.txt";
+
+    if (!std::filesystem::exists(path))
+    {
+        std::ofstream createfile(path);
+        createfile << 0;
+        createfile.close();
+    }
 
     std::ifstream readfile(path);
+    if (!readfile.is_open())
+    {
+        throw std::runtime_error("uplinkSequenceNo.txt already opened");
+    }
     std::getline(readfile, line);
     readfile.close();
 

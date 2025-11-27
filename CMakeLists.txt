@@ -66,8 +66,10 @@ target_link_libraries(strato-software
 # Install Rules
 # ------------------------------
 set(BIN_INSTALL_DIR "/usr/bin")
+set(DATA_INSTALL_DIR "/var/strato-software")
 set(SERVICE_NAME "strato-software")
 set(SERVICE_INSTALL_DIR "/etc/systemd/system")
+set(SERVICE_USER "user")
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in
@@ -75,8 +77,15 @@ configure_file(
     @ONLY
 )
 
+install(CODE "
+file(MAKE_DIRECTORY \"${DATA_INSTALL_DIR}\")
+execute_process(COMMAND chown ${SERVICE_USER}:${SERVICE_USER} ${DATA_INSTALL_DIR})
+execute_process(COMMAND chmod 755 ${DATA_INSTALL_DIR})
+")
+
 install(TARGETS strato-software
         RUNTIME DESTINATION ${BIN_INSTALL_DIR})
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_NAME}.service
         DESTINATION ${SERVICE_INSTALL_DIR})
+
