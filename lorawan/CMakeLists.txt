@@ -29,6 +29,16 @@ set(STRATO_HEADER_FILES
     # "${CMAKE_CURRENT_SOURCE_DIR}/../lmic_library/project_config/lmic_project_config.h"
 )
 
+# add_definitions(
+#     -DARDUINO_LMIC_PROJECT_CONFIG_H_SUPPRESS
+#     -DCFG_sx1276_radio=1
+#     -DCFG_eu868=1
+#     -DDISABLE_JOIN
+#     -DDISABLE_PING
+#     -DDISABLE_BEACONS
+#     -DLMIC_DEBUG_LEVEL=0
+# )
+
 add_executable(lorawan ${STRATO_SOURCE_FILES} ${STRATO_HEADER_FILES})
 
 add_executable(read_all_reg "${PROJECT_SRC_DIR}/read_all_reg.cpp")

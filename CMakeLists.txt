@@ -14,6 +14,16 @@ set(LOG_INSTALL_DIR "/var/log/strato-software")
 
 message("${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
+# add_definitions(
+#     -DARDUINO_LMIC_PROJECT_CONFIG_H_SUPPRESS
+#     -DCFG_sx1276_radio=1
+#     -DCFG_eu868=1
+#     -DDISABLE_JOIN
+#     -DDISABLE_PING
+#     -DDISABLE_BEACONS
+#     -DLMIC_DEBUG_LEVEL=0
+# )
+
 # add_compile_definitions(ARDUINO_LMIC_PROJECT_CONFIG_H_SUPPRESS 1)
 # add_compile_definitions(CFG_eu868 1)
 # add_compile_definitions(CFG_sx1276_radio 1)

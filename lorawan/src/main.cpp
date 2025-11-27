@@ -53,9 +53,9 @@ void os_getDevEui (u1_t* buf) { }
 void os_getDevKey (u1_t* buf) { }
 
 
-#define DISABLE_BEACONS 1
-#define DISABLE_JOIN 1
-#define DISABLE_PING 1
+// #define DISABLE_BEACONS 1
+// #define DISABLE_JOIN 1
+// #define DISABLE_PING 1
 
 // #define LMIC_ENABLE_user_events 1
 
@@ -167,7 +167,7 @@ int main()
     while(1)
     {
         os_runloop_once();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
 
@@ -185,3 +185,105 @@ int main()
     
     return 0;
 }
+
+
+
+
+
+
+
+
+// #include <iostream>
+// #include <fcntl.h>
+// #include <unistd.h>
+// #include <sys/ioctl.h>
+// #include <linux/spi/spidev.h>
+// #include <cstring>
+
+// const char *SPI_DEVICE = "/dev/spidev0.0";
+// uint8_t SPI_MODE = SPI_MODE_0;
+// uint8_t BITS_PER_WORD = 8;
+// uint32_t SPI_SPEED = 1000000; // 1 MHz
+
+// // Register-Defines
+// #define REG_FIFO          0x00
+// #define REG_OP_MODE       0x01
+// #define REG_IRQ_FLAGS     0x12
+// #define REG_IRQ_FLAGS_MASK 0x11
+// #define REG_DIO_MAPPING1  0x40
+
+// int spi_fd = -1;
+
+// // SPI open / close
+// bool spi_init() {
+//     spi_fd = open(SPI_DEVICE, O_RDWR);
+//     if (spi_fd < 0) return false;
+
+//     if (ioctl(spi_fd, SPI_IOC_WR_MODE, &SPI_MODE) < 0) return false;
+//     if (ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &BITS_PER_WORD) < 0) return false;
+//     if (ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &SPI_SPEED) < 0) return false;
+
+//     return true;
+// }
+
+// void spi_close() {
+//     if (spi_fd >= 0) close(spi_fd);
+// }
+
+// // SPI Write Register
+// void writeReg(uint8_t reg, uint8_t val) {
+//     uint8_t buf[2] = { reg | 0x80, val }; // MSB=1 für Write
+//     write(spi_fd, buf, 2);
+// }
+
+// // SPI Read Register
+// uint8_t readReg(uint8_t reg) {
+//     uint8_t buf[2] = { reg & 0x7F, 0x00 };
+//     write(spi_fd, buf, 2);
+//     uint8_t rx[2];
+//     read(spi_fd, rx, 2);
+//     return rx[1];
+// }
+
+// // Minimaler TX-Puls
+// void rfm95_tx_test() {
+//     if (!spi_init()) {
+//         std::cerr << "SPI init failed\n";
+//         return;
+//     }
+
+//     std::cout << "=== RFM95 Minimal TX-Test ===\n";
+
+//     // 1. Standby + LoRa
+//     writeReg(REG_OP_MODE, 0x81);  // LoRa, Standby
+
+//     // 2. DIO0 auf TxDone / RxDone
+//     writeReg(REG_DIO_MAPPING1, 0x00);
+
+//     // 3. IRQ unmask
+//     writeReg(REG_IRQ_FLAGS_MASK, 0x00);
+
+//     // 4. IRQ Flags löschen
+//     writeReg(REG_IRQ_FLAGS, 0xFF);
+
+//     // 5. Dummy Payload in FIFO
+//     writeReg(REG_FIFO, 0xAA);  // 1 Byte Dummy
+
+//     // 6. TX starten
+//     writeReg(REG_OP_MODE, 0x83); // Mode TX
+
+//     std::cout << "TX gestartet. Prüfe DIO0 am Oszi!\n";
+
+//     // 7. Optional: Warte kurz und lese IRQ
+//     usleep(200000); // 200 ms warten
+//     uint8_t irq = readReg(REG_IRQ_FLAGS);
+//     std::cout << "IRQ Flags nach TX: 0x" << std::hex << (int)irq << std::dec << "\n";
+
+//     spi_close();
+// }
+
+
+// int main() {
+//     rfm95_tx_test();
+//     return 0;
+// }

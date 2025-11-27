@@ -80,6 +80,7 @@ void onEvent(void *pUserData, ev_t ev)
 
     case EV_TXSTART:
         std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
+        dump_rfm96_registers();
         break;
     case EV_JOIN_TXCOMPLETE:
         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
@@ -132,6 +133,7 @@ void onEvent(void *pUserData, ev_t ev)
         }
         // Schedule next transmission
         // will be called by main loop
+        dump_rfm96_registers();
         std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
@@ -322,4 +324,72 @@ uint32_t SeqNoFile()
     // std::cout << payload[0] << std::endl;
 
     return payloadlen;
+}
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+#include <iostream>
+#include <iomanip>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <linux/spi/spidev.h>
+#include <cstring>
+
+#define SPI_DEVICE "/dev/spidev0.0"
+
+uint8_t rfm96_read_register(int spi_fd, uint8_t reg) {
+    uint8_t tx[2] = { reg & 0x7F, 0x00 }; // MSB=0 → read
+    uint8_t rx[2] = { 0 };
+
+    struct spi_ioc_transfer tr{};
+    tr.tx_buf = (unsigned long)tx;
+    tr.rx_buf = (unsigned long)rx;
+    tr.len = 2;
+    tr.speed_hz = 8000000;
+    tr.bits_per_word = 8;
+
+    if (ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr) < 0) {
+        perror("SPI read failed");
+    }
+
+    return rx[1];
+}
+
+void dump_rfm96_registers() {
+    int spi_fd = open(SPI_DEVICE, O_RDWR);
+    if (spi_fd < 0) {
+        perror("SPI open failed");
+        return;
+    }
+
+    uint8_t mode = SPI_MODE_0;
+    uint32_t speed = 8000000;
+    uint8_t bits = 8;
+
+    ioctl(spi_fd, SPI_IOC_WR_MODE, &mode);
+    ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+    ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+
+    std::cout << "RFM96 Register Dump:\n--------------------\n";
+
+    for (uint8_t reg = 0x00; reg <= 0x70; reg++) {
+        uint8_t val = rfm96_read_register(spi_fd, reg);
+        std::cout << "0x"
+                  << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+                  << (int)reg << ": 0x"
+                  << std::setw(2) << (int)val << std::dec << "\n";
+    }
+
+    std::cout << "-------------------- END\n";
+
+    close(spi_fd);   // SPI sauber freigeben für andere Module
 }

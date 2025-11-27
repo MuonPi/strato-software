@@ -28,6 +28,9 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
 uint32_t SeqNoFile();
 uint8_t PayloadFile(uint8_t* payload);
 
+
+void dump_rfm96_registers();
+uint8_t rfm96_read_register(int spi_fd, uint8_t reg);
 static uint8_t *data;
 static uint8_t data_size;
 

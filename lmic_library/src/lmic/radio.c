@@ -380,6 +380,8 @@ static u1_t randbuf[16];
 
 static void writeReg (u1_t addr, u1_t data ) {
     hal_spi_write(addr | 0x80, &data, 1);
+    // hal_spi_write(0x40 | 0x80, 0x00, 1);
+    // hal_spi_write(addr | 0x80, &data, 1);   //NKRG
 }
 
 static u1_t readReg (u1_t addr) {
@@ -828,6 +830,17 @@ static void txlora () {
     writeReg(LORARegFifoTxBaseAddr, 0x00);
     writeReg(LORARegFifoAddrPtr, 0x00);
     writeReg(LORARegPayloadLength, LMIC.dataLen);
+
+    // writeReg(0x40, 0x00);   //NKRG  // RegDioMapping1 -> DIO0 = TxDone
+    // writeReg(0x11, 0x00);   //NKRG  // IRQ Mask -> nichts maskieren
+    // writeReg(0x12, 0xFF);   //NKRG  // Alle IRQ Flags löschen
+
+    printf("---- IRQ DEBUG ----\n");                        //NKRG
+    printf("RegDioMapping1: 0x%02X\n", readReg(0x40));      //NKRG
+    printf("RegIrqFlagsMask: 0x%02X\n", readReg(0x11));     //NKRG
+    printf("RegIrqFlags: 0x%02X\n", readReg(0x12));         //NKRG
+    printf("RegOpMode: 0x%02X\n", readReg(0x01));           //NKRG
+    printf("-------------------\n");                        //NKRG
 
     // download buffer to the radio FIFO
     printf("before RegFifo\n");

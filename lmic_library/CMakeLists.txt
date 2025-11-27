@@ -93,6 +93,16 @@ target_include_directories(lmic PUBLIC
     $<BUILD_INTERFACE:${PROJECT_CONFIG_DIR}>
 )
 
+# add_definitions(
+#     -DARDUINO_LMIC_PROJECT_CONFIG_H_SUPPRESS
+#     -DCFG_sx1276_radio=1
+#     -DCFG_eu868=1
+#     -DDISABLE_JOIN
+#     -DDISABLE_PING
+#     -DDISABLE_BEACONS
+#     -DLMIC_DEBUG_LEVEL=0
+# )
+
 set_target_properties(
     lmic
     PROPERTIES
