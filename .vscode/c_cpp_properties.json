@@ -2,22 +2,21 @@
     "configurations": [
         {
             "name": "Raspberry Pi",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/include",
-                "/usr/local/include",
-                "${workspaceFolder}/lmic_library/src",
-                "${workspaceFolder}/lmic_library/src/hal",
-                "${workspaceFolder}/lmic_library/src/lmic",
-                "${workspaceFolder}/lmic_library/src/raspi",
-                "${workspaceFolder}/lorawan",
-                "${workspaceFolder}/lorawan/include"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "intelliSenseMode": "linux-gcc-x64",
             "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "cppStandard": "c++20",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/lib/lmic/src",
+                "${workspaceFolder}/lib/lmic/src/aes",
+                "${workspaceFolder}/lib/lmic/src/hal",
+                "${workspaceFolder}/lib/lmic/src/lmic",
+                "${workspaceFolder}/lib/lmic/src/raspi",
+                "${workspaceFolder}/lib/lmic/project_config"
+            ],
+            "defines": []
         }
     ],
     "version": 4

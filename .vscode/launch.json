@@ -5,7 +5,7 @@
             "name": "Remote Debug via gdbserver",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/lorawan",
+            "program": "${workspaceFolder}/build/bin/strato-software",
             "miDebuggerServerAddress": "192.168.43.197:1234",
             "miDebuggerPath": "/usr/bin/gdb-multiarch",
             "cwd": "${workspaceFolder}",

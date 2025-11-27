@@ -283,7 +283,7 @@ uint32_t SeqNoFile()
     readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
     path = std::string(abspath);
     path = path.substr(0, path.find_last_of('/'));
-    path = path + "/../../raw/uplinkSequenceNo.txt";
+    path = path + "/../../uplinkSequenceNo.txt";
 
     if (!std::filesystem::exists(path))
     {
@@ -326,7 +326,7 @@ uint8_t PayloadFile(uint8_t* payload)
     readlink("/proc/self/exe", abspath, sizeof(abspath) - 1);
     path = std::string(abspath);
     path = path.substr(0, path.find_last_of('/'));
-    path = path + "/../../raw/lora_payload.txt";
+    path = path + "/../../lora_payload.txt";
 
     std::ifstream readfile(path);
     std::getline(readfile, line);
