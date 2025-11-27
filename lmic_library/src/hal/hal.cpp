@@ -124,31 +124,31 @@ void hal_pollPendingIRQs_helper()
         if (plmic_pins->dio[i] == LMIC_UNUSED_PIN)
             continue;
         
-        // NKRG INTERRUPT FAKE
+        // // NKRG INTERRUPT FAKE
         // int input;  // NKRG ab hier
-        bool digitalReadFake = 0;
-        bool digitalReadValue = 0;
-        std::cout << "Anlegen von HIGH an dio" << static_cast<int>(i) << " um INTERRUPT FAKE zu erzwingen: ";
-        // std::cin.get();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        // bool digitalReadFake = 0;
+        // bool digitalReadValue = 0;
+        // std::cout << "Anlegen von HIGH an dio" << static_cast<int>(i) << " um INTERRUPT FAKE zu erzwingen: ";
+        // // std::cin.get();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
-        digitalReadValue = digitalRead(plmic_pins->dio[i]);
-        if (digitalReadValue == 1)
-        {
-            std::cout << "INTERRUPT FAKE" << std::endl;
-            digitalReadFake = 1;
-        }
-        else
-        {
-            std::cout << "KEIN INTERRUPT FAKE" << std::endl;
-            digitalReadFake = 0;
-            // std::cin.clear();
-            // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }   // NKRG bis hier
+        // digitalReadValue = digitalRead(plmic_pins->dio[i]);
+        // if (digitalReadValue == 1)
+        // {
+        //     std::cout << "INTERRUPT FAKE" << std::endl;
+        //     digitalReadFake = 1;
+        // }
+        // else
+        // {
+        //     std::cout << "KEIN INTERRUPT FAKE" << std::endl;
+        //     digitalReadFake = 0;
+        //     // std::cin.clear();
+        //     // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        // }   // NKRG bis hier
         
 
 
-        if (dio_states[i] != digitalReadValue)   // NKRG hier wird der interrupt ausgelesen vorher: if (dio_states[i] != digitalRead(plmic_pins->dio[i]))
+        if (dio_states[i] != digitalRead(plmic_pins->dio[i]))   // NKRG hier wird der interrupt ausgelesen 
         {
             dio_states[i] = !dio_states[i];
             if (dio_states[i] && interrupt_time[i] == 0)

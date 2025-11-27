@@ -47,6 +47,7 @@
 #include <libgen.h>
 #include <algorithm>
 #include <cctype>
+#include <filesystem>
 #include "strato_lmic.h"
 #include "hal/hal.h"
 #include "lmic.h"
@@ -134,7 +135,8 @@ void onEvent(void *pUserData, ev_t ev)
         // Schedule next transmission
         // will be called by main loop
         dump_rfm96_registers();
-        std::exit(0);   //NKRG
+        txcomplete = 1;
+        // std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
         std::cout << "EV_LOST_TSYNC" << std::endl;
@@ -256,6 +258,8 @@ void do_send(osjob_t *j)
 //     // Next TX is scheduled after TX_COMPLETE event.
 // }
 
+
+
 void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
 {
     data = message;
@@ -266,6 +270,8 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
     os_setCallback(&sendjob, do_send);
     std::cout << "after os_setCallback" << std::endl;
 }
+
+
 
 uint32_t SeqNoFile()
 {
@@ -279,20 +285,38 @@ uint32_t SeqNoFile()
     path = path.substr(0, path.find_last_of('/'));
     path = path + "/../../raw/uplinkSequenceNo.txt";
 
-    std::cout << path << std::endl;
+    if (!std::filesystem::exists(path))
+    {
+        std::ofstream createfile(path);
+        createfile << 1;
+        createfile.close();
+    }
 
     std::ifstream readfile(path);
+    if (!readfile.is_open())
+    {
+        throw std::runtime_error("uplinkSequenceNo.txt already opened");
+    }
     std::getline(readfile, line);
+    seqno = std::stoul(line);
     readfile.close();
 
-    seqno = std::stoul(line);
+    std::ofstream writefile(path, std::ios::trunc);
+    if (!writefile.is_open())
+    {
+        throw std::runtime_error("uplinkSequenceNo.txt already opened");
+    }
+    writefile << seqno + 1;
+    writefile.close();
 
-    // std::cout << seqno << std::endl;
+    std::cout << seqno << std::endl;
 
     return seqno;
 }
 
- uint8_t PayloadFile(uint8_t* payload)
+
+
+uint8_t PayloadFile(uint8_t* payload)
 {
     uint8_t payloadlen = 0;
     std::string line;
@@ -303,8 +327,6 @@ uint32_t SeqNoFile()
     path = std::string(abspath);
     path = path.substr(0, path.find_last_of('/'));
     path = path + "/../../raw/lora_payload.txt";
-
-    std::cout << path << std::endl;
 
     std::ifstream readfile(path);
     std::getline(readfile, line);

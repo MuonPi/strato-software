@@ -34,5 +34,7 @@ uint8_t rfm96_read_register(int spi_fd, uint8_t reg);
 static uint8_t *data;
 static uint8_t data_size;
 
+extern bool txcomplete;
+
 
 #endif // __StratoLMIC__

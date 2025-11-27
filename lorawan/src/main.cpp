@@ -93,6 +93,8 @@ uint8_t len;
 const unsigned TX_INTERVAL = 60;
 osjob_t workjob;
 
+bool txcomplete = 0;
+
 
 
 
@@ -161,13 +163,20 @@ int main()
     //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
     // }
 
-    sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
 
-    while(1)
+
+    for (uint8_t i = 0; i < 3; i++)
     {
-        os_runloop_once();
-        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+
+        while(txcomplete == 0)
+        {
+            os_runloop_once();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        txcomplete = 0;
     }
 
 
