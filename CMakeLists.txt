@@ -49,7 +49,6 @@ add_executable(strato-software
 
 target_include_directories(strato-software PUBLIC
     ${PROJECT_HEADER_DIR}
-    ${PROJECT_LIB_DIR}/lmic/src
 )
 
 # ------------------------------
@@ -57,9 +56,12 @@ target_include_directories(strato-software PUBLIC
 # ------------------------------
 add_subdirectory(${PROJECT_LIB_DIR}/lmic)
 
+add_subdirectory(${PROJECT_LIB_DIR}/sensors)
+
 target_link_libraries(strato-software
     gpiod
     lmic
+    sensors
 )
 
 # ------------------------------
