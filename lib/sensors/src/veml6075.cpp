@@ -1,14 +1,77 @@
-#include <stdint.h>
-#include <stdio.h>
+
+#include <iostream>
 #include <unistd.h>
-#include <iomanip>
-#include <chrono>
-#include <thread>
 #include "veml6075.h"
 
 // /*
 // * VEML6075 uv sensor
 // */
+
+
+VEML6075::VEML6075(uint8_t addr)
+    : i2cDevice("/dev/i2c-1", addr)
+{}
+
+bool VEML6075::init()
+{
+    uint8_t config[2] = {0x00, 0x00};
+    return writeReg(0x00, config, 2) == 2;
+}
+
+bool VEML6075::getUVRaw(uint16_t& uva, uint16_t& uvb)
+{
+    uint8_t buf[2];
+    if (readReg(0x07, buf, 2) != 2) return false;
+    uva = (buf[0] << 8) | buf[1];
+
+    if (readReg(0x09, buf, 2) != 2) return false;
+    uvb = (buf[0] << 8) | buf[1];
+
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// VEML6075::VEML6075(int bus, int address)
+//     : i2cDevice(bus, address) {}
+
+// bool VEML6075::init()
+// {
+//     uint8_t config[2] = {0x00, 0x00};   // Beispiel
+//     return writeReg(REG_CONF, config, 2) == 2;
+// }
+
+// bool VEML6075::getUVRawValue(uint16_t& uva, uint16_t& uvb)
+// {
+//     uint8_t buf[2];
+
+//     if (readReg(REG_UVA, buf, 2) != 2) return false;
+//     uva = (buf[0] << 8) | buf[1];
+
+//     if (readReg(REG_UVB, buf, 2) != 2) return false;
+//     uvb = (buf[0] << 8) | buf[1];
+
+//     return true;
+// }
+
+
+
+
+
 
 // #define CTL_REG 0x00
 // #define DATA_REG_UVA 0x07

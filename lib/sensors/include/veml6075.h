@@ -5,6 +5,44 @@
 
 // /* VEML6075 */
 
+
+class VEML6075 : public i2cDevice {
+public:
+    VEML6075(uint8_t address = 0x10);
+
+    bool init();
+    bool getUVRaw(uint16_t& uva, uint16_t& uvb);
+
+private:
+    static constexpr uint8_t REG_CONF = 0x00;
+    static constexpr uint8_t REG_UVA  = 0x07;
+    static constexpr uint8_t REG_UVB  = 0x09;
+};
+
+
+
+
+
+
+
+
+// class VEML6075 : public i2cDevice {
+// public:
+//     explicit VEML6075(int bus, int address);
+
+//     bool init();
+//     bool getUVRawValue(uint16_t& uva, uint16_t& uvb);
+
+// private:
+//     static constexpr uint8_t REG_CONF = 0x00;
+//     static constexpr uint8_t REG_UVA  = 0x07;
+//     static constexpr uint8_t REG_UVB  = 0x09;
+// };
+
+
+
+
+
 // class VEML6075 : public i2cDevice
 // {
 // public:
