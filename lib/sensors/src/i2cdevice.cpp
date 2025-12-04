@@ -206,7 +206,7 @@ int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)       // NKRG
     // reg2[2] = 0x80;
     reg3 = 0x80;
     int n = write(reg2, 2);
-    std::cout << "Rückgabewert write in readReg: " << n << std::endl;
+    // std::cout << "Rückgabewert write in readReg: " << n << std::endl;
     // if (n != 1)
     //     return -1;
     n = read(buf, nBytes + 2);

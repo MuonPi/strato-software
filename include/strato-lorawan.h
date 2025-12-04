@@ -11,8 +11,8 @@
  * licensed under Creative Commons Attribution-ShareAlike 3.0
  * ******************************************************************************/
 
-#ifndef __StratoLMIC__
-#define __StratoLMIC__
+#ifndef _STRATO_LORAWAN_H_
+#define _STRATO_LORAWAN_H_
 
 // #include <Wire.h>
 #include "hal/hal.h"
@@ -37,4 +37,4 @@ static uint8_t data_size;
 extern bool txcomplete;
 
 
-#endif // __StratoLMIC__
+#endif // _STRATO_LORAWAN_H_

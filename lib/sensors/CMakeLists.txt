@@ -15,4 +15,4 @@ target_include_directories(sensors PUBLIC
 
 # find_library(I2C_LIB i2c REQUIRED)
 
-target_link_libraries(sensors PRIVATE i2c) #${I2C_LIB})
+# target_link_libraries(sensors PRIVATE i2c) #${I2C_LIB})

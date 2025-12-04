@@ -48,7 +48,7 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
-#include "strato_lmic.h"
+#include "strato-lorawan.h"
 #include "hal/hal.h"
 #include "lmic.h"
 

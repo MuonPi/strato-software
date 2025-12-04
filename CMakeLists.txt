@@ -32,11 +32,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 # ------------------------------
 set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/main.cpp"
-    "${PROJECT_SRC_DIR}/strato_lmic.cpp"
+    "${PROJECT_SRC_DIR}/strato-lorawan.cpp"
+    "${PROJECT_SRC_DIR}/strato-sensors.cpp"
 )
 
 set(STRATO_HEADER_FILES
-    "${PROJECT_HEADER_DIR}/strato_lmic.h"
+    "${PROJECT_HEADER_DIR}/strato-lorawan.h"
+    "${PROJECT_HEADER_DIR}/strato-sensors.h"
 )
 
 # ------------------------------
@@ -75,7 +77,6 @@ set(SERVICE_USER "user")
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_NAME}.service
     @ONLY
 )
 

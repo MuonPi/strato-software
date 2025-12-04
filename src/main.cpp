@@ -1,35 +1,35 @@
-/*******************************************************************************
- * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
- * Copyright (c) 2018 Terry Moore, MCCI
- *
- * Permission is hereby granted, free of charge, to anyone
- * obtaining a copy of this document and accompanying files,
- * to do whatever they want with them without any restriction,
- * including, but not limited to, copying, modification and redistribution.
- * NO WARRANTY OF ANY KIND IS PROVIDED.
- *
- * This example sends a valid LoRaWAN packet with payload "Hello,
- * world!", using frequency and encryption settings matching those of
- * the The Things Network.
- *
- * This uses ABP (Activation-by-personalisation), where a DevAddr and
- * Session keys are preconfigured (unlike OTAA, where a DevEUI and
- * application key is configured, while the DevAddr and session keys are
- * assigned/generated in the over-the-air-activation procedure).
- *
- * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in
- * g1, 0.1% in g2), but not the TTN fair usage policy (which is probably
- * violated by this sketch when left running for longer)!
- *
- * To use this sketch, first register your application and device with
- * the things network, to set or generate a DevAddr, NwkSKey and
- * AppSKey. Each device should have their own unique values for these
- * fields.
- *
- * Do not forget to define the radio type correctly in
- * arduino-lmic/project_config/lmic_project_config.h or from your BOARDS.txt.
- *
- *******************************************************************************/
+// /*******************************************************************************
+//  * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
+//  * Copyright (c) 2018 Terry Moore, MCCI
+//  *
+//  * Permission is hereby granted, free of charge, to anyone
+//  * obtaining a copy of this document and accompanying files,
+//  * to do whatever they want with them without any restriction,
+//  * including, but not limited to, copying, modification and redistribution.
+//  * NO WARRANTY OF ANY KIND IS PROVIDED.
+//  *
+//  * This example sends a valid LoRaWAN packet with payload "Hello,
+//  * world!", using frequency and encryption settings matching those of
+//  * the The Things Network.
+//  *
+//  * This uses ABP (Activation-by-personalisation), where a DevAddr and
+//  * Session keys are preconfigured (unlike OTAA, where a DevEUI and
+//  * application key is configured, while the DevAddr and session keys are
+//  * assigned/generated in the over-the-air-activation procedure).
+//  *
+//  * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in
+//  * g1, 0.1% in g2), but not the TTN fair usage policy (which is probably
+//  * violated by this sketch when left running for longer)!
+//  *
+//  * To use this sketch, first register your application and device with
+//  * the things network, to set or generate a DevAddr, NwkSKey and
+//  * AppSKey. Each device should have their own unique values for these
+//  * fields.
+//  *
+//  * Do not forget to define the radio type correctly in
+//  * arduino-lmic/project_config/lmic_project_config.h or from your BOARDS.txt.
+//  *
+//  *******************************************************************************/
 
  // References:
  // [feather] adafruit-feather-m0-radio-with-lora-module.pdf
@@ -38,13 +38,18 @@
 #include <string>
 #include <thread>
 #include <chrono>
-#include "strato_lmic.h"
+#include <iomanip>
 #include "lmic.h"
 #include "hal/hal.h"
 #include "raspi/raspi.h"
-
 #include "spidevice.h"
-#include <iomanip>
+
+
+
+#include "strato-lorawan.h"
+#include "strato-sensors.h"
+
+#include "ads1115.h"
 
 
 
@@ -74,7 +79,7 @@ static const u4_t DEVADDR = 0x260BC37E;
 
 
 
-// #define DEVICEID "eui-70B3D57ED006549C"      // srato-abp
+// #define DEVICEID "eui-70B3D57ED006549C"      // strato-abp
 // #define ABP_DEVICEID "eui-70B3D57ED006549C"
 
 // // The Network Session Key / DO NOT SHARE
@@ -120,78 +125,70 @@ int main()
 {
 
 
-    // SPI::spiDevice spi_device{};
-    // spi_device.init();
-    // for (std::size_t i{0}; i < 0x64; i++)
+
+    // uint8_t nwkskey[sizeof(NWKSKEY)];
+    // uint8_t appskey[sizeof(APPSKEY)];
+
+    // for (int i = 0; i < 16; i++)
     // {
-    //     auto ch = spi_device.read(i, 1)[0];
-    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
+    //     nwkskey[i] = NWKSKEY[i];
+    //     appskey[i] = APPSKEY[i];
+    // }
+
+    // setup(DEVADDR, lmic_pins, appskey, nwkskey);
+    // // os_runloop_once();
+
+    // std::cout << "finished setup function" << std::endl;
+
+    // uplinkSequenceNo = SeqNoFile();
+    // std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+
+    // len = PayloadFile(payload);
+    // std::cout << static_cast<int>(len) << std::endl;
+    // for (size_t i = 0; i < len; i++)
+    // {
+    //     std::cout << static_cast<int>(payload[i]) << " ";
+    // }
+    // std::cout << std::endl;
+
+
+
+
+    // for (uint8_t i = 0; i < 1; i++)
+    // {
+    //     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+
+    //     while(txcomplete == 0)
+    //     {
+    //         os_runloop_once();
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //     }
+
+    //     txcomplete = 0;
     // }
 
 
+    
 
-
-    uint8_t nwkskey[sizeof(NWKSKEY)];
-    uint8_t appskey[sizeof(APPSKEY)];
-
-    for (int i = 0; i < 16; i++)
+    ADS1115 strato_ads1115(0x4A);
+    strato_ads1115.init();
+    int16_t raw;
+    double voltage;
+    while(true)
     {
-        nwkskey[i] = NWKSKEY[i];
-        appskey[i] = APPSKEY[i];
-    }
-
-    setup(DEVADDR, lmic_pins, appskey, nwkskey);
-    // os_runloop_once();
-
-    std::cout << "finished setup function" << std::endl;
-
-    uplinkSequenceNo = SeqNoFile();
-    std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
-
-    len = PayloadFile(payload);
-    std::cout << static_cast<int>(len) << std::endl;
-    for (size_t i = 0; i < len; i++)
-    {
-        std::cout << static_cast<int>(payload[i]) << " ";
-    }
-    std::cout << std::endl;
-
-
-    // for (std::size_t i{0}; i < 0x64; i++)
-    // {
-    //     auto ch = spi_device.read(i, 1)[0];
-    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
-    // }
-
-
-
-
-    for (uint8_t i = 0; i < 1; i++)
-    {
-        sendLoraPayload(1u, uplinkSequenceNo, payload, len);
-
-        while(txcomplete == 0)
+        for(uint8_t i = 0; i < 4; i++)
         {
-            os_runloop_once();
+            strato_ads1115.setChannel(i);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            strato_ads1115.getRawValue(raw);
+            std::cout << "RawValue: " << static_cast<int>(raw) << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            strato_ads1115.getVoltage(voltage);
+            std::cout << "Voltage: " << voltage << std::endl;
         }
-
-        txcomplete = 0;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
-
-
-    
-    // std::cout << "EV_TXCOMPLETE manually" << std::endl;
-
-
-    // for (std::size_t i{0}; i < 0x64; i++)
-    // {
-    //     auto ch = spi_device.read(i, 1)[0];
-    //     std::cout << i << ": " << std::hex << static_cast<unsigned>(ch) << std::endl;
-    // }
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(60000));
-    
     return 0;
 }
+
 
