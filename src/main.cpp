@@ -50,6 +50,7 @@
 #include "strato-sensors.h"
 
 #include "ads1115.h"
+#include "qmc5883.h"
 
 
 
@@ -170,22 +171,41 @@ int main()
 
     
 
-    ADS1115 strato_ads1115(0x4A);
-    strato_ads1115.init();
-    int16_t raw;
-    double voltage;
+    // ADS1115 strato_ads1115(0x4A);
+    // strato_ads1115.init();
+    // int16_t raw;
+    // double voltage;
+    // while(true)
+    // {
+    //     for(uint8_t i = 0; i < 4; i++)
+    //     {
+    //         strato_ads1115.setChannel(i);
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //         strato_ads1115.getRawValue(raw);
+    //         std::cout << "RawValue: " << static_cast<int>(raw) << std::endl;
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    //         strato_ads1115.getVoltage(voltage);
+    //         std::cout << "Voltage: " << voltage << std::endl;
+    //     }
+    //     std::this_thread::sleep_for(std::chrono::seconds(1));
+    // }
+
+
+
+
+    QMC5883 strato_5883(0x0D);
+    strato_5883.init();
+    int16_t raw[3];
+    double magnet[3];
     while(true)
     {
-        for(uint8_t i = 0; i < 4; i++)
-        {
-            strato_ads1115.setChannel(i);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            strato_ads1115.getRawValue(raw);
-            std::cout << "RawValue: " << static_cast<int>(raw) << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            strato_ads1115.getVoltage(voltage);
-            std::cout << "Voltage: " << voltage << std::endl;
-        }
+        strato_5883.getXYZRawValues(raw[0], raw[1], raw[2]);
+        std::cout << "RawValue: " << static_cast<int>(raw[0]) << static_cast<int>(raw[1]) << static_cast<int>(raw[2]) << std::endl;
+        // strato_5883.getXYZMagneticFields(magnet[0], magnet[1], magnet[2]);
+        // std::cout << "MagnetValues: " << static_cast<int>(magnet[0]) << static_cast<int>(magnet[1]) << static_cast<int>(magnet[2]) << std::endl;
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        // strato_5883.getTemperature(temperature);
+        // std::cout << "Temperature: " << temperature << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     return 0;

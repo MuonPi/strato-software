@@ -89,7 +89,10 @@ bool ADS1115::getRawValue(int16_t &value)
 {
     uint8_t buf[2];
     if (!readReg(ADS1115_DATA_REG, buf, 2))
+    {
+        std::cout << "ADS1115 READ FAILED" << std::endl;
         return false;
+    }
 
     value = (int16_t)((buf[0] << 8) | buf[1]);
     return true;

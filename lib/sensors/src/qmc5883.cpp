@@ -1,5 +1,5 @@
-#include <stdint.h>
-#include <stdio.h>
+#include <iomanip>
+#include <iostream>
 #include <unistd.h>
 #include "qmc5883.h"
 
@@ -7,20 +7,153 @@
 // * QMC5883 3 axis magnetic field sensor
 // */
 
-// #define DATA_X_LSB_REG 0x00
-// #define DATA_X_MSB_REG 0x01
-// #define DATA_Y_LSB_REG 0x02
-// #define DATA_Y_MSB_REG 0x03
-// #define DATA_Z_LSB_REG 0x04
-// #define DATA_Z_MSB_REG 0x05
-// #define STATUS_REG_A 0x06
-// #define TEMP_LSB_REG 0x07
-// #define TEMP_MSB_REG 0x08
-// #define CTL_REG_A 0x09
-// #define CTL_REG_B 0x0A
-// #define PERIOD_REG 0x0B
-// #define STATUS_REG_B 0x0C
-// #define ID_REG 0x0D
+#define QMC5883_DATA_X_LSB_REG 0x00
+#define QMC5883_DATA_X_MSB_REG 0x01
+#define QMC5883_DATA_Y_LSB_REG 0x02
+#define QMC5883_DATA_Y_MSB_REG 0x03
+#define QMC5883_DATA_Z_LSB_REG 0x04
+#define QMC5883_DATA_Z_MSB_REG 0x05
+#define QMC5883_STATUS_REG_A 0x06
+#define QMC5883_TEMP_LSB_REG 0x07
+#define QMC5883_TEMP_MSB_REG 0x08
+#define QMC5883_CTL_REG_A 0x09
+#define QMC5883_CTL_REG_B 0x0A
+#define QMC5883_PERIOD_REG 0x0B
+#define QMC5883_STATUS_REG_B 0x0C
+#define QMC5883_ID_REG 0x0D
+
+
+
+
+QMC5883::QMC5883(uint8_t i2c_address)
+    : i2cDevice(i2c_address), _address(i2c_address)
+{}
+
+
+bool QMC5883::init()
+{
+    OSR = 0b01;
+    RNG = 0b00;
+    ODR = 0b00;
+    MODE = 0b01;
+    SOFT_RST = 0b0;;
+    ROL_PNT = 0b0;
+    INT_ENB = 0b0;
+
+    return setConfig();
+}
+
+
+bool QMC5883::setConfig()
+{
+    uint8_t config_a =
+        OSR << 6        |
+        RNG << 4        |
+        ODR << 2        |
+        MODE;
+    uint8_t config_b =
+        SOFT_RST << 7   |
+        ROL_PNT << 6    |
+        INT_ENB;
+
+    if (!writeReg(QMC5883_CTL_REG_A, &config_a, 1))
+    {
+        std::cout << "QMC5883 SET CONFIG A FAILED" << std::endl;
+        return false;
+    }
+    if (!writeReg(QMC5883_CTL_REG_B, &config_b, 1))
+    {
+        std::cout << "QMC5883 SET CONFIG B FAILED" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+
+bool QMC5883::getXYZRawValues(int16_t& x, int16_t& y, int16_t& z)
+{
+    uint8_t buf[6];
+    if(!readReg(QMC5883_DATA_X_LSB_REG, buf, 6))
+    {
+        std::cout << "QMC5883 READ FAILED" << std::endl;
+        return false;
+    }
+    x = (int16_t)((buf[0] << 8) | buf[1]);
+    y = (int16_t)((buf[2] << 8) | buf[3]);
+    z = (int16_t)((buf[4] << 8) | buf[5]);
+
+    // if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
+    //     return false;
+
+    return true;
+}
+
+
+bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
+{
+    int16_t raw[3];
+    double range;
+    if(!getXYZRawValues(raw[0], raw[1], raw[2]))
+        return false;
+    
+    switch (RNG)
+    {
+    case 0b00:
+        range = 2.0;
+        break;
+    case 0b01:
+        range = 8.0;
+        break;
+    default:
+        return false;
+    }
+
+    x = raw[0] / 32768.0 * range;      // wrong factor?
+    y = raw[1] / 32768.0 * range;      // wrong factor?
+    z = raw[2] / 32768.0 * range;      // wrong factor?
+    return true;
+}
+
+
+bool QMC5883::getTemperatureRawValue(int16_t& temperature)
+{
+    uint8_t buf[2];
+    if(!readReg(QMC5883_TEMP_LSB_REG, buf, 2))
+    {
+        std::cout << "QMC5883 READ FAILED" << std::endl;
+        return false;
+    }
+    temperature = (int16_t)((buf[0] << 8) | buf[1]);
+
+
+    // if (tempreg >= -2048 && tempreg < 2048)
+    //     return false;
+
+    return true;
+}
+
+
+bool QMC5883::getTemperature(double& temperature)
+{
+    int16_t raw;
+    if(!getTemperatureRawValue(raw))
+        return false;
+    
+    temperature = raw / 100.;      // wrong factor?
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // bool QMC5883::init()
 // {
@@ -90,54 +223,9 @@
 //     return false;
 // }
 
-// bool QMC5883::getXYZRawValues(uint16_t& x, uint16_t& y, uint16_t& z)
-// {
-//     uint8_t readBuf[6];
 
-//     // uint8_t cmd = 0x01; // start single measurement
-//     // int n = writeReg(0x02, &cmd, 1); // addr mode reg (MR)
-//     // usleep(6000);
 
-//     // Read the 3 data registers into readBuf starting from addr 0x03
-//     int n = readReg(DATA_X_LSB_REG, readBuf, 6);
-//     uint16_t xreg = (uint16_t)(readBuf[0] | readBuf[1] << 8);
-//     uint16_t yreg = (uint16_t)(readBuf[2] | readBuf[3] << 8);
-//     uint16_t zreg = (uint16_t)(readBuf[4] | readBuf[5] << 8);
 
-//     // if (fDebugLevel > 1) {
-//     //     printf("%d bytes read\n", n);
-//     //     printf("xreg: %d\n", xreg);
-//     //     printf("yreg: %d\n", yreg);
-//     //     printf("zreg: %d\n", zreg);
-//     // }
-
-//     x = xreg;
-//     y = yreg;
-//     z = zreg;
-
-//     if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
-//         return true;
-
-//     return false;
-// }
-
-// bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
-// {
-//     uint16_t xreg, yreg, zreg;
-//     bool ok = getXYZRawValues(xreg, yreg, zreg);
-//     // double lsbgain = GAIN[fGain];
-//     x = /* lsbgain * */ xreg / 1000.;      // wrong factor?
-//     y = /* lsbgain * */ yreg / 1000.;      // wrong factor?
-//     z = /* lsbgain * */ zreg / 1000.;      // wrong factor?
-
-//     // if (fDebugLevel > 1) {
-//     //     printf("x field: %f G\n", x);
-//     //     printf("y field: %f G\n", y);
-//     //     printf("z field: %f G\n", z);
-//     // }
-
-//     return ok;
-// }
 
 // bool QMC5883::getTemperatureRawValue(uint16_t& temperature)
 // {
