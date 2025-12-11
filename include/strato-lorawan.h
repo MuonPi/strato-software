@@ -21,6 +21,12 @@
 
 #define LMIC_CLOCK_ERROR_PPM 30000
 
+class Lorawan
+{
+    public:
+    private:
+};
+
 void onEvent(void *pUserData, ev_t ev);
 bool setup(devaddr_t devaddr, const lmic_pinmap& lmic_pins, unsigned char *appskey, unsigned char *nwkskey);
 void do_send(osjob_t* j);

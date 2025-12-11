@@ -1,6 +1,8 @@
 #include <iomanip>
 #include <iostream>
 #include <unistd.h>
+#include <cmath>
+
 #include "qmc5883.h"
 
 // /*
@@ -70,7 +72,7 @@ bool QMC5883::setConfig()
 }
 
 
-bool QMC5883::getXYZRawValues(int16_t& x, int16_t& y, int16_t& z)
+bool QMC5883::getMagneticFieldRawValueXYZ(int16_t value[3])
 {
     uint8_t buf[6];
     if(!readReg(QMC5883_DATA_X_LSB_REG, buf, 6))
@@ -78,9 +80,9 @@ bool QMC5883::getXYZRawValues(int16_t& x, int16_t& y, int16_t& z)
         std::cout << "QMC5883 READ FAILED" << std::endl;
         return false;
     }
-    x = (int16_t)((buf[0] << 8) | buf[1]);
-    y = (int16_t)((buf[2] << 8) | buf[3]);
-    z = (int16_t)((buf[4] << 8) | buf[5]);
+    value[0] = (int16_t)((buf[1] << 8) | buf[0]);
+    value[1] = (int16_t)((buf[3] << 8) | buf[2]);
+    value[2] = (int16_t)((buf[5] << 8) | buf[4]);
 
     // if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
     //     return false;
@@ -89,11 +91,11 @@ bool QMC5883::getXYZRawValues(int16_t& x, int16_t& y, int16_t& z)
 }
 
 
-bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
+bool QMC5883::getMagneticFieldXYZ(double magnet[3])
 {
     int16_t raw[3];
     double range;
-    if(!getXYZRawValues(raw[0], raw[1], raw[2]))
+    if(!getMagneticFieldRawValueXYZ(raw))
         return false;
     
     switch (RNG)
@@ -108,9 +110,20 @@ bool QMC5883::getXYZMagneticFields(double& x, double& y, double& z)
         return false;
     }
 
-    x = raw[0] / 32768.0 * range;      // wrong factor?
-    y = raw[1] / 32768.0 * range;      // wrong factor?
-    z = raw[2] / 32768.0 * range;      // wrong factor?
+    magnet[0] = raw[0] / 32768.0 * range;      // wrong factor?
+    magnet[1] = raw[1] / 32768.0 * range;      // wrong factor?
+    magnet[2] = raw[2] / 32768.0 * range;      // wrong factor?
+    return true;
+}
+
+
+bool QMC5883::getMagneticField(double& magnet)
+{
+    double value[3];
+    if(!getMagneticFieldXYZ(value))
+        return false;
+    
+    magnet = std::sqrt(value[0] * value[0] + value[1] * value[1] + value[2] * value[2]);
     return true;
 }
 
@@ -123,7 +136,7 @@ bool QMC5883::getTemperatureRawValue(int16_t& temperature)
         std::cout << "QMC5883 READ FAILED" << std::endl;
         return false;
     }
-    temperature = (int16_t)((buf[0] << 8) | buf[1]);
+    temperature = (int16_t)((buf[1] << 8) | buf[0]);
 
 
     // if (tempreg >= -2048 && tempreg < 2048)

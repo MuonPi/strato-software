@@ -85,7 +85,7 @@ bool ADS1115::setChannel(uint8_t channel)
 }
 
 
-bool ADS1115::getRawValue(int16_t &value)
+bool ADS1115::getVoltageRawValue(int16_t &value)
 {
     uint8_t buf[2];
     if (!readReg(ADS1115_DATA_REG, buf, 2))
@@ -103,7 +103,7 @@ bool ADS1115::getVoltage(double &voltage)
 {
     int16_t raw;
     double range;
-    if (!getRawValue(raw))
+    if (!getVoltageRawValue(raw))
         return false;
     
     switch (PGA)

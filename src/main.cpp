@@ -39,6 +39,7 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+
 #include "lmic.h"
 #include "hal/hal.h"
 #include "raspi/raspi.h"
@@ -191,23 +192,35 @@ int main()
     // }
 
 
+    Sensors StratoSensors;
 
-
-    QMC5883 strato_5883(0x0D);
-    strato_5883.init();
-    int16_t raw[3];
-    double magnet[3];
-    while(true)
-    {
-        strato_5883.getXYZRawValues(raw[0], raw[1], raw[2]);
-        std::cout << "RawValue: " << static_cast<int>(raw[0]) << static_cast<int>(raw[1]) << static_cast<int>(raw[2]) << std::endl;
+    // QMC5883 strato_5883(0x0D);
+    // strato_5883.init();
+    // int16_t raw[3];
+    // double magnet[3];
+        // strato_5883.getXYZRawValues(raw[0], raw[1], raw[2]);
+        // std::cout << "RawValue: " << static_cast<int>(raw[0]) << static_cast<int>(raw[1]) << static_cast<int>(raw[2]) << std::endl;
         // strato_5883.getXYZMagneticFields(magnet[0], magnet[1], magnet[2]);
         // std::cout << "MagnetValues: " << static_cast<int>(magnet[0]) << static_cast<int>(magnet[1]) << static_cast<int>(magnet[2]) << std::endl;
         // std::this_thread::sleep_for(std::chrono::milliseconds(100));
         // strato_5883.getTemperature(temperature);
         // std::cout << "Temperature: " << temperature << std::endl;
+
+
+    StratoSensors.start();
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        std::cout << StratoSensors.temperature << std::endl;
+        std::cout << StratoSensors.temperature_mean << std::endl;
+        std::cout << StratoSensors.temperature_count << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+
+    StratoSensors.stop();
+
     return 0;
 }
 

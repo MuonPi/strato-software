@@ -13,8 +13,9 @@ public:
     bool init();
     // bool getConfig(uint16_t &value);
     bool setConfig();
-    bool getXYZRawValues(int16_t& x, int16_t& y, int16_t& z);
-    bool getXYZMagneticFields(double& x, double& y, double& z);
+    bool getMagneticFieldRawValueXYZ(int16_t value[3]);
+    bool getMagneticFieldXYZ(double magnet[3]);
+    bool getMagneticField(double& magnet);
     bool getTemperatureRawValue(int16_t& temperature);
     bool getTemperature(double& temperature);
 

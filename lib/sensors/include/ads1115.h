@@ -21,7 +21,7 @@ public:
     // bool getConfig(uint16_t &value);
     bool setConfig();
     bool setChannel(uint8_t channel);
-    bool getRawValue(int16_t &value);
+    bool getVoltageRawValue(int16_t &value);
     bool getVoltage(double &voltage);
 
     uint8_t OS = 0b0;

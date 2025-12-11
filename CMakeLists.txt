@@ -64,6 +64,7 @@ target_link_libraries(strato-software
     gpiod
     lmic
     sensors
+    atomic
 )
 
 # ------------------------------
