@@ -1,38 +1,3 @@
-// /*******************************************************************************
-//  * AmbaSat-1
-//  * Filename: AmbaSatLMIC.cpp
-//  *
-//  * This library is designed for use with AmbaSat-1 and is a wrapper for
-//  * IBM LMIC functionality
-//  *
-//  * Copyright (c) 2022 AmbaSat Ltd
-//  * https://ambasat.com
-//  *
-//  * licensed under Creative Commons Attribution-ShareAlike 3.0
-//  *******************************************************************************/
-
-// /*******************************************************************************
-//  *                Leds                GPIO
-//  *                ----                ----
-//  *                LED   <――――――――――>  13  (LED_BUILTIN) (SCK) Active-high,
-//  *                                        Useless, shared with SCK.
-//  *
-//  *                I2C [display]       GPIO
-//  *                ---                 ----
-//  *                SDA   <――――――――――>   2  (SDA)
-//  *                SCL   <――――――――――>   3  (SCL)
-//  *
-//  *                SPI/LoRa module     GPIO
-//  *                ----                ----
-//  *                MOSI  <――――――――――>  11  (MOSI)
-//  *                MISO  <――――――――――>  12  (MISO)
-//  *                SCK   <――――――――――>  13  (SCK)
-//  *                NSS   <――――――――――>  10  (SS)
-//  *                RST   <――――――――――>   7
-//  *                DIO0  <――――――――――>   8
-//  *                DIO1  <――――――――――>   9
-//  *                DIO2                 -  Not needed for LoRa.
-//  *******************************************************************************/
 
 #include <iostream>
 #include <unistd.h>
@@ -48,9 +13,12 @@
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
-#include "strato-lorawan.h"
+
 #include "hal/hal.h"
 #include "lmic.h"
+
+#include "strato-config.h"
+#include "strato-lorawan.h"
 
 // bool joined = false;
 // bool sleeping = false;
@@ -59,15 +27,13 @@ static osjob_t sendjob;
 
 static bool job_running{false};
 
-// ======================================================================================
+bool txcomplete = 0;
+
 
 void printEvent(ev_t ev)
 {
 }
 
-// =========================================================================================================================================
-// onEvent
-// =========================================================================================================================================
 
 void onEvent(void *pUserData, ev_t ev)
 {
@@ -81,7 +47,7 @@ void onEvent(void *pUserData, ev_t ev)
 
     case EV_TXSTART:
         std::cout << std::to_string(os_getTime()) << ": EV_TXSTART" << std::endl;
-        dump_rfm96_registers();
+        // dump_rfm96_registers();
         break;
     case EV_JOIN_TXCOMPLETE:
         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
@@ -134,7 +100,7 @@ void onEvent(void *pUserData, ev_t ev)
         }
         // Schedule next transmission
         // will be called by main loop
-        dump_rfm96_registers();
+        // dump_rfm96_registers();
         txcomplete = 1;
         // std::exit(0);   //NKRG
         break;
@@ -168,9 +134,175 @@ void onEvent(void *pUserData, ev_t ev)
     }
 }
 
-// ======================================================================================
 
-bool setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned char *appskey, unsigned char *nwkskey)
+void do_send(osjob_t *j)
+{
+    // Check if there is not a current TX/RX job running
+    if (LMIC.opmode & OP_TXRXPEND)
+    {
+        std::cout << "OP_TXRXPEND, not sending" << std::endl;
+        return;
+    }
+    else
+    {
+        // Prepare upstream data transmission at the next possible time.
+        std::cout << "Sending: ";
+        for (size_t i = 0; i < data_size; i++)
+        {
+            std::cout << static_cast<char>(data[i]);
+        }
+        std::cout << std::endl;
+        std::cout << "seqnoup: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
+        LMIC_setTxData2(1, data, data_size, 0);
+        std::cout << "Packet queued" << std::endl;
+    }
+    // Next TX is scheduled after TX_COMPLETE event.
+}
+
+
+
+
+// ========================================================================================================================
+
+
+
+
+Lorawan::Lorawan()
+    : running(false)
+{ }
+
+
+Lorawan::~Lorawan()
+{
+    stop();
+}
+
+
+bool Lorawan::start()
+{
+    bool expected = false;
+    if (!running.compare_exchange_strong(expected, true))
+        return false;
+
+    lorawanThread = std::thread(&Lorawan::threadFunc, this);
+    return true;
+}
+
+
+bool Lorawan::stop()
+{
+    bool expected = true;
+    if (!running.compare_exchange_strong(expected, false))
+        return false;
+
+    if (lorawanThread.joinable())
+        lorawanThread.join();
+    return true;
+}
+
+
+void Lorawan::threadFunc()
+{
+    std::cout << "LorawanThread started" << std::endl;
+    
+
+
+    #define DEVICEID "eui-70b3d57ed0052abe"     // Arduino-Test-0
+    #define ABP_DEVICEID "eui-70b3d57ed0052abe"
+
+    // The Network Session Key / DO NOT SHARE
+    static const u1_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
+
+    // LoRaWAN AppSKey, application session key / DO NOT SHARE
+    static const u1_t APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
+
+    // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
+    static const u4_t DEVADDR = 0x260BC37E;
+
+    uint32_t uplinkSequenceNo;
+    uint8_t payload[256];
+    uint8_t len;
+    const unsigned TX_INTERVAL = 60;
+    osjob_t workjob;
+
+    // Pin mapping
+    const lmic_pinmap lmic_pins = 
+    {
+        .nss = RF_CS_PIN,
+        .rxtx = LMIC_UNUSED_PIN,
+        .rst = RF_RST_PIN,
+        .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
+        .rxtx_rx_active = 0,
+        .rssi_cal = 10,
+        .spi_freq = 1000000 /* 1 MHz */
+    };
+
+
+
+    const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
+
+
+
+
+    uint8_t nwkskey[sizeof(NWKSKEY)];
+    uint8_t appskey[sizeof(APPSKEY)];
+
+    for (int i = 0; i < 16; i++)
+    {
+        nwkskey[i] = NWKSKEY[i];
+        appskey[i] = APPSKEY[i];
+    }
+
+    setup(DEVADDR, lmic_pins, appskey, nwkskey);
+    // os_runloop_once();
+
+    std::cout << "finished setup function" << std::endl;
+
+
+    auto start_time = std::chrono::steady_clock::now();
+
+
+    while (running)
+    {
+
+        uplinkSequenceNo = SeqNoFile();
+        std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+
+        len = PayloadFile(payload);
+        std::cout << static_cast<int>(len) << std::endl;
+        for (size_t i = 0; i < len; i++)
+        {
+            std::cout << static_cast<int>(payload[i]) << " ";
+        }
+        std::cout << std::endl;
+
+
+        sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+
+
+        while(txcomplete == 0)
+        {
+            os_runloop_once();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        txcomplete = 0;
+
+        std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
+    }
+    
+
+    std::cout << "LorawanThread stopped" << std::endl;
+}
+
+
+
+
+
+
+
+
+bool Lorawan::setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned char *appskey, unsigned char *nwkskey)
 {
     os_init_ex(&lmic_pins); // LMIC init
 
@@ -213,54 +345,8 @@ bool setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned char *appsk
     return true;
 }
 
-// ======================================================================================
 
-void do_send(osjob_t *j)
-{
-    // Check if there is not a current TX/RX job running
-    if (LMIC.opmode & OP_TXRXPEND)
-    {
-        std::cout << "OP_TXRXPEND, not sending" << std::endl;
-        return;
-    }
-    else
-    {
-        // Prepare upstream data transmission at the next possible time.
-        std::cout << "Sending: ";
-        for (size_t i = 0; i < data_size; i++)
-        {
-            std::cout << static_cast<char>(data[i]);
-        }
-        std::cout << std::endl;
-        std::cout << "seqnoup: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
-        LMIC_setTxData2(1, data, data_size, 0);
-        std::cout << "Packet queued" << std::endl;
-    }
-    // Next TX is scheduled after TX_COMPLETE event.
-}
-
-// void do_send(osjob_t *workjob)
-// {
-//     // Check if there is not a current TX/RX job running
-//     if (LMIC.opmode & OP_TXRXPEND)
-//     {
-//         std::cout << "OP_TXRXPEND, not sending" << std::endl;
-//         return;
-//     }
-//     else
-//     {
-//         // m_serial_handler->send("Answer: " + String(data.c_str()));
-//         // auto buf = reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str()));
-//         // m_serial_handler->send(data);
-//         // LMIC_setTxData2(1, reinterpret_cast<uint8_t*>(const_cast<char*>(data.c_str())),
-//         data.length(), 0); LMIC_setTxData2(1, data, data_size, 0);
-//     }
-//     // Next TX is scheduled after TX_COMPLETE event.
-// }
-
-
-
-void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
+void Lorawan::sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
 {
     data = message;
     data_size = n;
@@ -272,8 +358,7 @@ void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
 }
 
 
-
-uint32_t SeqNoFile()
+uint32_t Lorawan::SeqNoFile()
 {
     uint32_t seqno;
     std::string line;
@@ -312,8 +397,7 @@ uint32_t SeqNoFile()
 }
 
 
-
-uint8_t PayloadFile(uint8_t* payload)
+uint8_t Lorawan::PayloadFile(uint8_t* payload)
 {
     uint8_t payloadlen = 0;
     std::string line;
@@ -362,60 +446,60 @@ uint8_t PayloadFile(uint8_t* payload)
 
 
 
-#include <iostream>
-#include <iomanip>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/spi/spidev.h>
-#include <cstring>
+// #include <iostream>
+// #include <iomanip>
+// #include <fcntl.h>
+// #include <unistd.h>
+// #include <sys/ioctl.h>
+// #include <linux/spi/spidev.h>
+// #include <cstring>
 
-#define SPI_DEVICE "/dev/spidev0.0"
+// #define SPI_DEVICE "/dev/spidev0.0"
 
-uint8_t rfm96_read_register(int spi_fd, uint8_t reg) {
-    uint8_t tx[2] = { reg & 0x7F, 0x00 }; // MSB=0 → read
-    uint8_t rx[2] = { 0 };
+// uint8_t rfm96_read_register(int spi_fd, uint8_t reg) {
+//     uint8_t tx[2] = { reg & 0x7F, 0x00 }; // MSB=0 → read
+//     uint8_t rx[2] = { 0 };
 
-    struct spi_ioc_transfer tr{};
-    tr.tx_buf = (unsigned long)tx;
-    tr.rx_buf = (unsigned long)rx;
-    tr.len = 2;
-    tr.speed_hz = 8000000;
-    tr.bits_per_word = 8;
+//     struct spi_ioc_transfer tr{};
+//     tr.tx_buf = (unsigned long)tx;
+//     tr.rx_buf = (unsigned long)rx;
+//     tr.len = 2;
+//     tr.speed_hz = 8000000;
+//     tr.bits_per_word = 8;
 
-    if (ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr) < 0) {
-        perror("SPI read failed");
-    }
+//     if (ioctl(spi_fd, SPI_IOC_MESSAGE(1), &tr) < 0) {
+//         perror("SPI read failed");
+//     }
 
-    return rx[1];
-}
+//     return rx[1];
+// }
 
-void dump_rfm96_registers() {
-    int spi_fd = open(SPI_DEVICE, O_RDWR);
-    if (spi_fd < 0) {
-        perror("SPI open failed");
-        return;
-    }
+// void dump_rfm96_registers() {
+//     int spi_fd = open(SPI_DEVICE, O_RDWR);
+//     if (spi_fd < 0) {
+//         perror("SPI open failed");
+//         return;
+//     }
 
-    uint8_t mode = SPI_MODE_0;
-    uint32_t speed = 8000000;
-    uint8_t bits = 8;
+//     uint8_t mode = SPI_MODE_0;
+//     uint32_t speed = 8000000;
+//     uint8_t bits = 8;
 
-    ioctl(spi_fd, SPI_IOC_WR_MODE, &mode);
-    ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-    ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+//     ioctl(spi_fd, SPI_IOC_WR_MODE, &mode);
+//     ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
+//     ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
 
-    std::cout << "RFM96 Register Dump:\n--------------------\n";
+//     std::cout << "RFM96 Register Dump:\n--------------------\n";
 
-    for (uint8_t reg = 0x00; reg <= 0x70; reg++) {
-        uint8_t val = rfm96_read_register(spi_fd, reg);
-        std::cout << "0x"
-                  << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
-                  << (int)reg << ": 0x"
-                  << std::setw(2) << (int)val << std::dec << "\n";
-    }
+//     for (uint8_t reg = 0x00; reg <= 0x70; reg++) {
+//         uint8_t val = rfm96_read_register(spi_fd, reg);
+//         std::cout << "0x"
+//                   << std::hex << std::uppercase << std::setw(2) << std::setfill('0')
+//                   << (int)reg << ": 0x"
+//                   << std::setw(2) << (int)val << std::dec << "\n";
+//     }
 
-    std::cout << "-------------------- END\n";
+//     std::cout << "-------------------- END\n";
 
-    close(spi_fd);   // SPI sauber freigeben für andere Module
-}
+//     close(spi_fd);   // SPI sauber freigeben für andere Module
+// }

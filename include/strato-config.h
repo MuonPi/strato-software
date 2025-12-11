@@ -2,7 +2,12 @@
 #ifndef _STRATO_CONFIG_H_
 #define _STRATO_CONFIG_H_
 
+#define RF_CS_PIN 8
+#define RF_IRQ_PIN 20
+#define RF_RST_PIN 21
+
 #define SENSORS_INTERVAL 1000 //ms
+#define LORAWAN_INTERVAL 60 //s
 
 #define ADS1115_ADDR 0x4A
 #define QMC5883_ADDR 0x0D

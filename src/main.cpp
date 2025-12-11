@@ -46,7 +46,7 @@
 #include "spidevice.h"
 
 
-
+#include "strato-config.h"
 #include "strato-lorawan.h"
 #include "strato-sensors.h"
 
@@ -100,15 +100,12 @@ uint8_t len;
 const unsigned TX_INTERVAL = 60;
 osjob_t workjob;
 
-bool txcomplete = 0;
 
 
-
-
-// Strato-Mainboard		//NKRG
-#define RF_CS_PIN 8
-#define RF_IRQ_PIN 20
-#define RF_RST_PIN 21
+// // Strato-Mainboard		//NKRG
+// #define RF_CS_PIN 8
+// #define RF_IRQ_PIN 20
+// #define RF_RST_PIN 21
 
 // Pin mapping
 const lmic_pinmap lmic_pins = 
@@ -123,10 +120,11 @@ const lmic_pinmap lmic_pins =
 };
 
 
+Lorawan StratoLorawan;
+
+
 int main()
 {
-
-
 
     // uint8_t nwkskey[sizeof(NWKSKEY)];
     // uint8_t appskey[sizeof(APPSKEY)];
@@ -137,15 +135,15 @@ int main()
     //     appskey[i] = APPSKEY[i];
     // }
 
-    // setup(DEVADDR, lmic_pins, appskey, nwkskey);
+    // StratoLorawan.setup(DEVADDR, lmic_pins, appskey, nwkskey);
     // // os_runloop_once();
 
     // std::cout << "finished setup function" << std::endl;
 
-    // uplinkSequenceNo = SeqNoFile();
+    // uplinkSequenceNo = StratoLorawan.SeqNoFile();
     // std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
 
-    // len = PayloadFile(payload);
+    // len = StratoLorawan.PayloadFile(payload);
     // std::cout << static_cast<int>(len) << std::endl;
     // for (size_t i = 0; i < len; i++)
     // {
@@ -154,11 +152,13 @@ int main()
     // std::cout << std::endl;
 
 
-
+    StratoLorawan.start();
+    std::this_thread::sleep_for(std::chrono::seconds(20));
+    StratoLorawan.stop();
 
     // for (uint8_t i = 0; i < 1; i++)
     // {
-    //     sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+    //     StratoLorawan.sendLoraPayload(1u, uplinkSequenceNo, payload, len);
 
     //     while(txcomplete == 0)
     //     {
