@@ -62,7 +62,7 @@ void noInterrupts()
 
 void pinMode(uint8_t pin, uint8_t mode)
 {
-    std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
+    // std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
     if(gpio_init_state == 0)
     {
         init_gpio();
@@ -76,14 +76,14 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 bool digitalRead(uint8_t pin)
 {
-    std::cout << "digital Read" << std::endl;
+    // std::cout << "digital Read" << std::endl;
     return read_line(pin);
     // std::cout << "after read line" << std::endl;
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)
 {
-    std::cout << "digital Write" << std::endl;
+    // std::cout << "digital Write" << std::endl;
     write_line(pin, value);
     // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }

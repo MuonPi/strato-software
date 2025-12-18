@@ -463,13 +463,13 @@ static void runEngineUpdate (xref2osjob_t osjob) {
 }
 
 static void reportEventAndUpdate(ev_t ev) {
-    printf("start reportEventAndUpdate\n");
+    // printf("start reportEventAndUpdate\n");
     reportEventNoUpdate(ev);
     engineUpdate();
 }
 
 static void reportEventNoUpdate (ev_t ev) {
-    printf("start reportEventNoUpdate\n");
+    // printf("start reportEventNoUpdate\n");
     uint32_t const evSet = UINT32_C(1) << ev;
     EV(devCond, INFO, (e_.reason = EV::devCond_t::LMIC_EV,
                        e_.eui    = MAIN::CDEV->getEui(),
@@ -1814,7 +1814,7 @@ static void setupRx2DnData (xref2osjob_t osjob) {
 
 
 static void processRx1DnData (xref2osjob_t osjob) {
-    printf("processRx1DnData startet\n");
+    // printf("processRx1DnData startet\n");
     LMIC_API_PARAMETER(osjob);
 
     if( LMIC.dataLen == 0 || !processDnData() )
@@ -1823,7 +1823,7 @@ static void processRx1DnData (xref2osjob_t osjob) {
 
 
 static void setupRx1DnData (xref2osjob_t osjob) {
-    printf("setupRx1DnData startet\n");
+    // printf("setupRx1DnData startet\n");
     LMIC_API_PARAMETER(osjob);
 
     setupRx1(FUNC_ADDR(processRx1DnData));
@@ -1831,11 +1831,11 @@ static void setupRx1DnData (xref2osjob_t osjob) {
 
 
 static void updataDone (xref2osjob_t osjob) {   // muss durchlaufen werden
-    printf("updataDone startet\n");
+    // printf("updataDone startet\n");
     LMIC_API_PARAMETER(osjob);
 
     txDone(sec2osticks(LMIC.rxDelay), FUNC_ADDR(setupRx1DnData));
-    printf("updataDone endet\n");
+    // printf("updataDone endet\n");
 }
 
 // ========================================
@@ -2332,7 +2332,7 @@ static bit_t processDnData_norx(void) {
 
 // this Class-A uplink-and-receive cycle is complete.
 static bit_t processDnData_txcomplete(void) {   // hier müssen wir rein
-    printf("processDnData_txcomplete");
+    // printf("processDnData_txcomplete");
     LMIC.opmode &= ~(OP_TXDATA|OP_TXRXPEND);
     // turn off all the repeat stuff.
     LMIC.txCnt = LMIC.upRepeatCount = 0;
@@ -2536,8 +2536,8 @@ static void startRxPing (xref2osjob_t osjob) {
 // Decide what to do next for the MAC layer of a device. Inner part.
 // Only called from outer part.
 static void engineUpdate_inner (void) {
-    printf("engineUpdate_inner start");
-    printf("LMIC.opmode = %i\n", LMIC.opmode);
+    // printf("engineUpdate_inner start");
+    // printf("LMIC.opmode = %i\n", LMIC.opmode);
 #if LMIC_DEBUG_LEVEL > 0
     LMIC_DEBUG_PRINTF("%"LMIC_PRId_ostime_t": engineUpdate, opmode=0x%x\n", os_getTime(), LMIC.opmode);
 #endif
@@ -2578,7 +2578,7 @@ static void engineUpdate_inner (void) {
 #endif // !DISABLE_BEACONS
 
     if( (LMIC.opmode & (OP_JOINING|OP_REJOIN|OP_TXDATA|OP_POLL)) != 0 ) {
-        printf("LMIC.opmode 1. if to EV_TXCOMPLETE\n");
+        // printf("LMIC.opmode 1. if to EV_TXCOMPLETE\n");
         // Assuming txChnl points to channel which first becomes available again.
         bit_t jacc = ((LMIC.opmode & (OP_JOINING|OP_REJOIN)) != 0 ? 1 : 0);
         // Find next suitable channel and return availability time
@@ -2606,7 +2606,7 @@ static void engineUpdate_inner (void) {
 #endif // !DISABLE_BEACONS
         // Earliest possible time vs overhead to setup radio
         if( txbeg - (now + TX_RAMPUP) < 0 ) {
-            printf("LMIC.opmode 2. if to EV_TXCOMPLETE\n");
+            // printf("LMIC.opmode 2. if to EV_TXCOMPLETE\n");
             // We could send right now!
             txbeg = now;
             dr_t txdr = (dr_t)LMIC.datarate;
@@ -2636,7 +2636,7 @@ static void engineUpdate_inner (void) {
                     // Thus, we have N frames to detect a possible lock up.
                   reset:
                     os_setCallback(&LMIC.osjob, FUNC_ADDR(runReset));
-                    printf("exit goto reset\n");
+                    // printf("exit goto reset\n");
                     return;
                 }
                 if( (LMIC.txCnt==0 && LMIC.seqnoUp == 0xFFFFFFFF) ) {
@@ -2649,7 +2649,7 @@ static void engineUpdate_inner (void) {
                     goto reset;
                 }
                 if (! buildDataFrame()) {
-                    printf("LMIC.opmode 3. if to not right EV_TXCOMPLETE\n");
+                    // printf("LMIC.opmode 3. if to not right EV_TXCOMPLETE\n");
                     // can't transmit this message. Report completion.
                     initTxrxFlags(__func__, TXRX_LENERR);
                     if (LMIC.pendTxConf || LMIC.txCnt) {
@@ -2660,7 +2660,7 @@ static void engineUpdate_inner (void) {
                     reportEventNoUpdate(EV_TXCOMPLETE);     // hier wird der zwar ausgelöst aber sagt trotzdem nicht aus ob senden geklappt hat
                     return;
                 }
-                printf("hier gehts lang nach updataDone\n");
+                // printf("hier gehts lang nach updataDone\n");
                 LMIC.osjob.func = FUNC_ADDR(updataDone);    // hier lang geht es zum richtigen txcomplete in updataDone
             } // end of else (not joining)
             LMIC.rps    = setCr(updr2rps(txdr), (cr_t)LMIC.errcr);
@@ -2670,9 +2670,9 @@ static void engineUpdate_inner (void) {
             // limit power to value asked in adr
             LMIC.radio_txpow = LMIC.txpow > LMIC.adrTxPow ? LMIC.adrTxPow : LMIC.txpow;
             reportEventNoUpdate(EV_TXSTART);
-            printf("before os_radio\n");
+            // printf("before os_radio\n");
             os_radio(RADIO_TX);
-            printf("after os_radio\n");
+            // printf("after os_radio\n");
             return;
         }
         // Cannot yet TX
@@ -2750,9 +2750,9 @@ static void engineUpdate (void) {
     if (state == lmic_EngineUpdateState_idle) {
         LMIC.engineUpdateState = lmic_EngineUpdateState_busy;
         do  {
-            printf("before engineUpdate_inner\n");
+            // printf("before engineUpdate_inner\n");
             engineUpdate_inner();
-            printf("after engineUpdate_inner\n");
+            // printf("after engineUpdate_inner\n");
             state = LMIC.engineUpdateState - 1;
             LMIC.engineUpdateState = state;
             } while (state != lmic_EngineUpdateState_idle);
@@ -2931,22 +2931,22 @@ void LMIC_setTxData_strict (void) {
         LMIC.txCnt = 0;             // reset the confirmed uplink FSM
         LMIC.upRepeatCount = 0;     // reset the unconfirmed repeat FSM
     }
-    printf("before engineUpdate\n");
+    // printf("before engineUpdate\n");
     engineUpdate();
-    printf("after engineUpdate\n");
+    // printf("after engineUpdate\n");
 }
 
 
 // send a message, attempting to adjust TX data rate
 lmic_tx_error_t LMIC_setTxData2 (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
-    printf("LMIC_setTxData2\n");
+    // printf("LMIC_setTxData2\n");
     adjustDrForFrameIfNotBusy(dlen);
     return LMIC_setTxData2_strict(port, data, dlen, confirmed);
 }
 
 // send a message w/o callback; do not adjust data rate
 lmic_tx_error_t LMIC_setTxData2_strict (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed) {
-    printf("LMIC_setTxData2_strict");
+    // printf("LMIC_setTxData2_strict");
     if (isTxPathBusy()) {
         // already have a message queued
         return LMIC_ERROR_TX_BUSY;
@@ -2958,9 +2958,9 @@ lmic_tx_error_t LMIC_setTxData2_strict (u1_t port, xref2u1_t data, u1_t dlen, u1
     LMIC.pendTxConf = confirmed;
     LMIC.pendTxPort = port;
     LMIC.pendTxLen  = dlen;
-    printf("LMIC_setTxData_strict after dlen\n");
+    // printf("LMIC_setTxData_strict after dlen\n");
     LMIC_setTxData_strict();
-    printf("LMIC_setTxData_strict after dings\n");
+    // printf("LMIC_setTxData_strict after dings\n");
     if ( (LMIC.opmode & OP_TXDATA) == 0 ) {
         if (LMIC.txrxFlags & TXRX_LENERR) {
             return LMIC_ERROR_TX_NOT_FEASIBLE;

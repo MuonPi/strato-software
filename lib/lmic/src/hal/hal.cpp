@@ -43,12 +43,14 @@ static void hal_io_init()
     ASSERT(plmic_pins->dio[0] != LMIC_UNUSED_PIN);
     ASSERT(plmic_pins->dio[1] != LMIC_UNUSED_PIN || plmic_pins->dio[2] != LMIC_UNUSED_PIN);      // NKRG Why should we test this? Do we need dio1 and dio2?
 
+    std::cout << std::endl;
     std::cout << "nss: " << static_cast<int>(plmic_pins->nss) << std::endl;
     std::cout << "rst: " << static_cast<int>(plmic_pins->rst) << std::endl;
     std::cout << "dio[0]: " << static_cast<int>(plmic_pins->dio[0]) << std::endl;
     std::cout << "dio[1]: " << static_cast<int>(plmic_pins->dio[1]) << std::endl;
     std::cout << "dio[2]: " << static_cast<int>(plmic_pins->dio[2]) << std::endl;
-
+    std::cout << std::endl;
+    
     // initialize SPI chip select to high (it's active low)
     // digitalWrite(plmic_pins->nss, HIGH);
     // pinMode(plmic_pins->nss, OUTPUT);
@@ -229,7 +231,7 @@ void hal_processPendingIRQs()
         iTime = interrupt_time[i];
         if (iTime)
         {
-            std::cout << "iTime hat einen Wert" << std::endl;
+            // std::cout << "iTime hat einen Wert" << std::endl;
             interrupt_time[i] = 0;
             radio_irq_handler_v2(i, iTime);
         }

@@ -837,9 +837,9 @@ static void txlora () {
     // printf("-------------------\n");                        //NKRG
 
     // download buffer to the radio FIFO
-    printf("before RegFifo\n");
+    // printf("before RegFifo\n");
     writeBuf(RegFifo, LMIC.frame, LMIC.dataLen);
-    printf("after RegFifo\n");
+    // printf("after RegFifo\n");
 
     // enable antenna switch for TX
     hal_pin_rxtx(1);
@@ -900,9 +900,9 @@ static void starttx () {
     if(getSf(LMIC.rps) == FSK) { // FSK modem
         txfsk();
     } else { // LoRa modem
-        printf("before txlora\n");
+        // printf("before txlora\n");
         txlora();
-        printf("after txlora\n");
+        // printf("after txlora\n");
     }
     // the radio will go back to STANDBY mode as soon as the TX is finished
     // the corresponding IRQ will inform us about completion.
@@ -978,7 +978,7 @@ static void rxlora (u1_t rxmode) {
 
     // configure DIO mapping DIO0=RxDone DIO1=RxTout DIO2=NOP
     writeReg(RegDioMapping1, MAP_DIO0_LORA_RXDONE|MAP_DIO1_LORA_RXTOUT|MAP_DIO2_LORA_NOP);    //NKRG jetzt ist es wieder original aber das hatte ich mal probiert: writeReg(RegDioMapping1, MAP_DIO0_LORA_TXDONE|MAP_DIO1_LORA_RXTOUT);
-    printf("DIOMapping\n");
+    // printf("DIOMapping\n");
     // clear all radio IRQ flags
     writeReg(LORARegIrqFlags, 0xFF);
     // enable required radio IRQs
@@ -1284,7 +1284,7 @@ void radio_irq_handler (u1_t dio) {
 }
 
 void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
-    printf("radio_irq_handler_v2\n");
+    // printf("radio_irq_handler_v2\n");
     LMIC_API_PARAMETER(dio);
 
 #if CFG_TxContinuousMode
@@ -1306,18 +1306,18 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
     ostime_t const entry = now;
 #endif
     if( (readReg(RegOpMode) & OPMODE_LORA) != 0) { // LORA modem
-        printf("erstes if\n");
+        // printf("erstes if\n");
         u1_t flags = readReg(LORARegIrqFlags);
         // NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: flags = 0x08;   die Flags müssen gesetzt sein wenn der interrupt gekommen ist aber sie sind 0, es müsste 0x08 sein
         LMIC.saveIrqFlags = flags;
         LMICOS_logEventUint32("radio_irq_handler_v2: LoRa", flags);
         LMIC_X_DEBUG_PRINTF("IRQ=%02x\n", flags);
         if( flags & IRQ_LORA_TXDONE_MASK ) {
-            printf("zweites if\n");
+            // printf("zweites if\n");
             // save exact tx time
             LMIC.txend = now - us2osticks(43); // TXDONE FIXUP
         } else if( flags & IRQ_LORA_RXDONE_MASK ) {
-            printf("zweites else if 1\n");
+            // printf("zweites else if 1\n");
             // save exact rx time
             if(getBw(LMIC.rps) == BW125) {
                 now -= TABLE_GET_U2(LORA_RXDONE_FIXUP, getSf(LMIC.rps));
@@ -1349,7 +1349,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
             // ugh compatibility requires a biased range. RSSI
             LMIC.rssi = (s1_t) (RSSI_OFF + (rssi < -196 ? -196 : rssi > 63 ? 63 : rssi)); // RSSI [dBm] (-196...+63)
         } else if( flags & IRQ_LORA_RXTOUT_MASK ) {
-            printf("zweites else if 2\n");
+            // printf("zweites else if 2\n");
             // indicate timeout
             LMIC.dataLen = 0;
 #if LMIC_DEBUG_LEVEL > 0
@@ -1364,7 +1364,7 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
         // clear radio IRQ flags
         writeReg(LORARegIrqFlags, 0xFF);
     } else { // FSK modem
-        printf("erstes else\n");
+        // printf("erstes else\n");
         u1_t flags1 = readReg(FSKRegIrqFlags1);
         u1_t flags2 = readReg(FSKRegIrqFlags2);
 
@@ -1396,13 +1396,13 @@ void radio_irq_handler_v2 (u1_t dio, ostime_t now) {
         // in FSK, we need to put the radio in standby first.
         opmode(OPMODE_STANDBY);
     }
-    printf("nach den ifs\n");
+    // printf("nach den ifs\n");
     // NKRG jetzt ist es wieder wie vorher. was ich mal probiert habe: LMIC.txend = now;
     // go from standby to sleep
     opmode(OPMODE_SLEEP);
     // run os job (use preset func ptr)
     os_setCallback(&LMIC.osjob, LMIC.osjob.func);
-    printf("Ende von radio_irq_handler_v2\n");
+    // printf("Ende von radio_irq_handler_v2\n");
 #endif /* ! CFG_TxContinuousMode */
 }
 
@@ -1441,9 +1441,9 @@ void os_radio (u1_t mode) {
       case RADIO_TX:
         // transmit frame now
         LMIC.txend = 0;
-        printf("before starttx");
+        // printf("before starttx");
         starttx(); // buf=LMIC.frame, len=LMIC.dataLen
-        printf("after starttx");
+        // printf("after starttx");
         break;
 
       case RADIO_TX_AT:

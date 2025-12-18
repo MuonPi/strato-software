@@ -61,7 +61,7 @@ bool set_line_output(int pin)
 
 bool read_line(int pin)
 {
-    std::cout << "digital Read line " << std::dec << static_cast<int>(pin) << std::endl;
+    // std::cout << "digital Read line " << std::dec << static_cast<int>(pin) << std::endl;
     line = gpiod_chip_get_line(chip, pin);
     if (line == nullptr)
     {
@@ -72,7 +72,7 @@ bool read_line(int pin)
     {
         throw std::runtime_error("Error trying to read line");
     }
-    std::cout << "Read Value: " << static_cast<bool>(val) << std::endl;
+    // std::cout << "Read Value: " << static_cast<bool>(val) << std::endl;
     return static_cast<bool>(val);
 }
 

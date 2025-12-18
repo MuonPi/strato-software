@@ -23,11 +23,12 @@
 // bool joined = false;
 // bool sleeping = false;
 
+void os_getArtEui (u1_t* buf) { }
+void os_getDevEui (u1_t* buf) { }
+void os_getDevKey (u1_t* buf) { }
 static osjob_t sendjob;
-
-static bool job_running{false};
-
 bool txcomplete = 0;
+uint32_t uplinkSequenceNo;
 
 
 void printEvent(ev_t ev)
@@ -37,8 +38,8 @@ void printEvent(ev_t ev)
 
 void onEvent(void *pUserData, ev_t ev)
 {
-    std::cout << "onEvent start" << std::endl;
-    std::cout << std::dec << static_cast<int>(ev) << std::endl;
+    // std::cout << "onEvent start" << std::endl;
+    // std::cout << std::dec << static_cast<int>(ev) << std::endl;
     switch (ev)
     {
     case EV_RXSTART:
@@ -52,7 +53,6 @@ void onEvent(void *pUserData, ev_t ev)
     case EV_JOIN_TXCOMPLETE:
         std::cout << "EV_JOIN_TXCOMPLETE" << std::endl;
     case EV_TXCANCELED:
-        job_running = false;
         std::cout << "EV_TXCANCELLED" << std::endl;
         break;
     case EV_SCAN_TIMEOUT:
@@ -88,7 +88,6 @@ void onEvent(void *pUserData, ev_t ev)
         std::cout << "EV_REJOIN_FAILED" << std::endl;
         break;
     case EV_TXCOMPLETE:
-        job_running = false;
         std::cout << "EV_TXCOMPLETE" << std::endl;
         if (LMIC.txrxFlags & TXRX_ACK)
         std::cout << "Received ack" << std::endl;
@@ -149,7 +148,7 @@ void do_send(osjob_t *j)
         std::cout << "Sending: ";
         for (size_t i = 0; i < data_size; i++)
         {
-            std::cout << static_cast<char>(data[i]);
+            std::cout << static_cast<int>(data[i]) << " ";
         }
         std::cout << std::endl;
         std::cout << "seqnoup: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
@@ -164,13 +163,6 @@ void do_send(osjob_t *j)
 
 // ========================================================================================================================
 
-
-
-void os_getArtEui (u1_t* buf) { }
-void os_getDevEui (u1_t* buf) { }
-void os_getDevKey (u1_t* buf) { }
-uint32_t uplinkSequenceNo;
-osjob_t workjob;
 
 
 // Pin mapping
@@ -194,101 +186,7 @@ Lorawan::Lorawan()
 
 Lorawan::~Lorawan()
 {
-    // stop();
 }
-
-
-// bool Lorawan::start()
-// {
-//     bool expected = false;
-//     if (!running.compare_exchange_strong(expected, true))
-//         return false;
-
-//     lorawanThread = std::thread(&Lorawan::threadFunc, this);
-//     return true;
-// }
-
-
-// bool Lorawan::stop()
-// {
-//     bool expected = true;
-//     if (!running.compare_exchange_strong(expected, false))
-//         return false;
-
-//     if (lorawanThread.joinable())
-//         lorawanThread.join();
-//     return true;
-// }
-
-
-// void Lorawan::threadFunc()
-// {
-//     std::cout << "LorawanThread started" << std::endl;
-    
-
-//     const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
-
-
-
-
-//     uint32_t uplinkSequenceNo;
-//     uint8_t payload[256];
-//     uint8_t len;
-//     const unsigned TX_INTERVAL = 60;
-//     osjob_t workjob;
-
-
-//     uint8_t nwkskey[sizeof(NWKSKEY)];
-//     uint8_t appskey[sizeof(APPSKEY)];
-
-//     for (int i = 0; i < 16; i++)
-//     {
-//         nwkskey[i] = NWKSKEY[i];
-//         appskey[i] = APPSKEY[i];
-//     }
-
-//     setup(DEVADDR, lmic_pins, appskey, nwkskey);
-//     // os_runloop_once();
-
-//     std::cout << "finished setup function" << std::endl;
-
-
-//     auto start_time = std::chrono::steady_clock::now();
-//     auto last_message = std::chrono::steady_clock::now();
-
-
-//     while (running)
-//     {
-
-//         uplinkSequenceNo = SeqNoFile();
-//         std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
-
-//         len = PayloadFile(payload);
-//         std::cout << static_cast<int>(len) << std::endl;
-//         for (size_t i = 0; i < len; i++)
-//         {
-//             std::cout << static_cast<int>(payload[i]) << " ";
-//         }
-//         std::cout << std::endl;
-
-
-//         sendLoraPayload(1u, uplinkSequenceNo, payload, len);
-//         last_message = std::chrono::steady_clock::now();
-
-
-//         while(std::chrono::steady_clock::now() - last_message < interval && running)
-//         {
-//             os_runloop_once();
-//             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-//         }
-//     }
-    
-
-//     std::cout << "LorawanThread stopped" << std::endl;
-// }
-
-
-
 
 
 
@@ -309,11 +207,12 @@ bool Lorawan::init()
 }
 
 
+
 bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
 {
     
     uplinkSequenceNo = SeqNoFile();
-    std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+    // std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
 
     for (size_t i = 0; i < size; i++)
     {
@@ -323,7 +222,9 @@ bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
 
     sendLoraPayload(1u, uplinkSequenceNo, payload, size);
     // last_message = std::chrono::steady_clock::now();
+    return true;
 }
+
 
 
 bool Lorawan::runloop()
@@ -378,9 +279,10 @@ bool Lorawan::setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned ch
 
     LMIC_registerEventCb(&onEvent, nullptr);
 
-    std::cout << "setup end" << std::endl;
+    // std::cout << "setup end" << std::endl;
     return true;
 }
+
 
 
 void Lorawan::sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
@@ -389,10 +291,9 @@ void Lorawan::sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint
     data_size = n;
     LMIC.seqnoUp = sequenceNo;
 
-    job_running = true;
     os_setCallback(&sendjob, do_send);
-    std::cout << "after os_setCallback" << std::endl;
 }
+
 
 
 uint32_t Lorawan::SeqNoFile()
@@ -428,10 +329,11 @@ uint32_t Lorawan::SeqNoFile()
     writefile << seqno;
     writefile.close();
 
-    std::cout << seqno << std::endl;
+    // std::cout << seqno << std::endl;
 
     return seqno;
 }
+
 
 
 uint8_t Lorawan::PayloadFile(uint8_t* payload)

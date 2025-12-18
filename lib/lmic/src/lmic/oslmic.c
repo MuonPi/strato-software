@@ -41,7 +41,7 @@ static struct {
 int os_init_ex (const void *pintable) {
     memset(&OS, 0x00, sizeof(OS));
     hal_init_ex(pintable);
-    printf("radio_init = %i\n", radio_init());
+    // printf("radio_init = %i\n", radio_init());
     if (! radio_init())
         return 0;
     LMIC_init();
@@ -51,7 +51,7 @@ int os_init_ex (const void *pintable) {
 void os_init() {
     if (os_init_ex((const void *)&lmic_pins))
         return;
-    printf("os_init_not_okay\n");
+    // printf("os_init_not_okay\n");
     ASSERT(0);
 }
 
@@ -95,20 +95,20 @@ void os_setCallback (osjob_t* job, osjobcb_t cb) {
     job->next = NULL;
     job->deadline = 0;
     job->func = cb;
-    printf("jetzt bekommt runnablejobs einen wert\n");
+    // printf("jetzt bekommt runnablejobs einen wert\n");
 
     // add to end of run queue
     for(pnext=&OS.runnablejobs; *pnext; pnext=&((*pnext)->next));
     *pnext = job;
-    printf("vor hal_enableIRQs\n");
+    // printf("vor hal_enableIRQs\n");
     hal_enableIRQs();
 }
 
 // schedule timed job
 void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
     osjob_t** pnext;
-    printf("start of os_settimedcallback\n");
-    printf("pnext = %p\n", job);
+    // printf("start of os_settimedcallback\n");
+    // printf("pnext = %p\n", job);
 
     // special case time 0 -- it will be one tick late.
     if (time == 0)
@@ -118,7 +118,7 @@ void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
 
     // remove if job was already queued
     unlinkjob(getJobQueue(job), job);
-    printf("pnext = %p\n", job);
+    // printf("pnext = %p\n", job);
 
     // fill-in job
     job->next = NULL;
@@ -134,7 +134,7 @@ void os_setTimedCallback (osjob_t* job, ostime_t time, osjobcb_t cb) {
         }
     }
     *pnext = job;
-    printf("pnext = %p\n", job);
+    // printf("pnext = %p\n", job);
     hal_enableIRQs();
 }
 
@@ -148,7 +148,7 @@ void os_runloop () {
 int i = 0;
 
 void os_runloop_once() {
-    printf("\n\nos_runloop_once\n");
+    // printf("\n\nos_runloop_once\n");
     osjob_t* j = NULL;
     hal_processPendingIRQs();
 
@@ -158,13 +158,13 @@ void os_runloop_once() {
     // check for runnable jobs
     if(OS.runnablejobs) {
         // printf("runnable job: %d\n runnablejobs.func: %d\ncount: %i\n", OS.runnablejobs, OS.runnablejobs->func, i);
-        printf("runnable job\n");
+        // printf("runnable job\n");
         j = OS.runnablejobs;
         OS.runnablejobs = j->next;
-        printf("runnable job: %d\n", j);
+        // printf("runnable job: %d\n", j);
         // ASSERT(0);
     } else if(OS.scheduledjobs && hal_checkTimer(OS.scheduledjobs->deadline)) { // check for expired timed jobs
-        printf("scheduled job\n");
+        // printf("scheduled job\n");
         j = OS.scheduledjobs;
         OS.scheduledjobs = j->next;
     } else { // nothing pending
@@ -172,7 +172,7 @@ void os_runloop_once() {
     }
     hal_enableIRQs();
     if(j) { // run job callback
-        printf("run job callback\n");
+        // printf("run job callback\n");
         // printf("j->func = %p\n", j->func);
         j->func(j);
     }
