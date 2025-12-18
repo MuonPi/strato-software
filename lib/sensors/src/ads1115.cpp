@@ -20,7 +20,7 @@ bool ADS1115::init()
 {
     OS = 0b0;
     MUX = 0b100;
-    PGA = 0b010;
+    PGA = 0b001;
     MODE = 0b0;
     DR = 0b100;
     COMP_MODE = 0b0;;
@@ -30,22 +30,6 @@ bool ADS1115::init()
 
     return setConfig();
 }
-
-
-// bool ADS1115::getConfig(uint16_t &config)
-// {
-//     uint8_t buf[2];
-//     if (!readReg(ADS1115_CONFIG_REG, buf, 2))
-//     {
-//         std::cout << "ADS1115 GET CONFIG FAILED" << std::endl;
-//         return false;
-//     }
-//     else
-//     {
-//         config = buf[1] | buf[0] >> 8;
-//         return true;
-//     }
-// }
 
 
 bool ADS1115::setConfig()

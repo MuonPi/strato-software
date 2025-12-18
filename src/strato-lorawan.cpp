@@ -166,6 +166,26 @@ void do_send(osjob_t *j)
 
 
 
+void os_getArtEui (u1_t* buf) { }
+void os_getDevEui (u1_t* buf) { }
+void os_getDevKey (u1_t* buf) { }
+uint32_t uplinkSequenceNo;
+osjob_t workjob;
+
+
+// Pin mapping
+const lmic_pinmap lmic_pins = 
+{
+    .nss = RF_CS_PIN,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst = RF_RST_PIN,
+    .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
+    .rxtx_rx_active = 0,
+    .rssi_cal = 10,
+    .spi_freq = 1000000 /* 1 MHz */
+};
+
+
 
 Lorawan::Lorawan()
     : running(false)
@@ -174,76 +194,106 @@ Lorawan::Lorawan()
 
 Lorawan::~Lorawan()
 {
-    stop();
+    // stop();
 }
 
 
-bool Lorawan::start()
-{
-    bool expected = false;
-    if (!running.compare_exchange_strong(expected, true))
-        return false;
+// bool Lorawan::start()
+// {
+//     bool expected = false;
+//     if (!running.compare_exchange_strong(expected, true))
+//         return false;
 
-    lorawanThread = std::thread(&Lorawan::threadFunc, this);
-    return true;
-}
-
-
-bool Lorawan::stop()
-{
-    bool expected = true;
-    if (!running.compare_exchange_strong(expected, false))
-        return false;
-
-    if (lorawanThread.joinable())
-        lorawanThread.join();
-    return true;
-}
+//     lorawanThread = std::thread(&Lorawan::threadFunc, this);
+//     return true;
+// }
 
 
-void Lorawan::threadFunc()
-{
-    std::cout << "LorawanThread started" << std::endl;
+// bool Lorawan::stop()
+// {
+//     bool expected = true;
+//     if (!running.compare_exchange_strong(expected, false))
+//         return false;
+
+//     if (lorawanThread.joinable())
+//         lorawanThread.join();
+//     return true;
+// }
+
+
+// void Lorawan::threadFunc()
+// {
+//     std::cout << "LorawanThread started" << std::endl;
     
 
-
-    #define DEVICEID "eui-70b3d57ed0052abe"     // Arduino-Test-0
-    #define ABP_DEVICEID "eui-70b3d57ed0052abe"
-
-    // The Network Session Key / DO NOT SHARE
-    static const u1_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
-
-    // LoRaWAN AppSKey, application session key / DO NOT SHARE
-    static const u1_t APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
-
-    // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-    static const u4_t DEVADDR = 0x260BC37E;
-
-    uint32_t uplinkSequenceNo;
-    uint8_t payload[256];
-    uint8_t len;
-    const unsigned TX_INTERVAL = 60;
-    osjob_t workjob;
-
-    // Pin mapping
-    const lmic_pinmap lmic_pins = 
-    {
-        .nss = RF_CS_PIN,
-        .rxtx = LMIC_UNUSED_PIN,
-        .rst = RF_RST_PIN,
-        .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
-        .rxtx_rx_active = 0,
-        .rssi_cal = 10,
-        .spi_freq = 1000000 /* 1 MHz */
-    };
-
-
-
-    const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
+//     const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
 
 
 
 
+//     uint32_t uplinkSequenceNo;
+//     uint8_t payload[256];
+//     uint8_t len;
+//     const unsigned TX_INTERVAL = 60;
+//     osjob_t workjob;
+
+
+//     uint8_t nwkskey[sizeof(NWKSKEY)];
+//     uint8_t appskey[sizeof(APPSKEY)];
+
+//     for (int i = 0; i < 16; i++)
+//     {
+//         nwkskey[i] = NWKSKEY[i];
+//         appskey[i] = APPSKEY[i];
+//     }
+
+//     setup(DEVADDR, lmic_pins, appskey, nwkskey);
+//     // os_runloop_once();
+
+//     std::cout << "finished setup function" << std::endl;
+
+
+//     auto start_time = std::chrono::steady_clock::now();
+//     auto last_message = std::chrono::steady_clock::now();
+
+
+//     while (running)
+//     {
+
+//         uplinkSequenceNo = SeqNoFile();
+//         std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+
+//         len = PayloadFile(payload);
+//         std::cout << static_cast<int>(len) << std::endl;
+//         for (size_t i = 0; i < len; i++)
+//         {
+//             std::cout << static_cast<int>(payload[i]) << " ";
+//         }
+//         std::cout << std::endl;
+
+
+//         sendLoraPayload(1u, uplinkSequenceNo, payload, len);
+//         last_message = std::chrono::steady_clock::now();
+
+
+//         while(std::chrono::steady_clock::now() - last_message < interval && running)
+//         {
+//             os_runloop_once();
+//             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+//         }
+//     }
+    
+
+//     std::cout << "LorawanThread stopped" << std::endl;
+// }
+
+
+
+
+
+
+bool Lorawan::init()
+{
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
@@ -254,51 +304,38 @@ void Lorawan::threadFunc()
     }
 
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
-    // os_runloop_once();
 
-    std::cout << "finished setup function" << std::endl;
-
-
-    auto start_time = std::chrono::steady_clock::now();
-
-
-    while (running)
-    {
-
-        uplinkSequenceNo = SeqNoFile();
-        std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
-
-        len = PayloadFile(payload);
-        std::cout << static_cast<int>(len) << std::endl;
-        for (size_t i = 0; i < len; i++)
-        {
-            std::cout << static_cast<int>(payload[i]) << " ";
-        }
-        std::cout << std::endl;
-
-
-        sendLoraPayload(1u, uplinkSequenceNo, payload, len);
-
-
-        while(txcomplete == 0)
-        {
-            os_runloop_once();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        txcomplete = 0;
-
-        std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
-    }
-    
-
-    std::cout << "LorawanThread stopped" << std::endl;
+    return true;
 }
 
 
+bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
+{
+    
+    uplinkSequenceNo = SeqNoFile();
+    std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        std::cout << static_cast<int>(payload[i]) << " ";
+    }
+    std::cout << std::endl;
+
+    sendLoraPayload(1u, uplinkSequenceNo, payload, size);
+    // last_message = std::chrono::steady_clock::now();
+}
 
 
-
+bool Lorawan::runloop()
+{
+    os_runloop_once();
+    if(txcomplete == true)
+    {
+        txcomplete = false;
+        return true;
+    }
+    return false;
+}
 
 
 
