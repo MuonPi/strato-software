@@ -13,8 +13,8 @@ public:
     bool init();
     // bool getConfig(uint16_t &value);
     bool setConfig();
-    bool getMagneticFieldRawValueXYZ(int16_t value[3]);
-    bool getMagneticFieldXYZ(double magnet[3]);
+    bool getMagneticFieldRawValueXYZ(int16_t* value);
+    bool getMagneticFieldXYZ(double* magnet);
     bool getMagneticField(double& magnet);
     bool getTemperatureRawValue(int16_t& temperature);
     bool getTemperature(double& temperature);
@@ -31,4 +31,4 @@ private:
     uint8_t _address;
 };
 
-#endif // !_QMC5883_H_
+#endif // _QMC5883_H_

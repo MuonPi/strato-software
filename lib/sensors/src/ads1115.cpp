@@ -23,12 +23,15 @@ bool ADS1115::init()
     PGA = 0b001;
     MODE = 0b0;
     DR = 0b100;
-    COMP_MODE = 0b0;;
+    COMP_MODE = 0b0;
     COMP_POL = 0b0;
     COMP_LAT = 0b0;
     COMP_QUE = 0b11;
 
-    return setConfig();
+    bool success = setConfig();
+    if (success)
+        std::cout << "ADS1115 INITED" << std::endl;
+    return success;
 }
 
 

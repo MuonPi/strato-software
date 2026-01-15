@@ -178,40 +178,71 @@ int i2cDevice::write(uint8_t* buf, int nBytes)
 
 int i2cDevice::writeReg(uint8_t reg, uint8_t* buf, int nBytes)
 {
-    // the i2c_smbus_*_i2c_block_data functions are better but allow
-    // block sizes of up to 32 bytes only
-    //i2c_smbus_write_i2c_block_data(int file, reg, nBytes, buf);
+    std::lock_guard<std::mutex> lock(fMutex);
 
-    uint8_t* wbuf = new uint8_t[nBytes + 1];
-    if (!wbuf)
+    std::vector<uint8_t> wbuf(nBytes + 1);
+    wbuf[0] = reg;
+    std::copy(buf, buf + nBytes, wbuf.begin() + 1);
+
+    // Schreiben
+    int written = write(wbuf.data(), nBytes + 1);
+    if (written != nBytes + 1)
+    {
+        // Schreibfehler
         return 0;
-    int n { 0 };
-    try {
-        std::copy(buf, buf + nBytes, wbuf + 1);
-        wbuf[0] = reg;
-        n = write(wbuf, nBytes + 1);
-    } catch (...) {
     }
-    delete[] wbuf;
-    return n - 1;
+
+    return nBytes; // Erfolg
 }
 
-int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)       // NKRG
+// ORIGINAL writeReg:
+// int i2cDevice::writeReg(uint8_t reg, uint8_t* buf, int nBytes)
+// {
+//     // the i2c_smbus_*_i2c_block_data functions are better but allow
+//     // block sizes of up to 32 bytes only
+//     //i2c_smbus_write_i2c_block_data(int file, reg, nBytes, buf);
+
+//     uint8_t* wbuf = new uint8_t[nBytes + 1];
+//     if (!wbuf)
+//         return 0;
+//     int n { 0 };
+//     try {
+//         std::copy(buf, buf + nBytes, wbuf + 1);
+//         wbuf[0] = reg;
+//         n = write(wbuf, nBytes + 1);
+//     } catch (...) {
+//     }
+//     delete[] wbuf;
+//     return n - 1;
+// }
+
+int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)
 {
     std::lock_guard<std::mutex> lock(fMutex);
-    uint8_t reg2[3];
-    uint8_t reg3;
-    reg2[0] = 0x10 & 0b10000000;
-    reg2[1] = 0x00;
-    // reg2[2] = 0x80;
-    reg3 = 0x80;
-    int n = write(reg2, 2);
-    // std::cout << "Rückgabewert write in readReg: " << n << std::endl;
-    // if (n != 1)
-    //     return -1;
-    n = read(buf, nBytes + 2);
-    return n;
+
+    uint8_t txBuf[2];
+    txBuf[0] = reg | 0x80;
+    txBuf[1] = 0x00;
+
+    // Register-Adresse schreiben
+    int written = write(txBuf, 2);
+    if (written != 2)
+    {
+        // Schreibfehler
+        return 0;
+    }
+
+    // Daten lesen
+    int readBytes = read(buf, nBytes);
+    if (readBytes != nBytes)
+    {
+        // Lesefehler oder unvollständige Übertragung
+        return 0;
+    }
+
+    return readBytes;   // Erfolg
 }
+
 
 // ORIGINAL readReg:
 // int i2cDevice::readReg(uint8_t reg, uint8_t* buf, int nBytes)

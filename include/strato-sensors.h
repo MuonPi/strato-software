@@ -33,6 +33,16 @@ public:
     std::atomic<double> temperature_mean {0};
     std::atomic<uint16_t> temperature_count {0};
 
+    std::atomic<double> XOR {0};
+    std::atomic<double> XOR_mean {0};
+    std::atomic<uint16_t> XOR_count {0};
+
+    std::atomic<double> AND {0};
+    std::atomic<double> AND_mean {0};
+    std::atomic<uint16_t> AND_count {0};
+
+    std::atomic<double> coordinates[3] {0};
+
 private:
     void threadFunc();
 

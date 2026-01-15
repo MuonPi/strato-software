@@ -10,7 +10,8 @@
 #define RF_RST_PIN 21
 
 #define SENSORS_INTERVAL 1000 //ms
-#define LORAWAN_INTERVAL 60 //s
+#define LORAWAN_INTERVAL 1 //60 //s
+#define LOGFILE_INTERVAL 30 //min
 
 #define ADS1115_ADDR 0x4A
 #define QMC5883_ADDR 0x0D

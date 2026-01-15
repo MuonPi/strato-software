@@ -7,6 +7,7 @@ add_library(sensors STATIC
     src/qmc5883.cpp
     src/sen0321.cpp
     src/veml6075.cpp
+    src/muonpi.cpp
 )
 
 target_include_directories(sensors PUBLIC

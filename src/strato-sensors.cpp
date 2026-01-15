@@ -1,10 +1,12 @@
 #include <iostream>
+#include <cmath>
 
 #include "strato-config.h"
 #include "ads1115.h"
 #include "qmc5883.h"
+#include "muonpi.h"
 #include "strato-sensors.h"
-
+#include "logfile.h"
 
 
 
@@ -47,43 +49,121 @@ void Sensors::threadFunc()
     std::cout << "SensorThread started" << std::endl;
 
     auto start_time = std::chrono::steady_clock::now();
-    const auto interval = std::chrono::milliseconds(SENSORS_INTERVAL);
-
+    const auto sensors_interval = std::chrono::milliseconds(SENSORS_INTERVAL);
+    const auto logfile_interval = std::chrono::minutes(LOGFILE_INTERVAL);
+    
     ADS1115 strato_ads1115(ADS1115_ADDR);
     QMC5883 strato_qmc5883(QMC5883_ADDR);
-    
-    strato_ads1115.init();
-    strato_qmc5883.init();
+    MUONPI strato_muonpi;
+
+    bool ads1115_inited = false;
+    bool qmc5883_inited = false;
+    bool muonpi_inited = false;
 
     double voltage_temp = 0;
-    double magnet_temp = 0;
+    double magnetXYZ_temp[3] {0};
     double temperature_temp = 0;
+    double XOR_temp = 0;
+    double AND_temp = 0;
+    double coordinates_temp[3] {0};
+
+    std::string timestamp_value {0};
+    std::string timestamp_filename {0};
 
     while (running)
     {
-        if (strato_ads1115.getVoltage(voltage_temp))
-        {
-            voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
-            voltage = voltage_temp;
-            voltage_mean = ((voltage_mean * voltage_count) + voltage_temp) / (voltage_count + 1);
-            voltage_count++;
-        }
+        getTimestampFilename(timestamp_filename, logfile_interval);
+        getTimestampValue(timestamp_value);
 
-        if (strato_qmc5883.getMagneticField(magnet_temp))
+        if (ads1115_inited)
         {
-            magnet = magnet_temp;
-            magnet_mean = ((magnet_mean * magnet_count) + magnet_temp) / (magnet_count + 1);
-            magnet_count++;
+            if (strato_ads1115.getVoltage(voltage_temp))
+            {
+                voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
+                voltage = voltage_temp;
+                voltage_mean = ((voltage_mean * voltage_count) + voltage_temp) / (voltage_count + 1);
+                voltage_count++;
+                writeLogfile("voltage", timestamp_filename, timestamp_value, &voltage_temp, 1);
+            }
+            else
+                ads1115_inited = strato_ads1115.init();
         }
+        else
+            ads1115_inited = strato_ads1115.init();
 
-        if (strato_qmc5883.getTemperature(temperature_temp))
+
+        if (qmc5883_inited)
         {
-            temperature = temperature_temp;
-            temperature_mean = ((temperature_mean * temperature_count) + temperature_temp) / (temperature_count + 1);
-            temperature_count++;
+            if (strato_qmc5883.getMagneticFieldXYZ(magnetXYZ_temp))
+            {
+                for(size_t i; i < 3; i++)
+                    magnetXYZ[i] = magnetXYZ_temp[i];
+                magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
+                magnet_mean = ((magnet_mean * magnet_count) + magnet) / (magnet_count + 1);
+                magnet_count++;
+                writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
+            }
+            else
+                qmc5883_inited = strato_qmc5883.init();
         }
+        else
+            qmc5883_inited = strato_qmc5883.init();
 
-        std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
+
+        if (qmc5883_inited)
+        {
+            if (strato_qmc5883.getTemperature(temperature_temp))
+            {
+                temperature = temperature_temp;
+                temperature_mean = ((temperature_mean * temperature_count) + temperature_temp) / (temperature_count + 1);
+                temperature_count++;
+                writeLogfile("temperature_inside", timestamp_filename, timestamp_value, &temperature_temp, 1);
+            }
+            else
+                qmc5883_inited = strato_qmc5883.init();
+        }
+        else
+            qmc5883_inited = strato_qmc5883.init();
+
+
+        if (muonpi_inited)
+        {
+            if(strato_muonpi.getLogfilePath())
+            {
+                if (strato_muonpi.getXOR(XOR_temp))
+                {
+                    std::cout << XOR_temp << std::endl;
+                    XOR = XOR_temp;
+                    XOR_mean = ((XOR_mean * XOR_count) + XOR_temp) / (XOR_count + 1);
+                    XOR_count++;
+                }
+
+                if (strato_muonpi.getAND(AND_temp))
+                {
+                    std::cout << AND_temp << std::endl;
+                    AND = AND_temp;
+                    AND_mean = ((AND_mean * AND_count) + AND_temp) / (AND_count + 1);
+                    AND_count++;
+                }
+
+                if (strato_muonpi.getCoordinates(coordinates_temp))
+                {
+                    std::cout << coordinates_temp[0] << std::endl;
+                    for(size_t i; i < 3; i++)
+                        coordinates[i] = coordinates_temp[i];
+                }
+            }
+            else
+                muonpi_inited = strato_muonpi.init();
+        }
+        else
+            muonpi_inited = strato_muonpi.init();
+
+
+        
+
+
+        std::this_thread::sleep_for(sensors_interval - ((std::chrono::steady_clock::now() - start_time) % sensors_interval));
     }
 
     std::cout << "SensorThread stopped" << std::endl;

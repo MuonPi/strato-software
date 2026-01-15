@@ -35,6 +35,7 @@ set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/strato-lorawan.cpp"
     "${PROJECT_SRC_DIR}/strato-sensors.cpp"
     "${PROJECT_SRC_DIR}/CayenneLPP.cpp"
+    "${PROJECT_SRC_DIR}/logfile.cpp"
 )
 
 set(STRATO_HEADER_FILES
@@ -42,6 +43,7 @@ set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/strato-sensors.h"
     "${PROJECT_HEADER_DIR}/strato-config.h"
     "${PROJECT_HEADER_DIR}/CayenneLPP.h"
+    "${PROJECT_HEADER_DIR}/logfile.h"
 )
 
 # ------------------------------

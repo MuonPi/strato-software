@@ -42,7 +42,10 @@ bool QMC5883::init()
     ROL_PNT = 0b0;
     INT_ENB = 0b0;
 
-    return setConfig();
+    bool success = setConfig();
+    if (success)
+        std::cout << "QMC5883 INITED" << std::endl;
+    return success;
 }
 
 
@@ -60,24 +63,24 @@ bool QMC5883::setConfig()
 
     if (!writeReg(QMC5883_CTL_REG_A, &config_a, 1))
     {
-        std::cout << "QMC5883 SET CONFIG A FAILED" << std::endl;
+        std::cerr << "QMC5883 SET CONFIG FAILED" << std::endl;
         return false;
     }
     if (!writeReg(QMC5883_CTL_REG_B, &config_b, 1))
     {
-        std::cout << "QMC5883 SET CONFIG B FAILED" << std::endl;
+        std::cerr << "QMC5883 SET CONFIG FAILED" << std::endl;
         return false;
     }
     return true;
 }
 
 
-bool QMC5883::getMagneticFieldRawValueXYZ(int16_t value[3])
+bool QMC5883::getMagneticFieldRawValueXYZ(int16_t* value)
 {
     uint8_t buf[6];
     if(!readReg(QMC5883_DATA_X_LSB_REG, buf, 6))
     {
-        std::cout << "QMC5883 READ FAILED" << std::endl;
+        std::cerr << "QMC5883 READ FAILED" << std::endl;
         return false;
     }
     value[0] = (int16_t)((buf[1] << 8) | buf[0]);
@@ -91,7 +94,7 @@ bool QMC5883::getMagneticFieldRawValueXYZ(int16_t value[3])
 }
 
 
-bool QMC5883::getMagneticFieldXYZ(double magnet[3])
+bool QMC5883::getMagneticFieldXYZ(double* magnet)
 {
     int16_t raw[3];
     double range;
@@ -133,7 +136,7 @@ bool QMC5883::getTemperatureRawValue(int16_t& temperature)
     uint8_t buf[2];
     if(!readReg(QMC5883_TEMP_LSB_REG, buf, 2))
     {
-        std::cout << "QMC5883 READ FAILED" << std::endl;
+        std::cerr << "QMC5883 READ FAILED" << std::endl;
         return false;
     }
     temperature = (int16_t)((buf[1] << 8) | buf[0]);
