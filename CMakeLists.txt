@@ -34,7 +34,6 @@ set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/main.cpp"
     "${PROJECT_SRC_DIR}/strato-lorawan.cpp"
     "${PROJECT_SRC_DIR}/strato-sensors.cpp"
-    "${PROJECT_SRC_DIR}/CayenneLPP.cpp"
     "${PROJECT_SRC_DIR}/logfile.cpp"
 )
 
@@ -42,7 +41,6 @@ set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/strato-lorawan.h"
     "${PROJECT_HEADER_DIR}/strato-sensors.h"
     "${PROJECT_HEADER_DIR}/strato-config.h"
-    "${PROJECT_HEADER_DIR}/CayenneLPP.h"
     "${PROJECT_HEADER_DIR}/logfile.h"
 )
 
@@ -65,10 +63,13 @@ add_subdirectory(${PROJECT_LIB_DIR}/lmic)
 
 add_subdirectory(${PROJECT_LIB_DIR}/sensors)
 
+add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
+
 target_link_libraries(strato-software
     gpiod
     lmic
     sensors
+    cayennelpp
     atomic
 )
 

@@ -132,7 +132,7 @@ void Sensors::threadFunc()
             {
                 if (strato_muonpi.getXOR(XOR_temp))
                 {
-                    std::cout << XOR_temp << std::endl;
+                    // std::cout << XOR_temp << std::endl;
                     XOR = XOR_temp;
                     XOR_mean = ((XOR_mean * XOR_count) + XOR_temp) / (XOR_count + 1);
                     XOR_count++;
@@ -140,7 +140,7 @@ void Sensors::threadFunc()
 
                 if (strato_muonpi.getAND(AND_temp))
                 {
-                    std::cout << AND_temp << std::endl;
+                    // std::cout << AND_temp << std::endl;
                     AND = AND_temp;
                     AND_mean = ((AND_mean * AND_count) + AND_temp) / (AND_count + 1);
                     AND_count++;
