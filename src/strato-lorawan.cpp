@@ -28,7 +28,21 @@ void os_getDevEui (u1_t* buf) { }
 void os_getDevKey (u1_t* buf) { }
 static osjob_t sendjob;
 bool txcomplete = 0;
-uint32_t uplinkSequenceNo;
+// uint32_t uplinkSequenceNo;
+
+
+
+// Pin mapping
+const lmic_pinmap lmic_pins = 
+{
+    .nss = RF_CS_PIN,
+    .rxtx = LMIC_UNUSED_PIN,
+    .rst = RF_RST_PIN,
+    .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
+    .rxtx_rx_active = 0,
+    .rssi_cal = 10,
+    .spi_freq = 1000000 /* 1 MHz */
+};
 
 
 void printEvent(ev_t ev)
@@ -99,8 +113,7 @@ void onEvent(void *pUserData, ev_t ev)
         }
         // Schedule next transmission
         // will be called by main loop
-        // dump_rfm96_registers();
-        txcomplete = 1;
+        // txcomplete = 1;  //NKRG
         // std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
@@ -151,7 +164,7 @@ void do_send(osjob_t *j)
             std::cout << static_cast<int>(data[i]) << " ";
         }
         std::cout << std::endl;
-        std::cout << "seqnoup: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
+        std::cout << "UplinkSequenceNumber: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
         LMIC_setTxData2(1, data, data_size, 0);
         std::cout << "Packet queued" << std::endl;
     }
@@ -165,28 +178,13 @@ void do_send(osjob_t *j)
 
 
 
-// Pin mapping
-const lmic_pinmap lmic_pins = 
-{
-    .nss = RF_CS_PIN,
-    .rxtx = LMIC_UNUSED_PIN,
-    .rst = RF_RST_PIN,
-    .dio = {RF_IRQ_PIN, RF_IRQ_PIN, LMIC_UNUSED_PIN},
-    .rxtx_rx_active = 0,
-    .rssi_cal = 10,
-    .spi_freq = 1000000 /* 1 MHz */
-};
-
-
 
 Lorawan::Lorawan()
-    : running(false)
-{ }
+{}
 
 
 Lorawan::~Lorawan()
-{
-}
+{}
 
 
 
@@ -195,7 +193,7 @@ bool Lorawan::init()
     uint8_t nwkskey[sizeof(NWKSKEY)];
     uint8_t appskey[sizeof(APPSKEY)];
 
-    for (int i = 0; i < 16; i++)
+    for (uint8_t i = 0; i < 16; i++)
     {
         nwkskey[i] = NWKSKEY[i];
         appskey[i] = APPSKEY[i];
@@ -203,6 +201,7 @@ bool Lorawan::init()
 
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
 
+    std::cout << "LORAWAN inited" << std::endl;
     return true;
 }
 
@@ -210,17 +209,21 @@ bool Lorawan::init()
 
 bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
 {
-    
-    uplinkSequenceNo = SeqNoFile();
+    uint32_t uplinkSequenceNo = 0;
+    if(!SeqNoFile(uplinkSequenceNo))
+    {
+        std::cerr << "could not send payload" << std::endl;
+        return false;
+    }
     // std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
 
-    for (size_t i = 0; i < size; i++)
-    {
-        std::cout << static_cast<int>(payload[i]) << " ";
-    }
-    std::cout << std::endl;
+    // for (size_t i = 0; i < size; i++)
+    // {
+    //     std::cout << static_cast<int>(payload[i]) << " ";
+    // }
+    // std::cout << std::endl;
 
-    sendLoraPayload(1u, uplinkSequenceNo, payload, size);
+    scheduleSendPayload(1u, uplinkSequenceNo, payload, size);
     // last_message = std::chrono::steady_clock::now();
     return true;
 }
@@ -230,11 +233,11 @@ bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
 bool Lorawan::runloop()
 {
     os_runloop_once();
-    if(txcomplete == true)
-    {
-        txcomplete = false;
-        return true;
-    }
+    // if(txcomplete == true)
+    // {
+    //     txcomplete = false;
+    //     return true;
+    // }
     return false;
 }
 
@@ -285,7 +288,7 @@ bool Lorawan::setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned ch
 
 
 
-void Lorawan::sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
+void Lorawan::scheduleSendPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint8_t n)
 {
     data = message;
     data_size = n;
@@ -296,9 +299,9 @@ void Lorawan::sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t *message, uint
 
 
 
-uint32_t Lorawan::SeqNoFile()
+bool Lorawan::SeqNoFile(uint32_t& seqno)
 {
-    uint32_t seqno;
+    // uint32_t seqno;
     std::string line;
     std::string path;
 
@@ -314,7 +317,8 @@ uint32_t Lorawan::SeqNoFile()
     std::ifstream readfile(path);
     if (!readfile.is_open())
     {
-        throw std::runtime_error("uplinkSequenceNo.txt already opened");
+        std::cerr << "could not open file " << path << std::endl;
+        return false;
     }
     std::getline(readfile, line);
     seqno = std::stoul(line);
@@ -323,7 +327,8 @@ uint32_t Lorawan::SeqNoFile()
     std::ofstream writefile(path, std::ios::trunc);
     if (!writefile.is_open())
     {
-        throw std::runtime_error("uplinkSequenceNo.txt already opened");
+        std::cerr << "could not open file " << path << std::endl;
+        return false;
     }
     seqno++;
     writefile << seqno;
@@ -331,49 +336,56 @@ uint32_t Lorawan::SeqNoFile()
 
     // std::cout << seqno << std::endl;
 
-    return seqno;
+    return true;
 }
 
 
 
-uint8_t Lorawan::PayloadFile(uint8_t* payload)
+bool Lorawan::reset()
 {
-    uint8_t payloadlen = 0;
-    std::string line;
-    std::string path;
-
-    path = "/var/strato-software/lora_payload.txt";
-
-    if (!std::filesystem::exists(path))
-    {
-        std::ofstream createfile(path);
-        createfile << 0;
-        createfile.close();
-    }
-
-    std::ifstream readfile(path);
-    if (!readfile.is_open())
-    {
-        throw std::runtime_error("uplinkSequenceNo.txt already opened");
-    }
-    std::getline(readfile, line);
-    readfile.close();
-
-    // std::cout << line << std::endl;
-
-    std::istringstream iss(line);
-    // std::vector<uint8_t> payloadstr;
-    std::string element;
-    while(std::getline(iss, element, ';'))
-    {
-        payload[payloadlen] = static_cast<uint8_t>(std::stoi(element));
-        payloadlen++;
-    }
-
-    // std::cout << payload[0] << std::endl;
-
-    return payloadlen;
+    LMIC_reset();
+    return true;
 }
+
+
+// uint8_t Lorawan::PayloadFile(uint8_t* payload)
+// {
+//     uint8_t payloadlen = 0;
+//     std::string line;
+//     std::string path;
+
+//     path = "/var/strato-software/lora_payload.txt";
+
+//     if (!std::filesystem::exists(path))
+//     {
+//         std::ofstream createfile(path);
+//         createfile << 0;
+//         createfile.close();
+//     }
+
+//     std::ifstream readfile(path);
+//     if (!readfile.is_open())
+//     {
+//         throw std::runtime_error("uplinkSequenceNo.txt already opened");
+//     }
+//     std::getline(readfile, line);
+//     readfile.close();
+
+//     // std::cout << line << std::endl;
+
+//     std::istringstream iss(line);
+//     // std::vector<uint8_t> payloadstr;
+//     std::string element;
+//     while(std::getline(iss, element, ';'))
+//     {
+//         payload[payloadlen] = static_cast<uint8_t>(std::stoi(element));
+//         payloadlen++;
+//     }
+
+//     // std::cout << payload[0] << std::endl;
+
+//     return payloadlen;
+// }
 
 
 

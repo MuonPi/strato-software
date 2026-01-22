@@ -5,16 +5,16 @@
 // #include "lmic.h"
 // #include "hal/hal.h"
 
-#define RF_CS_PIN 8
-#define RF_IRQ_PIN 20
-#define RF_RST_PIN 21
 
-#define SENSORS_INTERVAL 1000 //ms
+#define SENSORS_INTERVAL 1 //s
 #define LORAWAN_INTERVAL 1 //60 //s
+#define LORAWAN_TIMEOUT 100 //s
 #define LOGFILE_INTERVAL 30 //min
 
+#define MUONPI_USED
 #define ADS1115_ADDR 0x4A
 #define QMC5883_ADDR 0x0D
+#define VEML6075_ADDR 0x10
 
 #define VOLTAGE_DIVIDER_A0_R1 20
 #define VOLTAGE_DIVIDER_A0_R2 51

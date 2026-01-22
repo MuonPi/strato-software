@@ -12,16 +12,18 @@
 #include "logfile.h"
 
 
+
 bool getTimestampValue(std::string& timestamp)
 {
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     std::tm now_tm;
     localtime_r(&now, &now_tm);
     std::ostringstream timestamp_o;
-    timestamp_o << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S-%s");
+    timestamp_o << std::put_time(&now_tm, "%Y-%m-%d_%H-%M-%S");
     timestamp = timestamp_o.str();
     return true;
 }
+
 
 
 bool getTimestampFilename(std::string& timestamp, std::chrono::minutes min_interval)
@@ -70,7 +72,7 @@ bool writeLogfile(const std::string& filename, const std::string& timestamp_file
     std::ofstream writefile(path, std::ios::out | std::ios::app); // anhängen
     if (!writefile.is_open())
     {
-        std::cerr << path << " already opened" << std::endl;
+        std::cerr << "could not open file " << path << std::endl;
         return false;
     }
 

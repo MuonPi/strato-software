@@ -11,7 +11,7 @@ public:
 
     bool init();
     bool getLogfilePath();
-    bool getAttribute(const std::string attribute, double& value);
+    bool getAttribute(const std::string& attribute, double& value);
     bool getXOR(double& value);
     bool getAND(double& value);
     bool getCoordinates(double* value);

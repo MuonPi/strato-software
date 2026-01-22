@@ -3,30 +3,125 @@
 #include <unistd.h>
 #include "veml6075.h"
 
+
 // /*
 // * VEML6075 uv sensor
 // */
 
+#define VEML6075_CONF_REG 0x00
+#define VEML6075_DATA_UVA_REG 0x07
+#define VEML6075_DATA_UVB_REG 0x09
+#define VEML6075_DATA_UV_COMP1_REG 0x0A
+#define VEML6075_DATA_UV_COMP2_REG 0x0B
+#define VEML6075_ID_REG 0x0C
 
-VEML6075::VEML6075(uint8_t addr)
-    : i2cDevice("/dev/i2c-1", addr)
+
+VEML6075::VEML6075(uint8_t i2c_address)
+    : i2cDevice(i2c_address), _address(i2c_address)
 {}
+
 
 bool VEML6075::init()
 {
-    uint8_t config[2] = {0x00, 0x00};
-    return writeReg(0x00, config, 2) == 2;
+    UV_IT = 0b000;  //0b000
+    HD = 0b0;
+    UV_TRIG = 0b0;
+    UV_AF = 0b0;
+    AD = 0b0;
+
+    bool success = setConfig();
+    if (success)
+        std::cout << "VEML6075 inited" << std::endl;
+    
+
+    // uint8_t buf[1];
+    // readReg(VEML6075_ID_REG, buf, 1);
+    // std::cout << static_cast<int>(buf[0]) << std::endl;
+    // uint8_t id[2];
+    // readReg(VEML6075_ID_REG, id, 2);
+    // std::cout << "ID: " << std::hex << ((id[1] << 8) | id[0]) << std::endl;
+
+
+    return success;
 }
 
-bool VEML6075::getUVRaw(uint16_t& uva, uint16_t& uvb)
+
+bool VEML6075::setConfig()
+{
+    uint8_t config =
+        UV_IT << 4      |
+        HD << 3         |
+        UV_TRIG << 2    |
+        UV_AF << 1      |
+        AD;
+    uint8_t buf[2];
+    buf[0] = config;
+    buf[1] = 0x00;
+
+    if (!writeReg(VEML6075_CONF_REG, buf, 2))
+    {
+        std::cerr << "VEML6075 SET CONFIG FAILED" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+
+bool VEML6075::getUVRawValue(int16_t* value)
 {
     uint8_t buf[2];
-    if (readReg(0x07, buf, 2) != 2) return false;
-    uva = (buf[0] << 8) | buf[1];
+    if(!readReg(VEML6075_DATA_UVA_REG, buf, 2))
+    {
+        std::cerr << "VEML6075 READ FAILED" << std::endl;
+        return false;
+    }
+    value[0] = (int16_t)((buf[1] << 8) | buf[0]);
+    if(!readReg(VEML6075_DATA_UVB_REG, buf, 2))
+    {
+        std::cerr << "VEML6075 READ FAILED" << std::endl;
+        return false;
+    }
+    value[1] = (int16_t)((buf[1] << 8) | buf[0]);
 
-    if (readReg(0x09, buf, 2) != 2) return false;
-    uvb = (buf[0] << 8) | buf[1];
+    // std::cout << value[0] << std::endl;
 
+    // if (xreg >= -2048 && xreg < 2048 && yreg >= -2048 && yreg < 2048 && zreg >= -2048 && zreg < 2048)
+    //     return false;
+
+    return true;
+}
+
+
+bool VEML6075::getUV(double* uv)
+{
+    int16_t raw[2];
+    uint8_t factor;
+    if(!getUVRawValue(raw))
+        return false;
+    
+    switch (UV_IT)
+    {
+    case 0b000:
+        factor = 1;
+        break;
+    case 0b001:
+        factor = 2;
+        break;
+    case 0b010:
+        factor = 4;
+        break;
+    case 0b011:
+        factor = 8;
+        break;
+    case 0b100:
+        factor = 16;
+        break;
+    default:
+        return false;
+    }
+
+    uv[0] = raw[0]; // / 32768.0 / factor;      // wrong factor?
+    uv[1] = raw[1]; // / 32768.0 / factor;      // wrong factor?
     return true;
 }
 
@@ -40,224 +135,3 @@ bool VEML6075::getUVRaw(uint16_t& uva, uint16_t& uvb)
 
 
 
-
-
-
-
-
-
-// VEML6075::VEML6075(int bus, int address)
-//     : i2cDevice(bus, address) {}
-
-// bool VEML6075::init()
-// {
-//     uint8_t config[2] = {0x00, 0x00};   // Beispiel
-//     return writeReg(REG_CONF, config, 2) == 2;
-// }
-
-// bool VEML6075::getUVRawValue(uint16_t& uva, uint16_t& uvb)
-// {
-//     uint8_t buf[2];
-
-//     if (readReg(REG_UVA, buf, 2) != 2) return false;
-//     uva = (buf[0] << 8) | buf[1];
-
-//     if (readReg(REG_UVB, buf, 2) != 2) return false;
-//     uvb = (buf[0] << 8) | buf[1];
-
-//     return true;
-// }
-
-
-
-
-
-
-// #define CTL_REG 0x00
-// #define DATA_REG_UVA 0x07
-// #define DATA_REG_UVB 0x09
-// #define ID_REG 0x0C
-
-// bool VEML6075::init()
-// {
-//     int n;
-//     std::cout << "VEML6075 INIT ..." << std::endl;
-    
-//     uint8_t readBuf[4]; // 2 byte buffer to store the data read from the I2C device
-//     std::cout << "rückgabewert read: ";
-//     for (auto i = 0u; i<4; i++){
-//         n = readBuf[i] = 0;
-//         std::cout << n << " ";
-//     }
-//     std::cout << std::endl;
-
-//     readReg(CTL_REG, readBuf, 4);
-//     std::cout << "ausgelesene Werte: ";
-//     for (auto i = 0u; i < 4; i++){
-//         std::cout << std::hex << static_cast<int>(readBuf[i]) << " ";
-//         std::cout << std::hex << static_cast<unsigned>(readBuf[i]) << "  ";
-//     }
-//     std::cout << std::endl;
-
-
-//     // uint8_t reg[2];
-//     // reg[0] = CTL_REG;
-//     // // reg[1] = 0x10;
-//     // write(reg, 1);
-//     // std::this_thread::sleep_for(std::chrono::microseconds(1000));
-//     // read(readBuf, 4);
-
-//     // int n = readWord(ID_REG, readBuf); // Read the id registers into readBuf
-
-//     // readBuf[1] = 11;
-
-//     // printf("%d", &readBuf[0]);
-//     // std::cout << static_cast<int>(readBuf[0]) << "  " << static_cast<int>(readBuf[1]) << std::endl;
-
-//     // if (fDebugLevel > 1)
-//     // {
-//     //     printf("%d bytes read\n", n);
-//     //     printf("id reg: 0x%x \n", readBuf[0]);
-//     // }
-
-//     // if (readBuf[0] != 0b01001000)   // das was im normalfall im id register stehen soll
-//     // {
-//     //     std::cout << "VEML6075 INIT FAILED" << std::endl;
-//     //     return false;
-//     // }
-
-//     // addr config reg A (CRA)
-//     // 8 average, 15 Hz, single measurement: 0x70
-
-//     uint8_t cmd[2];
-//     cmd[0] = 0b01001000;     // das was ins cmd register rein soll
-//     cmd[1] = 0b01001000;
-
-//     n = writeReg(CTL_REG, cmd, 2);
-//     std::cout << "rückgabewert write: ";
-//     std::cout << n << " " << std::endl;
-
-//     // int n = readReg(ID_REG, readBuf, 4); // Read the id registers into readBuf
-
-//     // for (auto i = 0u; i < 4; i++){
-//     //     std::cout << std::hex << static_cast<unsigned>(readBuf[i]) << ' ';
-//     // }
-
-    
-
-//     // std::cout << (int)(readBuf[0]) << (int)(readBuf[1]) << std::endl;
-
-//     // std::cout << "VEML6075 INIT DONE" << std::endl;
-
-//     // setGain(fGain);
-//     return true;
-// }
-
-// // bool VEML6075::readRDYBit()
-// // {
-// //     // uint8_t readBuf[1]; // 2 byte buffer to store the data read from the I2C device
-
-// //     // // addr status reg (SR)
-// //     // int n = readReg(STATUS_REG_A, readBuf, 1); // Read the status register into readBuf
-
-// //     // if (n != 1)
-// //     //     return false;
-    
-// //     // uint8_t sr = readBuf[0];
-
-// //     // // if (fDebugLevel > 1)
-// //     // // {
-// //     // //     printf("%d bytes read\n", n);
-// //     // //     printf("status (read from device): 0x%x\n", sr);
-// //     // // }
-
-// //     // if ((sr & 0b00000001) == 0b00000001)
-// //     // {
-// //     //     std::cout << "VEML6075 READY" << std::endl;
-// //     //     return true;
-// //     // }
-// //     // return false;
-// // }
-
-// bool VEML6075::getUVRawValue(uint16_t& uva, uint16_t& uvb)
-// {
-//     uint8_t readBuf[2];
-
-//     // uint8_t cmd = 0x01; // start single measurement
-//     // int n = writeReg(0x02, &cmd, 1); // addr mode reg (MR)
-//     // usleep(6000);
-
-//     // Read the 3 data registers into readBuf starting from addr 0x03
-//     int n = readReg(DATA_REG_UVA, readBuf, 2);
-//     uint16_t uvareg = (uint8_t)(readBuf[0] << 8 | (uint8_t)(readBuf[1]));
-//     n = readReg(DATA_REG_UVB, readBuf, 2);
-//     uint16_t uvbreg = (uint8_t)(readBuf[0] << 8 | (uint8_t)(readBuf[1]));
-
-//     // if (fDebugLevel > 1) {
-//     //     printf("%d bytes read\n", n);
-//     //     printf("xreg: %d\n", xreg);
-//     //     printf("yreg: %d\n", yreg);
-//     //     printf("zreg: %d\n", zreg);
-//     // }
-
-//     uva = uvareg;
-//     uvb = uvbreg;
-
-//     if (uvareg >= -2048 && uvareg < 2048 && uvbreg >= -2048 && uvbreg < 2048)
-//         return true;
-
-//     return false;
-// }
-
-// // bool VEML6075::getXYZMagneticFields(double& x, double& y, double& z)
-// // {
-// //     uint16_t xreg, yreg, zreg;
-// //     bool ok = getXYZRawValues(xreg, yreg, zreg);
-// //     // double lsbgain = GAIN[fGain];
-// //     x = /* lsbgain * */ xreg / 1000.;      // wrong factor?
-// //     y = /* lsbgain * */ yreg / 1000.;      // wrong factor?
-// //     z = /* lsbgain * */ zreg / 1000.;      // wrong factor?
-
-// //     // if (fDebugLevel > 1) {
-// //     //     printf("x field: %f G\n", x);
-// //     //     printf("y field: %f G\n", y);
-// //     //     printf("z field: %f G\n", z);
-// //     // }
-
-// //     return ok;
-// // }
-
-// // bool VEML6075::getTemperatureRawValue(uint16_t& temperature)
-// // {
-// //     uint8_t readBuf[2];
-
-// //     int n = readReg(TEMP_LSB_REG, readBuf, 2);
-// //     uint16_t tempreg = (uint16_t)(readBuf[0] | readBuf[1] << 8);
-
-// //     // if (fDebugLevel > 1) {
-// //     //     printf("%d bytes read\n", n);
-// //     //     printf("tempreg: %d\n", tempreg);
-// //     // }
-
-// //     temperature = tempreg;
-
-// //     if (tempreg >= -2048 && tempreg < 2048)
-// //         return true;
-
-// //     return false;
-// // }
-
-// // bool VEML6075::getTemperature(double& temperature)
-// // {
-// //     uint16_t tempreg;
-// //     bool ok = getTemperatureRawValue(tempreg);
-// //     temperature = tempreg / 100.;      // wrong factor?
-
-// //     // if (fDebugLevel > 1) {
-// //     //     printf("x field: %f G\n", x);
-// //     //     printf("y field: %f G\n", y);
-// //     //     printf("z field: %f G\n", z);
-// //     // }
-
-// //     return ok;
-// // }

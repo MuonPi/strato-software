@@ -30,7 +30,7 @@ bool ADS1115::init()
 
     bool success = setConfig();
     if (success)
-        std::cout << "ADS1115 INITED" << std::endl;
+        std::cout << "ADS1115 inited" << std::endl;
     return success;
 }
 

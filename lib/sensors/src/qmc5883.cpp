@@ -38,13 +38,13 @@ bool QMC5883::init()
     RNG = 0b00;
     ODR = 0b00;
     MODE = 0b01;
-    SOFT_RST = 0b0;;
+    SOFT_RST = 0b0;
     ROL_PNT = 0b0;
     INT_ENB = 0b0;
 
     bool success = setConfig();
     if (success)
-        std::cout << "QMC5883 INITED" << std::endl;
+        std::cout << "QMC5883 inited" << std::endl;
     return success;
 }
 

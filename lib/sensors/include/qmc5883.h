@@ -23,7 +23,7 @@ public:
     uint8_t RNG = 0b00;
     uint8_t ODR = 0b00;
     uint8_t MODE = 0b00;
-    uint8_t SOFT_RST = 0b0;;
+    uint8_t SOFT_RST = 0b0;
     uint8_t ROL_PNT = 0b0;
     uint8_t INT_ENB = 0b0;
 

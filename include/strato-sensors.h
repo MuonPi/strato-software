@@ -20,8 +20,18 @@ public:
     bool start();
     bool stop();
 
-    std::atomic<double> voltage {0.0};
-    std::atomic<double> voltage_mean {0.0};
+    std::atomic<double> XOR {0};
+    std::atomic<double> XOR_mean {0};
+    std::atomic<uint16_t> XOR_count {0};
+
+    std::atomic<double> AND {0};
+    std::atomic<double> AND_mean {0};
+    std::atomic<uint16_t> AND_count {0};
+
+    std::atomic<double> coordinates[3] {0};
+
+    std::atomic<double> voltage {0};
+    std::atomic<double> voltage_mean {0};
     std::atomic<uint16_t> voltage_count {0};
 
     std::atomic<double> magnet {0};
@@ -33,15 +43,9 @@ public:
     std::atomic<double> temperature_mean {0};
     std::atomic<uint16_t> temperature_count {0};
 
-    std::atomic<double> XOR {0};
-    std::atomic<double> XOR_mean {0};
-    std::atomic<uint16_t> XOR_count {0};
-
-    std::atomic<double> AND {0};
-    std::atomic<double> AND_mean {0};
-    std::atomic<uint16_t> AND_count {0};
-
-    std::atomic<double> coordinates[3] {0};
+    std::atomic<double> uv[2] {0};
+    std::atomic<double> uv_mean {0};
+    std::atomic<uint16_t> uv_count {0};
 
 private:
     void threadFunc();

@@ -21,17 +21,13 @@ public:
     bool init();
     bool sendPayload(uint8_t* payload, uint8_t size);
     bool runloop();
+    bool reset();
 
     bool setup(devaddr_t devaddr, const lmic_pinmap& lmic_pins, unsigned char *appskey, unsigned char *nwkskey);
-    void sendLoraPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
-    uint32_t SeqNoFile();
-    uint8_t PayloadFile(uint8_t* payload);
+    void scheduleSendPayload(u1_t port, u4_t sequenceNo, uint8_t* message, uint8_t n);
+    bool SeqNoFile(uint32_t& seqno);
+    // uint8_t PayloadFile(uint8_t* payload);
 
-private:
-    void threadFunc();
-
-    std::thread lorawanThread;
-    std::atomic<bool> running;
 };
 
 

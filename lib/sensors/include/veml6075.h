@@ -1,25 +1,34 @@
 #ifndef _VEML6075_H_
 #define _VEML6075_H_
 
+
+#include <stdint.h>
 #include "i2cdevice.h"
 
-// /* VEML6075 */
 
 
-class VEML6075 : public i2cDevice {
+class VEML6075 : public i2cDevice
+{
 public:
-    VEML6075(uint8_t address = 0x10);
+    VEML6075(uint8_t i2c_address);
 
     bool init();
-    bool getUVRaw(uint16_t& uva, uint16_t& uvb);
+    bool setConfig();
+    bool getUVRawValue(int16_t* value);
+    bool getUV(double* uv);
+
+    uint8_t UV_IT = 0b000;
+    uint8_t HD = 0b0;
+    uint8_t UV_TRIG = 0b0;
+    uint8_t UV_AF = 0b0;
+    uint8_t AD = 0b0;
 
 private:
-    static constexpr uint8_t REG_CONF = 0x00;
-    static constexpr uint8_t REG_UVA  = 0x07;
-    static constexpr uint8_t REG_UVB  = 0x09;
+    uint8_t _address;
 };
 
 
+#endif // _VEML6075_H_
 
 
 
@@ -80,4 +89,3 @@ private:
 // //     signed int fCalibParameters[11];
 // };
 
-#endif // !_VEML6075_H_

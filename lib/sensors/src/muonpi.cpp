@@ -20,7 +20,7 @@ bool MUONPI::init()
     std::ifstream readfile(path);
     if (!readfile.is_open())
     {
-        std::cerr << path << " already opened" << std::endl;
+        std::cerr << "could not open file " << path << std::endl;
         return false;
     }
 
@@ -40,7 +40,7 @@ bool MUONPI::init()
     readfile.open(path);
     if (!readfile.is_open())
     {
-        std::cerr << path << " already opened" << std::endl;
+        std::cerr << "could not open file " << path << std::endl;
         return false;
     }
 
@@ -51,7 +51,7 @@ bool MUONPI::init()
     
     // std::cout << line << std::endl;
     logfile_path = path;
-    std::cout << "MUONPI INITED" << std::endl;
+    std::cout << "MUONPI inited" << std::endl;
     return true;
 }
 
@@ -62,7 +62,7 @@ bool MUONPI::getLogfilePath()
     std::ifstream readfile(path);
     if (!readfile.is_open())
     {
-        std::cerr << path << " already opened" << std::endl;
+        std::cerr << "could not open file " << path << std::endl;
         return false;
     }
 
@@ -79,58 +79,121 @@ bool MUONPI::getLogfilePath()
 }
 
 
-bool MUONPI::getAttribute(const std::string attribute, double& value)
+// bool MUONPI::getAttribute(const std::string attribute, double& value)
+// {
+//     std::ifstream readfile(logfile_path);
+//     if (!readfile.is_open())
+//     {
+//         std::cerr << "could not open file " << logfile_path << std::endl;
+//         return false;
+//     }
+
+//     const uint16_t N = 30;
+//     std::array<std::string, N> buffer;
+//     uint16_t index = 0;
+//     std::string line;
+
+//     // Datei durchlesen, nur die letzten N Zeilen behalten
+//     while (std::getline(readfile, line))
+//     {
+//         buffer[index % N] = line;
+//         index++;
+//     }
+//     readfile.close();
+
+//     // Rückwärts durch die letzten N Zeilen iterieren
+//     uint16_t start = std::min(index, static_cast<uint16_t>(N));
+//     for (uint16_t i = start - 1; i >= 0; i--)
+//     {
+//         const std::string& l = buffer[(index - 1 - i + N) % N];
+//         if (l.size() >= 20 + attribute.size() && l.substr(20, attribute.size()) == attribute)
+//         {
+//             // drittes Token extrahieren
+//             std::istringstream iss(l);
+//             std::string token;
+//             uint16_t token_index = 0;
+//             while (iss >> token)
+//             {
+//                 if (token_index == 2)
+//                 {
+//                     // std::cout << "rateXOR gefunden" << std::endl;
+//                     try {
+//                         value = std::stod(token);  // String zu double konvertieren
+//                         return true;               // erfolgreich
+//                     } catch (...) {
+//                         std::cerr << "attribute not convertible: " << attribute << std::endl;
+//                         return false;              // Fehler beim Konvertieren
+//                     }
+//                 }
+//                 token_index++;
+//             }
+//         }
+//     }
+//     std::cerr << "attribute not found: " << attribute << std::endl;
+//     return false;  // Attribut nicht gefunden
+// }
+
+bool MUONPI::getAttribute(const std::string& attribute, double& value)
 {
     std::ifstream readfile(logfile_path);
     if (!readfile.is_open())
     {
-        std::cerr << logfile_path << " already opened" << std::endl;
+        std::cerr << "could not open file: " << logfile_path << std::endl;
         return false;
     }
 
-    const uint8_t N = 50;
-    std::array<std::string, N> buffer;
-    uint8_t index = 0;
+    constexpr size_t read_lines_no = 62;
+    std::array<std::string, read_lines_no> buffer;
+    size_t index = 0;
     std::string line;
 
-    // Datei durchlesen, nur die letzten N Zeilen behalten
+    // Nur die letzten read_lines_no Zeilen behalten
     while (std::getline(readfile, line))
     {
-        buffer[index % N] = line;
+        buffer[index % read_lines_no] = std::move(line);
         index++;
     }
-    readfile.close();
 
-    // Rückwärts durch die letzten N Zeilen iterieren
-    int start = std::min(index, static_cast<uint8_t>(N));
-    for (int i = start - 1; i >= 0; i--)
+    const size_t count = std::min(index, read_lines_no);
+
+    // Rückwärts suchen (letztes Vorkommen gewinnt)
+    for (int i = static_cast<int>(count) - 1; i >= 0; --i)
     {
-        const std::string& l = buffer[(index - 1 - i + N) % N];
-        if (l.size() >= 20 + attribute.size() && l.substr(20, attribute.size()) == attribute)
+        const std::string& l = buffer[(index - 1 - i + read_lines_no) % read_lines_no];
+
+        // Attribut muss nach Timestamp + Leerzeichen beginnen
+        const size_t attr_pos = l.find(attribute);
+        if (attr_pos == std::string::npos)
+            continue;
+
+        // Tokens per Position extrahieren (schneller als stringstream)
+        size_t first_space  = l.find(' ', attr_pos);
+        if (first_space == std::string::npos)
+            continue;
+
+        size_t second_space = l.find(' ', first_space + 1);
+        if (second_space == std::string::npos)
+            continue;
+
+        std::string_view value_str(
+            l.data() + first_space + 1,
+            second_space - first_space - 1
+        );
+
+        try
         {
-            // drittes Token extrahieren
-            std::istringstream iss(l);
-            std::string token;
-            int token_index = 0;
-            while (iss >> token)
-            {
-                if (token_index == 2)
-                {
-                    // std::cout << "rateXOR gefunden" << std::endl;
-                    try {
-                        value = std::stod(token);  // String zu double konvertieren
-                        return true;               // erfolgreich
-                    } catch (...) {
-                        std::cerr << "attribute not convertible: " << attribute << std::endl;
-                        return false;              // Fehler beim Konvertieren
-                    }
-                }
-                token_index++;
-            }
+            value = std::stod(std::string(value_str));
+            return true;
+        }
+        catch (...)
+        {
+            std::cerr << "attribute not convertible: " << attribute << std::endl;
+            return false;
         }
     }
+
     std::cerr << "attribute not found: " << attribute << std::endl;
-    return false;  // Attribut nicht gefunden
+    return false;
 }
 
 
