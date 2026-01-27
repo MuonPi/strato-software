@@ -26,7 +26,8 @@ int main()
     auto start_time = std::chrono::steady_clock::now();
     auto last_message = std::chrono::steady_clock::now();
     const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
-    const auto timeout = std::chrono::seconds(LORAWAN_TIMEOUT);
+    const auto lorawan_timeout = std::chrono::seconds(LORAWAN_TIMEOUT);
+    const auto sensorthread_timeout = std::chrono::seconds(SENSORTHREAD_TIMEOUT);
     
     StratoSensors.start();
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -35,6 +36,14 @@ int main()
 
     while(true)
     {
+
+        if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
+        {
+            StratoSensors.stop();
+            StratoSensors.start();
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        }
+
 
         StratoPayload.reset();
         StratoPayload.addGPS(0, StratoSensors.coordinates[0], StratoSensors.coordinates[1], StratoSensors.coordinates[2]);
@@ -67,10 +76,10 @@ int main()
                 StratoLorawan.runloop();
                 if (txcomplete == true)
                     break;
-                if (std::chrono::steady_clock::now() - last_message > timeout)
+                if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
                 {
                     std::cerr << "LORAWAN timeout" << std::endl;
-                    lorawan_inited = StratoLorawan.init();
+                    lorawan_inited = StratoLorawan.reset();
                     break;
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -79,7 +88,7 @@ int main()
         }
         else
         {
-            lorawan_inited = StratoLorawan.init();
+            lorawan_inited = StratoLorawan.reset();
         }
 
 

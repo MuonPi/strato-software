@@ -20,6 +20,9 @@ public:
     bool start();
     bool stop();
 
+    std::atomic<bool> running {false};
+    std::atomic<std::chrono::steady_clock::time_point> heartbeat {std::chrono::steady_clock::now()};
+
     std::atomic<double> XOR {0};
     std::atomic<double> XOR_mean {0};
     std::atomic<uint16_t> XOR_count {0};
@@ -49,10 +52,7 @@ public:
 
 private:
     void threadFunc();
-
     std::thread sensorThread;
-    std::atomic<bool> running;
-    // std::mutex mtx;
 };
 
 

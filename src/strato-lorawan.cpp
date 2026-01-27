@@ -113,7 +113,7 @@ void onEvent(void *pUserData, ev_t ev)
         }
         // Schedule next transmission
         // will be called by main loop
-        // txcomplete = 1;  //NKRG
+        txcomplete = 1;  //NKRG
         // std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
@@ -344,49 +344,9 @@ bool Lorawan::SeqNoFile(uint32_t& seqno)
 bool Lorawan::reset()
 {
     LMIC_reset();
+    std::cout << "LORAWAN resetted" << std::endl;
     return true;
 }
-
-
-// uint8_t Lorawan::PayloadFile(uint8_t* payload)
-// {
-//     uint8_t payloadlen = 0;
-//     std::string line;
-//     std::string path;
-
-//     path = "/var/strato-software/lora_payload.txt";
-
-//     if (!std::filesystem::exists(path))
-//     {
-//         std::ofstream createfile(path);
-//         createfile << 0;
-//         createfile.close();
-//     }
-
-//     std::ifstream readfile(path);
-//     if (!readfile.is_open())
-//     {
-//         throw std::runtime_error("uplinkSequenceNo.txt already opened");
-//     }
-//     std::getline(readfile, line);
-//     readfile.close();
-
-//     // std::cout << line << std::endl;
-
-//     std::istringstream iss(line);
-//     // std::vector<uint8_t> payloadstr;
-//     std::string element;
-//     while(std::getline(iss, element, ';'))
-//     {
-//         payload[payloadlen] = static_cast<uint8_t>(std::stoi(element));
-//         payloadlen++;
-//     }
-
-//     // std::cout << payload[0] << std::endl;
-
-//     return payloadlen;
-// }
-
 
 
 

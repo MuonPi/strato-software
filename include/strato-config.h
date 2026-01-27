@@ -7,6 +7,7 @@
 
 
 #define SENSORS_INTERVAL 1 //s
+#define SENSORTHREAD_TIMEOUT 5 //s
 #define LORAWAN_INTERVAL 1 //60 //s
 #define LORAWAN_TIMEOUT 100 //s
 #define LOGFILE_INTERVAL 30 //min
