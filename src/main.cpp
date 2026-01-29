@@ -57,6 +57,10 @@ int main()
         StratoSensors.temperature_mean = 0;
         StratoSensors.temperature_count = 0;
 
+        std::cout << "Temperature: " << StratoSensors.temperature << std::endl;
+        std::cout << "Pressure: " << StratoSensors.pressure << std::endl;
+        std::cout << "Humidity: " << StratoSensors.humidity << std::endl << std::endl;
+
         // std::cout << StratoPayload.getSize() << std::endl;
         // uint8_t* buffer = StratoPayload.getBuffer();
         // for(uint8_t i = 0; i < StratoPayload.getSize(); i++)
@@ -66,30 +70,30 @@ int main()
         // }
         // std::cout << std::endl;
 
-        if (lorawan_inited)
-        {
-            StratoLorawan.sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
-            last_message = std::chrono::steady_clock::now();
+        // if (lorawan_inited)
+        // {
+        //     StratoLorawan.sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
+        //     last_message = std::chrono::steady_clock::now();
 
-            while(true)
-            {
-                StratoLorawan.runloop();
-                if (txcomplete == true)
-                    break;
-                if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
-                {
-                    std::cerr << "LORAWAN timeout" << std::endl;
-                    lorawan_inited = StratoLorawan.reset();
-                    break;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            }
-            txcomplete = false;
-        }
-        else
-        {
-            lorawan_inited = StratoLorawan.reset();
-        }
+        //     while(true)
+        //     {
+        //         StratoLorawan.runloop();
+        //         if (txcomplete == true)
+        //             break;
+        //         if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
+        //         {
+        //             std::cerr << "LORAWAN timeout" << std::endl;
+        //             lorawan_inited = StratoLorawan.reset();
+        //             break;
+        //         }
+        //         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        //     }
+        //     txcomplete = false;
+        // }
+        // else
+        // {
+        //     lorawan_inited = StratoLorawan.reset();
+        // }
 
 
         
@@ -101,3 +105,192 @@ int main()
     return 0;
 }
 
+
+
+
+
+
+
+
+// // #include <fcntl.h>
+// // #include <unistd.h>
+// // #include <sys/ioctl.h>
+// // #include <linux/i2c-dev.h>
+// // #include <cstdint>
+// // #include <chrono>
+// // #include <thread>
+// // #include <iostream>
+
+
+// // bool initVEML6075(int fd)
+// // {
+// //     constexpr uint8_t REG_CONF = 0x00;
+
+// //     // UV_IT = 800ms, continuous, SD=0
+// //     uint16_t config = (0b100 << 4);
+
+// //     uint8_t cfg[3] = {
+// //         REG_CONF,
+// //         uint8_t(config & 0xFF),
+// //         uint8_t(config >> 8)
+// //     };
+
+// //     if (write(fd, cfg, 3) != 3)
+// //         return false;
+
+// //     std::this_thread::sleep_for(std::chrono::milliseconds(900));
+// //     return true;
+// // }
+
+// // bool readVEML6075Raw(
+// //     int fd,
+// //     uint16_t& uva,
+// //     uint16_t& uvb,
+// //     uint16_t& comp1,
+// //     uint16_t& comp2
+// // )
+// // {
+// //     auto read16 = [&](uint8_t reg, uint16_t& out) -> bool {
+// //         if (write(fd, &reg, 1) != 1)
+// //             return false;
+// //         uint8_t buf[2];
+// //         if (read(fd, buf, 2) != 2)
+// //             return false;
+// //         out = (uint16_t(buf[1]) << 8) | buf[0];
+// //         return true;
+// //     };
+
+// //     return read16(0x07, uva) &&
+// //            read16(0x09, uvb) &&
+// //            read16(0x0A, comp1) &&
+// //            read16(0x0B, comp2);
+// // }
+
+
+
+
+
+// // uint16_t uva, uvb, comp1, comp2;
+
+// // int main()
+// // {
+// //     int fd = open("/dev/i2c-1", O_RDWR);
+// //     ioctl(fd, I2C_SLAVE, 0x10);
+
+// //     initVEML6075(fd);
+
+// //     while (true) {
+// //         readVEML6075Raw(fd, uva, uvb, comp1, comp2);
+
+// //         std::cout
+// //             << "UVA=" << uva
+// //             << " UVB=" << uvb
+// //             << " C1=" << comp1
+// //             << " C2=" << comp2
+// //             << std::endl;
+
+// //         std::this_thread::sleep_for(std::chrono::seconds(1));
+// //     }
+// // }
+
+
+
+
+
+
+
+
+// // #include <fcntl.h>
+// // #include <unistd.h>
+// // #include <sys/ioctl.h>
+// // #include <linux/i2c-dev.h>
+// // #include <cstdint>
+// // #include <iostream>
+// // #include <thread>
+// // #include <chrono>
+
+
+
+// // constexpr uint8_t LMP91000_ADDR = 0x48;
+// // constexpr uint8_t MCP3221_ADDR  = 0x4D;
+
+// // bool Ozone3Clickinit(const char* i2cdev)
+// // {
+// //     int fd = open(i2cdev, O_RDWR);
+// //     if (fd < 0) return false;
+
+// //     if (ioctl(fd, I2C_SLAVE, LMP91000_ADDR) < 0) {
+// //         close(fd);
+// //         return false;
+// //     }
+
+// //     // Unlock
+// //     // uint8_t buf[] = {0x00, 0x00};
+// //     // write(fd, buf, 2);
+
+// //     // TIA: Gain 35kΩ, Load 10Ω
+// //     uint8_t tia[] = {0x01, 0b00000000};
+// //     write(fd, tia, 2);
+
+// //     // Ref: Internal, 50% bias
+// //     uint8_t ref[] = {0x10, 0b00000011};
+// //     write(fd, ref, 2);
+
+// //     // Mode: 3-lead amperometric
+// //     uint8_t mode[] = {0x11, 0b00100000};
+// //     write(fd, mode, 2);
+
+// //     uint8_t mode2[] = {0x12, 0b00000000};
+// //     write(fd, mode2, 2);
+
+// //     // Lock
+// //     // uint8_t lock[] = {0x00, 0x01};
+// //     // write(fd, lock, 2);
+
+// //     close(fd);
+
+// //     // Sensor braucht Zeit!
+// //     std::this_thread::sleep_for(std::chrono::seconds(2));
+
+// //     return true;
+// // }
+
+// // bool Ozone3Clickread(const char* i2cdev, uint16_t& adc)
+// // {
+// //     // ---------- MCP3221 READ ----------
+// //     int fd = open(i2cdev, O_RDWR);
+// //     if (ioctl(fd, I2C_SLAVE, MCP3221_ADDR) < 0) {
+// //         close(fd);
+// //         return false;
+// //     }
+
+// //     uint8_t buf[2];
+// //     if (read(fd, buf, 2) != 2) {
+// //         close(fd);
+// //         return false;
+// //     }
+
+// //     adc = (uint16_t(buf[0]) << 8) | buf[1];
+// //     adc &= 0x0FFF; // 12 Bit
+
+// //     close(fd);
+// //     return true;
+// // }
+
+
+
+// // int main()
+// // {
+// //     uint16_t value;
+
+// //     Ozone3Clickinit("/dev/i2c-1");
+
+// //     while (true) {
+// //         if (Ozone3Clickread("/dev/i2c-1", value))
+// //             std::cout << "Ozone ADC: " << value << std::endl;
+// //         else
+// //             std::cerr << "Read failed\n";
+
+// //         std::this_thread::sleep_for(std::chrono::seconds(1));
+// //     }
+// // }

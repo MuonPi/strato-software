@@ -7,6 +7,7 @@
 #include "ads1115.h"
 #include "qmc5883.h"
 #include "veml6075.h"
+#include "bme280.h"
 #include "strato-sensors.h"
 #include "logfile.h"
 
@@ -25,6 +26,7 @@ Sensors::~Sensors()
 
 bool Sensors::start()
 {
+    std::cout << "SensorThread starting ..." << std::endl;
     bool expected = false;
     if (!running.compare_exchange_strong(expected, true))
         return false;
@@ -35,12 +37,12 @@ bool Sensors::start()
 
 bool Sensors::stop()
 {
+    std::cout << "SensorThread stopping ..." << std::endl;
     bool expected = true;
     if (!running.compare_exchange_strong(expected, false))
         return false;
     if (sensorThread.joinable())
         sensorThread.join();
-    std::cout << "SensorThread stopped" << std::endl;
     return true;
 }
 
@@ -75,7 +77,7 @@ void Sensors::threadFunc()
         QMC5883 strato_qmc5883(QMC5883_ADDR);
         bool qmc5883_inited = false;
         double magnetXYZ_temp[3] {0};
-        double temperature_temp = 0;
+        // double temperature_temp = 0;
         #endif
 
         #ifdef VEML6075_ADDR
@@ -84,8 +86,16 @@ void Sensors::threadFunc()
         double uv_temp[2] {0};
         #endif
 
+        #ifdef BME280_ADDR
+        BME280 strato_bme280(BME280_ADDR);
+        bool bme280_inited = true;
+        TPH temperature_pressure_humidity_temp {0};
+        #endif
+
         std::string timestamp_value {0};
         std::string timestamp_filename {0};
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         while (running)
         {
@@ -168,15 +178,15 @@ void Sensors::threadFunc()
                 else
                     qmc5883_inited = strato_qmc5883.init();
             
-                if (strato_qmc5883.getTemperature(temperature_temp))
-                {
-                    temperature = temperature_temp;
-                    temperature_mean = ((temperature_mean * temperature_count) + temperature_temp) / (temperature_count + 1);
-                    temperature_count++;
-                    writeLogfile("temperature_inside", timestamp_filename, timestamp_value, &temperature_temp, 1);
-                }
-                else
-                    qmc5883_inited = strato_qmc5883.init();
+                // if (strato_qmc5883.getTemperature(temperature_temp))
+                // {
+                //     temperature = temperature_temp;
+                //     temperature_mean = ((temperature_mean * temperature_count) + temperature_temp) / (temperature_count + 1);
+                //     temperature_count++;
+                //     writeLogfile("temperature_inside", timestamp_filename, timestamp_value, &temperature_temp, 1);
+                // }
+                // else
+                //     qmc5883_inited = strato_qmc5883.init();
             }
             else
                 qmc5883_inited = strato_qmc5883.init();
@@ -202,6 +212,56 @@ void Sensors::threadFunc()
             else
                 veml6075_inited = strato_veml6075.init();
             #endif
+
+
+
+            #ifdef BME280_ADDR
+            temperature_pressure_humidity_temp = {0};
+            // // strato_bme280.softReset();
+            if (bme280_inited)
+            {
+                temperature_pressure_humidity_temp = strato_bme280.getTPHValues();
+
+                if (temperature_pressure_humidity_temp.T > -999.0)
+                {
+                    temperature = temperature_pressure_humidity_temp.T;
+                    temperature_mean = ((temperature_mean * temperature_count) + temperature_pressure_humidity_temp.T) / (temperature_count + 1);
+                    temperature_count++;
+                    writeLogfile("temperature", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.T, 1);
+                }
+                else
+                    bme280_inited = strato_bme280.init();
+
+                if (temperature_pressure_humidity_temp.P > -999.0)
+                {
+                    pressure = temperature_pressure_humidity_temp.P;
+                    pressure_mean = ((pressure_mean * pressure_count) + temperature_pressure_humidity_temp.P) / (pressure_count + 1);
+                    pressure_count++;
+                    writeLogfile("pressure", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.P, 1);
+                }
+                else
+                    bme280_inited = strato_bme280.init();
+
+                if (temperature_pressure_humidity_temp.H > -999.0)
+                {
+                    humidity = temperature_pressure_humidity_temp.H;
+                    humidity_mean = ((humidity_mean * humidity_count) + temperature_pressure_humidity_temp.H) / (humidity_count + 1);
+                    humidity_count++;
+                    writeLogfile("humidity", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.H, 1);
+                }
+                else
+                    bme280_inited = strato_bme280.init();
+            }
+            else
+                bme280_inited = strato_bme280.init();
+            #endif
+
+            // temperature_raw = strato_bme280.getTemperature(0);
+            
+            // std::cout << temperature_raw << std::endl;
+
+
+
 
 
             std::this_thread::sleep_for(sensors_interval - ((std::chrono::steady_clock::now() - start_time) % sensors_interval));

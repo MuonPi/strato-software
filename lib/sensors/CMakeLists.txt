@@ -8,6 +8,7 @@ add_library(sensors STATIC
     src/sen0321.cpp
     src/veml6075.cpp
     src/muonpi.cpp
+    src/ozone3click.cpp
 )
 
 target_include_directories(sensors PUBLIC

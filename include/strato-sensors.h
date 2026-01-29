@@ -42,13 +42,25 @@ public:
     std::atomic<double> magnetXYZ[3] {0};
     std::atomic<uint16_t> magnet_count {0};
 
-    std::atomic<double> temperature {0};
-    std::atomic<double> temperature_mean {0};
-    std::atomic<uint16_t> temperature_count {0};
+    // std::atomic<double> temperature {0};
+    // std::atomic<double> temperature_mean {0};
+    // std::atomic<uint16_t> temperature_count {0};
 
     std::atomic<double> uv[2] {0};
     std::atomic<double> uv_mean {0};
     std::atomic<uint16_t> uv_count {0};
+
+    std::atomic<double> temperature {0};
+    std::atomic<double> temperature_mean {0};
+    std::atomic<uint16_t> temperature_count {0};
+
+    std::atomic<double> pressure {0};
+    std::atomic<double> pressure_mean {0};
+    std::atomic<uint16_t> pressure_count {0};
+
+    std::atomic<double> humidity {0};
+    std::atomic<double> humidity_mean {0};
+    std::atomic<uint16_t> humidity_count {0};
 
 private:
     void threadFunc();
