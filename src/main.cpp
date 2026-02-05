@@ -57,9 +57,7 @@ int main()
         StratoSensors.temperature_mean = 0;
         StratoSensors.temperature_count = 0;
 
-        std::cout << "Temperature: " << StratoSensors.temperature << std::endl;
-        std::cout << "Pressure: " << StratoSensors.pressure << std::endl;
-        std::cout << "Humidity: " << StratoSensors.humidity << std::endl << std::endl;
+        std::cout << "Ozone: " << StratoSensors.ozone << std::endl;
 
         // std::cout << StratoPayload.getSize() << std::endl;
         // uint8_t* buffer = StratoPayload.getBuffer();
@@ -200,97 +198,97 @@ int main()
 
 
 
-// // #include <fcntl.h>
-// // #include <unistd.h>
-// // #include <sys/ioctl.h>
-// // #include <linux/i2c-dev.h>
-// // #include <cstdint>
-// // #include <iostream>
-// // #include <thread>
-// // #include <chrono>
+// #include <fcntl.h>
+// #include <unistd.h>
+// #include <sys/ioctl.h>
+// #include <linux/i2c-dev.h>
+// #include <cstdint>
+// #include <iostream>
+// #include <thread>
+// #include <chrono>
 
 
 
-// // constexpr uint8_t LMP91000_ADDR = 0x48;
-// // constexpr uint8_t MCP3221_ADDR  = 0x4D;
+// constexpr uint8_t LMP91000_ADDR = 0x48;
+// constexpr uint8_t MCP3221_ADDR  = 0x4D;
 
-// // bool Ozone3Clickinit(const char* i2cdev)
-// // {
-// //     int fd = open(i2cdev, O_RDWR);
-// //     if (fd < 0) return false;
+// bool Ozone3Clickinit(const char* i2cdev)
+// {
+//     int fd = open(i2cdev, O_RDWR);
+//     if (fd < 0) return false;
 
-// //     if (ioctl(fd, I2C_SLAVE, LMP91000_ADDR) < 0) {
-// //         close(fd);
-// //         return false;
-// //     }
+//     if (ioctl(fd, I2C_SLAVE, LMP91000_ADDR) < 0) {
+//         close(fd);
+//         return false;
+//     }
 
-// //     // Unlock
-// //     // uint8_t buf[] = {0x00, 0x00};
-// //     // write(fd, buf, 2);
+//     // Unlock
+//     // uint8_t buf[] = {0x00, 0x00};
+//     // write(fd, buf, 2);
 
-// //     // TIA: Gain 35kΩ, Load 10Ω
-// //     uint8_t tia[] = {0x01, 0b00000000};
-// //     write(fd, tia, 2);
+//     // TIA: Gain 35kΩ, Load 10Ω
+//     uint8_t tia[] = {0x01, 0b00000000};
+//     write(fd, tia, 2);
 
-// //     // Ref: Internal, 50% bias
-// //     uint8_t ref[] = {0x10, 0b00000011};
-// //     write(fd, ref, 2);
+//     // Ref: Internal, 50% bias
+//     uint8_t ref[] = {0x10, 0b00000011};
+//     write(fd, ref, 2);
 
-// //     // Mode: 3-lead amperometric
-// //     uint8_t mode[] = {0x11, 0b00100000};
-// //     write(fd, mode, 2);
+//     // Mode: 3-lead amperometric
+//     uint8_t mode[] = {0x11, 0b00100000};
+//     write(fd, mode, 2);
 
-// //     uint8_t mode2[] = {0x12, 0b00000000};
-// //     write(fd, mode2, 2);
+//     uint8_t mode2[] = {0x12, 0b00000000};
+//     write(fd, mode2, 2);
 
-// //     // Lock
-// //     // uint8_t lock[] = {0x00, 0x01};
-// //     // write(fd, lock, 2);
+//     // Lock
+//     // uint8_t lock[] = {0x00, 0x01};
+//     // write(fd, lock, 2);
 
-// //     close(fd);
+//     close(fd);
 
-// //     // Sensor braucht Zeit!
-// //     std::this_thread::sleep_for(std::chrono::seconds(2));
+//     // Sensor braucht Zeit!
+//     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-// //     return true;
-// // }
+//     return true;
+// }
 
-// // bool Ozone3Clickread(const char* i2cdev, uint16_t& adc)
-// // {
-// //     // ---------- MCP3221 READ ----------
-// //     int fd = open(i2cdev, O_RDWR);
-// //     if (ioctl(fd, I2C_SLAVE, MCP3221_ADDR) < 0) {
-// //         close(fd);
-// //         return false;
-// //     }
+// bool Ozone3Clickread(const char* i2cdev, uint16_t& adc)
+// {
+//     // ---------- MCP3221 READ ----------
+//     int fd = open(i2cdev, O_RDWR);
+//     if (ioctl(fd, I2C_SLAVE, MCP3221_ADDR) < 0) {
+//         close(fd);
+//         return false;
+//     }
 
-// //     uint8_t buf[2];
-// //     if (read(fd, buf, 2) != 2) {
-// //         close(fd);
-// //         return false;
-// //     }
+//     uint8_t buf[2];
+//     if (read(fd, buf, 2) != 2) {
+//         close(fd);
+//         return false;
+//     }
 
-// //     adc = (uint16_t(buf[0]) << 8) | buf[1];
-// //     adc &= 0x0FFF; // 12 Bit
+//     adc = (uint16_t(buf[0]) << 8) | buf[1];
+//     adc &= 0x0FFF; // 12 Bit
 
-// //     close(fd);
-// //     return true;
-// // }
+//     close(fd);
+//     return true;
+// }
 
 
 
-// // int main()
-// // {
-// //     uint16_t value;
+// int main()
+// {
+//     uint16_t value;
 
-// //     Ozone3Clickinit("/dev/i2c-1");
+//     Ozone3Clickinit("/dev/i2c-1");
 
-// //     while (true) {
-// //         if (Ozone3Clickread("/dev/i2c-1", value))
-// //             std::cout << "Ozone ADC: " << value << std::endl;
-// //         else
-// //             std::cerr << "Read failed\n";
+//     while (true) {
+//         if (Ozone3Clickread("/dev/i2c-1", value))
+//             std::cout << "Ozone ADC: " << value << std::endl;
+//         else
+//             std::cerr << "Read failed\n";
 
-// //         std::this_thread::sleep_for(std::chrono::seconds(1));
-// //     }
-// // }
+//         std::this_thread::sleep_for(std::chrono::seconds(1));
+//     }
+// }

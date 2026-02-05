@@ -8,6 +8,7 @@
 #include "qmc5883.h"
 #include "veml6075.h"
 #include "bme280.h"
+#include "ozone3click.h"
 #include "strato-sensors.h"
 #include "logfile.h"
 
@@ -59,6 +60,11 @@ void Sensors::threadFunc()
         const auto sensors_interval = std::chrono::seconds(SENSORS_INTERVAL);
         const auto logfile_interval = std::chrono::minutes(LOGFILE_INTERVAL);
         
+        std::string timestamp_value {0};
+        std::string timestamp_filename {0};
+
+
+
         #ifdef MUONPI_USED
         MUONPI strato_muonpi;
         bool muonpi_inited = false;
@@ -92,9 +98,16 @@ void Sensors::threadFunc()
         TPH temperature_pressure_humidity_temp {0};
         #endif
 
-        std::string timestamp_value {0};
-        std::string timestamp_filename {0};
+        #ifdef OZONE3CLICK_LMP_ADDR
+        #ifdef OZONE3CLICK_ADC_ADDR
+        OZONE3CLICK strato_ozone3click(OZONE3CLICK_LMP_ADDR, OZONE3CLICK_ADC_ADDR);
+        bool ozone3click_inited = false;
+        double ozone_temp {0};
+        #endif
+        #endif
 
+
+        
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
         while (running)
@@ -201,7 +214,7 @@ void Sensors::threadFunc()
                 {
                     for(size_t i; i < 2; i++)
                         uv[i] = uv_temp[i];
-                    uv_mean = (uv_mean * uv_count) + ((uv[0] + uv[1]) / 2) / (uv_count + 1);
+                    uv_mean = (uv_mean * uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (uv_count + 1);
                     uv_count++;
                     writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 2);
                     // std::cout << uv_temp[0] << "  " << uv_temp[1] << std::endl;
@@ -256,10 +269,27 @@ void Sensors::threadFunc()
                 bme280_inited = strato_bme280.init();
             #endif
 
-            // temperature_raw = strato_bme280.getTemperature(0);
-            
-            // std::cout << temperature_raw << std::endl;
 
+
+            #ifdef OZONE3CLICK_LMP_ADDR
+            #ifdef OZONE3CLICK_ADC_ADDR
+            if (ozone3click_inited)
+            {
+                if (strato_ozone3click.getOzone(ozone_temp))
+                {
+                    ozone = ozone_temp;
+                    ozone_mean = (ozone_mean * ozone_count) + ozone_temp / (ozone_count + 1);
+                    ozone_count++;
+                    writeLogfile("ozone", timestamp_filename, timestamp_value, &ozone_temp, 1);
+                    // std::cout << ozone_temp << std::endl;
+                }
+                else
+                    ozone3click_inited = strato_ozone3click.init();
+            }
+            else
+                ozone3click_inited = strato_ozone3click.init();
+            #endif
+            #endif
 
 
 

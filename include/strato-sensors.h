@@ -62,6 +62,10 @@ public:
     std::atomic<double> humidity_mean {0};
     std::atomic<uint16_t> humidity_count {0};
 
+    std::atomic<double> ozone {0};
+    std::atomic<double> ozone_mean {0};
+    std::atomic<uint16_t> ozone_count {0};
+
 private:
     void threadFunc();
     std::thread sensorThread;

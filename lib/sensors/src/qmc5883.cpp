@@ -155,7 +155,7 @@ bool QMC5883::getTemperature(double& temperature)
     if(!getTemperatureRawValue(raw))
         return false;
     
-    temperature = raw / 100.;      // wrong factor?
+    temperature = (double)raw / 100.;      // wrong factor?
     return true;
 }
 

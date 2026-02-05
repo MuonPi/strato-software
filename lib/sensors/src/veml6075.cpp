@@ -120,8 +120,8 @@ bool VEML6075::getUV(double* uv)
         return false;
     }
 
-    uv[0] = raw[0]; // / 32768.0 / factor;      // wrong factor?
-    uv[1] = raw[1]; // / 32768.0 / factor;      // wrong factor?
+    uv[0] = (double)raw[0]; // / 32768.0 / factor;      // wrong factor?
+    uv[1] = (double)raw[1]; // / 32768.0 / factor;      // wrong factor?
     return true;
 }
 

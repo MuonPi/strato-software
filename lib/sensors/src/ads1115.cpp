@@ -123,6 +123,6 @@ bool ADS1115::getVoltage(double &voltage)
         return false;
     }
 
-    voltage = raw / 32768.0 * range;
+    voltage = (double)raw / 32768.0 * range;
     return true;
 }
