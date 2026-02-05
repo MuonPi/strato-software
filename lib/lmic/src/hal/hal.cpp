@@ -43,13 +43,13 @@ static void hal_io_init()
     ASSERT(plmic_pins->dio[0] != LMIC_UNUSED_PIN);
     ASSERT(plmic_pins->dio[1] != LMIC_UNUSED_PIN || plmic_pins->dio[2] != LMIC_UNUSED_PIN);      // NKRG Why should we test this? Do we need dio1 and dio2?
 
-    std::cout << std::endl;
-    std::cout << "nss: " << static_cast<int>(plmic_pins->nss) << std::endl;
-    std::cout << "rst: " << static_cast<int>(plmic_pins->rst) << std::endl;
-    std::cout << "dio[0]: " << static_cast<int>(plmic_pins->dio[0]) << std::endl;
-    std::cout << "dio[1]: " << static_cast<int>(plmic_pins->dio[1]) << std::endl;
-    std::cout << "dio[2]: " << static_cast<int>(plmic_pins->dio[2]) << std::endl;
-    std::cout << std::endl;
+    // std::cout << std::endl;
+    // std::cout << "nss: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    // std::cout << "rst: " << static_cast<int>(plmic_pins->rst) << std::endl;
+    // std::cout << "dio[0]: " << static_cast<int>(plmic_pins->dio[0]) << std::endl;
+    // std::cout << "dio[1]: " << static_cast<int>(plmic_pins->dio[1]) << std::endl;
+    // std::cout << "dio[2]: " << static_cast<int>(plmic_pins->dio[2]) << std::endl;
+    // std::cout << std::endl;
     
     // initialize SPI chip select to high (it's active low)
     // digitalWrite(plmic_pins->nss, HIGH);
@@ -579,7 +579,7 @@ void hal_failed(const char *file, u2_t line)
     // LMIC_FAILURE_TO.print(':');
     // LMIC_FAILURE_TO.println(line);
     // LMIC_FAILURE_TO.flush();
-    std::cout << "FAILURE " << file << ":" << line << std::endl; // NKRG
+    std::cout << "LORAWAN FAILURE " << file << ":" << line << std::endl; // NKRG
 #endif
 
     hal_disableIRQs();
@@ -587,7 +587,7 @@ void hal_failed(const char *file, u2_t line)
     // Infinite loop
     while (1)
     {
-        ;
+        exit(EXIT_FAILURE);    // NKRG
     }
 }
 

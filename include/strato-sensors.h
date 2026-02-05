@@ -46,7 +46,7 @@ public:
     // std::atomic<double> temperature_mean {0};
     // std::atomic<uint16_t> temperature_count {0};
 
-    std::atomic<double> uv[2] {0};
+    std::atomic<double> uv[4] {0};
     std::atomic<double> uv_mean {0};
     std::atomic<uint16_t> uv_count {0};
 

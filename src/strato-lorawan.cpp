@@ -104,7 +104,7 @@ void onEvent(void *pUserData, ev_t ev)
     case EV_TXCOMPLETE:
         std::cout << "EV_TXCOMPLETE" << std::endl;
         if (LMIC.txrxFlags & TXRX_ACK)
-        std::cout << "Received ack" << std::endl;
+            std::cout << "Received ack" << std::endl;
         if (LMIC.dataLen)
         {
             std::cout << "Received ";
@@ -165,7 +165,7 @@ void do_send(osjob_t *j)
         }
         std::cout << std::endl;
         std::cout << "UplinkSequenceNumber: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
-        LMIC_setTxData2(1, data, data_size, 0);
+        LMIC_setTxData2(1, data, data_size, 0); // ,0 NKRG
         std::cout << "Packet queued" << std::endl;
     }
     // Next TX is scheduled after TX_COMPLETE event.
@@ -200,6 +200,8 @@ bool Lorawan::init()
     }
 
     setup(DEVADDR, lmic_pins, appskey, nwkskey);
+
+    LMIC_setClockError(MAX_CLOCK_ERROR * 1 / 100);  // NKRG
 
     std::cout << "LORAWAN inited" << std::endl;
     return true;
@@ -268,6 +270,7 @@ bool Lorawan::setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned ch
 
     // TTN uses SF9 for its RX2 window.
     LMIC.dn2Dr = DR_SF9;
+    LMIC.dn2Freq = 869525000;   // NKRG
 
     // Set data rate and transmit power for uplink (note: txpow seems to be ignored by the library)
     LMIC_setDrTxpow(static_cast<dr_t>(DR_SF10), static_cast<s1_t>(20)); // spreading factor 10

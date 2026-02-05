@@ -89,7 +89,7 @@ void Sensors::threadFunc()
         #ifdef VEML6075_ADDR
         VEML6075 strato_veml6075(VEML6075_ADDR);
         bool veml6075_inited = false;
-        double uv_temp[2] {0};
+        double uv_temp[4] {0};
         #endif
 
         #ifdef BME280_ADDR
@@ -212,11 +212,11 @@ void Sensors::threadFunc()
             {
                 if (strato_veml6075.getUV(uv_temp))
                 {
-                    for(size_t i; i < 2; i++)
+                    for(size_t i; i < 4; i++)
                         uv[i] = uv_temp[i];
                     uv_mean = (uv_mean * uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (uv_count + 1);
                     uv_count++;
-                    writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 2);
+                    writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 4);
                     // std::cout << uv_temp[0] << "  " << uv_temp[1] << std::endl;
                 }
                 else

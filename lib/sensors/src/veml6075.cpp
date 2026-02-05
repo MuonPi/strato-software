@@ -75,13 +75,25 @@ bool VEML6075::getUVRawValue(int16_t* value)
         std::cerr << "VEML6075 READ FAILED" << std::endl;
         return false;
     }
-    value[0] = (int16_t)((buf[1] << 8) | buf[0]);
+    value[0] = (int16_t)((buf[1] << 8) | buf[0]); // UVA
     if(!readReg(VEML6075_DATA_UVB_REG, buf, 2))
     {
         std::cerr << "VEML6075 READ FAILED" << std::endl;
         return false;
     }
-    value[1] = (int16_t)((buf[1] << 8) | buf[0]);
+    value[1] = (int16_t)((buf[1] << 8) | buf[0]); // UVB
+    if(!readReg(VEML6075_DATA_UV_COMP1_REG, buf, 2))
+    {
+        std::cerr << "VEML6075 READ FAILED" << std::endl;
+        return false;
+    }
+    value[2] = (int16_t)((buf[1] << 8) | buf[0]); // COMP1
+    if(!readReg(VEML6075_DATA_UV_COMP2_REG, buf, 2))
+    {
+        std::cerr << "VEML6075 READ FAILED" << std::endl;
+        return false;
+    }
+    value[3] = (int16_t)((buf[1] << 8) | buf[0]); // COMP2
 
     // std::cout << value[0] << std::endl;
 
