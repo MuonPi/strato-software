@@ -36,8 +36,14 @@ bool BME280::init()
     writeReg(0xf2, buf, 1);
 
     if (val == 0x60)
+    {
         readCalibParameters();
-    std::cout << "BME280 inited" << std::endl;
+        std::cout << "BME280 inited" << std::endl;
+    }
+    else
+    {
+        std::cerr << "BME280 SET CONFIG FAILED" << std::endl;
+    }
     return (val == 0x60);
 }
 

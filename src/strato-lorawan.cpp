@@ -103,8 +103,10 @@ void onEvent(void *pUserData, ev_t ev)
         break;
     case EV_TXCOMPLETE:
         std::cout << "EV_TXCOMPLETE" << std::endl;
+        std::cout << "LMIC.txrxFlags: " << static_cast<int>(LMIC.txrxFlags) << "   TXRX_ACK: " << TXRX_ACK << "   LMIC.txrxFlags & TXRX_ACK: " << static_cast<int>(LMIC.txrxFlags & TXRX_ACK) << std::endl;
         if (LMIC.txrxFlags & TXRX_ACK)
             std::cout << "Received ack" << std::endl;
+        std::cout << "LMIC.dataLen: " << static_cast<int>(LMIC.dataLen) << std::endl;
         if (LMIC.dataLen)
         {
             std::cout << "Received ";
@@ -114,7 +116,6 @@ void onEvent(void *pUserData, ev_t ev)
         // Schedule next transmission
         // will be called by main loop
         txcomplete = 1;  //NKRG
-        // std::exit(0);   //NKRG
         break;
     case EV_LOST_TSYNC:
         std::cout << "EV_LOST_TSYNC" << std::endl;

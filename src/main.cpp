@@ -51,16 +51,22 @@ int main()
 
 
         StratoPayload.reset();
-        StratoPayload.addGPS(0, StratoSensors.coordinates[0], StratoSensors.coordinates[1], StratoSensors.coordinates[2]);
-        StratoPayload.addAnalogInput(1, StratoSensors.voltage_mean);
+        StratoPayload.addGPS(2, StratoSensors.coordinates[0], StratoSensors.coordinates[1], StratoSensors.coordinates[2]);
+        StratoPayload.addAnalogOutput(3, StratoSensors.voltage_mean * 100);
         StratoSensors.voltage_mean = 0;
         StratoSensors.voltage_count = 0;
-        StratoPayload.addAnalogInput(2, StratoSensors.magnet_mean);
+        StratoPayload.addAnalogInput(8, StratoSensors.temperature_mean);
         StratoSensors.magnet_mean = 0;
         StratoSensors.magnet_count = 0;
-        StratoPayload.addAnalogInput(3, StratoSensors.temperature_mean);
+        StratoPayload.addAnalogInput(7, StratoSensors.pressure_mean);
         StratoSensors.temperature_mean = 0;
         StratoSensors.temperature_count = 0;
+        StratoPayload.addAnalogInput(4, StratoSensors.XOR_mean);
+        StratoSensors.XOR_mean = 0;
+        StratoSensors.XOR_count = 0;
+        StratoPayload.addAnalogInput(5, StratoSensors.AND_mean);
+        StratoSensors.AND_mean = 0;
+        StratoSensors.AND_count = 0;
 
         // std::cout << "Ozone: " << StratoSensors.ozone << std::endl;
 

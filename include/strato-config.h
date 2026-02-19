@@ -12,11 +12,11 @@
 #define LORAWAN_TIMEOUT 100 //s
 #define LOGFILE_INTERVAL 30 //min
 
-// #define MUONPI_USED
-// #define ADS1115_ADDR 0x4A
+#define MUONPI_USED
+#define ADS1115_ADDR 0x4A
 // #define QMC5883_ADDR 0x0D
 // #define VEML6075_ADDR 0x10
-// #define BME280_ADDR 0x76
+#define BME280_ADDR 0x76
 // #define OZONE3CLICK_LMP_ADDR 0x48
 // #define OZONE3CLICK_ADC_ADDR 0x4D
 
