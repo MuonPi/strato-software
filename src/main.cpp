@@ -51,7 +51,8 @@ int main()
 
 
         StratoPayload.reset();
-        StratoPayload.addGPS(2, StratoSensors.coordinates[0], StratoSensors.coordinates[1], StratoSensors.coordinates[2]);
+        // std::cout << static_cast<float>(StratoSensors.coordinates[0]) << " " << static_cast<float>(StratoSensors.coordinates[1]) <<  " " << static_cast<float>(StratoSensors.coordinates[2]) << std::endl;
+        StratoPayload.addGPS(2, static_cast<float>(StratoSensors.coordinates[0]), static_cast<float>(StratoSensors.coordinates[1]), static_cast<float>(StratoSensors.coordinates[2]));
         StratoPayload.addAnalogOutput(3, StratoSensors.voltage_mean * 100);
         StratoSensors.voltage_mean = 0;
         StratoSensors.voltage_count = 0;

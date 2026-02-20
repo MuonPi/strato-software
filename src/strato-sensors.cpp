@@ -142,7 +142,7 @@ void Sensors::threadFunc()
 
                     if (strato_muonpi.getCoordinates(coordinates_temp))
                     {
-                        // std::cout << coordinates_temp[0] << std::endl;
+                        // std::cout << coordinates_temp[0] << " " << coordinates_temp[1] <<  " " << coordinates_temp[2] << std::endl;
                         for(size_t i; i < 3; i++)
                             coordinates[i] = coordinates_temp[i];
                     }
