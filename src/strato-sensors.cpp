@@ -95,7 +95,7 @@ void Sensors::threadFunc()
         #ifdef BME280_ADDR
         BME280 strato_bme280(BME280_ADDR);
         bool bme280_inited = true;
-        TPH temperature_pressure_humidity_temp {0};
+        TPH tph_temp {0};
         #endif
 
         #ifdef OZONE3CLICK_LMP_ADDR
@@ -229,38 +229,38 @@ void Sensors::threadFunc()
 
 
             #ifdef BME280_ADDR
-            temperature_pressure_humidity_temp = {0};
+            tph_temp = {0};
             // // strato_bme280.softReset();
             if (bme280_inited)
             {
-                temperature_pressure_humidity_temp = strato_bme280.getTPHValues();
+                tph_temp = strato_bme280.getTPHValues();
 
-                if (temperature_pressure_humidity_temp.T > -999.0)
+                if (tph_temp.T > -999.0)
                 {
-                    temperature = temperature_pressure_humidity_temp.T;
-                    temperature_mean = ((temperature_mean * temperature_count) + temperature_pressure_humidity_temp.T) / (temperature_count + 1);
+                    temperature = tph_temp.T;
+                    temperature_mean = ((temperature_mean * temperature_count) + tph_temp.T) / (temperature_count + 1);
                     temperature_count++;
-                    writeLogfile("temperature", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.T, 1);
+                    writeLogfile("temperature", timestamp_filename, timestamp_value, &tph_temp.T, 1);
                 }
                 else
                     bme280_inited = strato_bme280.init();
 
-                if (temperature_pressure_humidity_temp.P > -999.0)
+                if (tph_temp.P > -999.0)
                 {
-                    pressure = temperature_pressure_humidity_temp.P;
-                    pressure_mean = ((pressure_mean * pressure_count) + temperature_pressure_humidity_temp.P) / (pressure_count + 1);
+                    pressure = tph_temp.P;
+                    pressure_mean = ((pressure_mean * pressure_count) + tph_temp.P) / (pressure_count + 1);
                     pressure_count++;
-                    writeLogfile("pressure", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.P, 1);
+                    writeLogfile("pressure", timestamp_filename, timestamp_value, &tph_temp.P, 1);
                 }
                 else
                     bme280_inited = strato_bme280.init();
 
-                if (temperature_pressure_humidity_temp.H > -999.0)
+                if (tph_temp.H > -999.0)
                 {
-                    humidity = temperature_pressure_humidity_temp.H;
-                    humidity_mean = ((humidity_mean * humidity_count) + temperature_pressure_humidity_temp.H) / (humidity_count + 1);
+                    humidity = tph_temp.H;
+                    humidity_mean = ((humidity_mean * humidity_count) + tph_temp.H) / (humidity_count + 1);
                     humidity_count++;
-                    writeLogfile("humidity", timestamp_filename, timestamp_value, &temperature_pressure_humidity_temp.H, 1);
+                    writeLogfile("humidity", timestamp_filename, timestamp_value, &tph_temp.H, 1);
                 }
                 else
                     bme280_inited = strato_bme280.init();

@@ -84,6 +84,7 @@ set(SERVICE_USER "user")
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_NAME}.service
     @ONLY
 )
 
