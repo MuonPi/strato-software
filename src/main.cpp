@@ -56,10 +56,10 @@ int main()
         StratoPayload.addAnalogInput(3, static_cast<float>(StratoSensors.voltage_mean));
         StratoSensors.voltage_mean = 0;
         StratoSensors.voltage_count = 0;
-        StratoPayload.addAnalogInput(4, StratoSensors.XOR_mean);
+        StratoPayload.addAnalogInput(4, static_cast<float>(StratoSensors.XOR_mean));
         StratoSensors.XOR_mean = 0;
         StratoSensors.XOR_count = 0;
-        StratoPayload.addAnalogInput(5, StratoSensors.AND_mean);
+        StratoPayload.addAnalogInput(5, static_cast<float>(StratoSensors.AND_mean));
         StratoSensors.AND_mean = 0;
         StratoSensors.AND_count = 0;
         StratoPayload.addBarometricPressure(7, static_cast<float>(StratoSensors.pressure_mean / 100));
@@ -69,16 +69,6 @@ int main()
         StratoSensors.temperature_mean = 0;
         StratoSensors.temperature_count = 0;
 
-        // std::cout << "Ozone: " << StratoSensors.ozone << std::endl;
-
-        // std::cout << StratoPayload.getSize() << std::endl;
-        // uint8_t* buffer = StratoPayload.getBuffer();
-        // for(uint8_t i = 0; i < StratoPayload.getSize(); i++)
-        // {
-        //     buffer[i] = StratoPayload.getBuffer()[i];
-        //     std::cout << static_cast<int>(buffer[i]) << " ";
-        // }
-        // std::cout << std::endl;
 
         if (lorawan_inited)
         {

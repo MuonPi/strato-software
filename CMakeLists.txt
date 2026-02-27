@@ -17,7 +17,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # ------------------------------
-# Verzeichnisse
+# Folders
 # ------------------------------
 set(PROJECT_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(PROJECT_HEADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -57,7 +57,7 @@ target_include_directories(strato-software PUBLIC
 )
 
 # ------------------------------
-# Bibliotheken
+# Librarys
 # ------------------------------
 add_subdirectory(${PROJECT_LIB_DIR}/lmic)
 
