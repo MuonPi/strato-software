@@ -1,22 +1,23 @@
 {
     "configurations": [
         {
-            "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "~/../../usr/include",
-                "${workspaceFolder}/include/lmic_library/src",
-                "${workspaceFolder}/include/lmic_library/src/hal",
-                "${workspaceFolder}/include/lmic_library/src/lmic",
-                "${workspaceFolder}/include/lmic_library/src/hal",
-                "${workspaceFolder}/include/lmic_library/src/hal"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++17",
+            "name": "Raspberry Pi",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
             "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "cStandard": "c11",
+            "cppStandard": "c++20",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/lib/lmic/src",
+                "${workspaceFolder}/lib/lmic/src/aes",
+                "${workspaceFolder}/lib/lmic/src/hal",
+                "${workspaceFolder}/lib/lmic/src/lmic",
+                "${workspaceFolder}/lib/lmic/src/raspi",
+                "${workspaceFolder}/lib/lmic/project_config",
+                "${workspaceFolder}/lib/sensors/include"
+            ],
+            "defines": []
         }
     ],
     "version": 4

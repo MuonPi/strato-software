@@ -1,2 +1,5 @@
 **/__pycache__/
 **/build/
+**/raw/
+lora_payload.txt
+uplinkSequenceNo.txt

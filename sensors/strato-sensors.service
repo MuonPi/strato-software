@@ -1,0 +1,12 @@
+[Unit]
+Description=Readout of sensors for stratospheric balloon experiment
+
+[Service]
+User=user
+Type=simple
+RemainAfterExit=yes
+ExecStart=python3 /home/user/strato-software/sensors/sensors-readout.py
+
+[Install]
+WantedBy=multi-user.target
+
