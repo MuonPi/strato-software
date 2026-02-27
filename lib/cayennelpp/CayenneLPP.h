@@ -53,6 +53,7 @@ class CayenneLPP
         uint8_t addTemperature(uint8_t channel, float celsius);
         uint8_t addRelativeHumidity(uint8_t channel, float rh);
         uint8_t addAccelerometer(uint8_t channel, float x, float y, float z);
+        uint8_t addAccelerometer(uint8_t channel, float x, float y);
         uint8_t addBarometricPressure(uint8_t channel, float hpa);
         uint8_t addGyrometer(uint8_t channel, float x, float y, float z);
         uint8_t addGPS(uint8_t channel, float latitude, float longitude, float meters);

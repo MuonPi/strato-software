@@ -53,21 +53,21 @@ int main()
         StratoPayload.reset();
         // std::cout << static_cast<float>(StratoSensors.coordinates[0]) << " " << static_cast<float>(StratoSensors.coordinates[1]) <<  " " << static_cast<float>(StratoSensors.coordinates[2]) << std::endl;
         StratoPayload.addGPS(2, static_cast<float>(StratoSensors.coordinates[0]), static_cast<float>(StratoSensors.coordinates[1]), static_cast<float>(StratoSensors.coordinates[2]));
-        StratoPayload.addAnalogOutput(3, StratoSensors.voltage_mean * 100);
+        StratoPayload.addAnalogInput(3, static_cast<float>(StratoSensors.voltage_mean));
         StratoSensors.voltage_mean = 0;
         StratoSensors.voltage_count = 0;
-        StratoPayload.addAnalogInput(8, StratoSensors.temperature_mean);
-        StratoSensors.magnet_mean = 0;
-        StratoSensors.magnet_count = 0;
-        StratoPayload.addAnalogInput(7, StratoSensors.pressure_mean);
-        StratoSensors.temperature_mean = 0;
-        StratoSensors.temperature_count = 0;
         StratoPayload.addAnalogInput(4, StratoSensors.XOR_mean);
         StratoSensors.XOR_mean = 0;
         StratoSensors.XOR_count = 0;
         StratoPayload.addAnalogInput(5, StratoSensors.AND_mean);
         StratoSensors.AND_mean = 0;
         StratoSensors.AND_count = 0;
+        StratoPayload.addBarometricPressure(7, static_cast<float>(StratoSensors.pressure_mean / 100));
+        StratoSensors.pressure_mean = 0;
+        StratoSensors.pressure_count = 0;
+        StratoPayload.addTemperature(8, static_cast<float>(StratoSensors.temperature_mean));
+        StratoSensors.temperature_mean = 0;
+        StratoSensors.temperature_count = 0;
 
         // std::cout << "Ozone: " << StratoSensors.ozone << std::endl;
 

@@ -150,6 +150,25 @@ uint8_t CayenneLPP::addAccelerometer(uint8_t channel, float x, float y, float z)
     return cursor;
 }
 
+uint8_t CayenneLPP::addAccelerometer(uint8_t channel, float x, float y) {
+    if ((cursor + LPP_ACCELEROMETER_SIZE) > maxsize) {
+        return 0;
+    }
+    int16_t vx = x * 1000;
+    int16_t vy = y * 1000;
+    
+    buffer[cursor++] = channel; 
+    buffer[cursor++] = LPP_ACCELEROMETER; 
+    buffer[cursor++] = vx >> 16;
+    buffer[cursor++] = vx >> 8;
+    buffer[cursor++] = vx;
+    buffer[cursor++] = vy >> 16;
+    buffer[cursor++] = vy >> 8; 
+    buffer[cursor++] = vy;
+
+    return cursor;
+}
+
 uint8_t CayenneLPP::addBarometricPressure(uint8_t channel, float hpa) {
     if ((cursor + LPP_BAROMETRIC_PRESSURE_SIZE) > maxsize) {
         return 0;
