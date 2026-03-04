@@ -104,25 +104,25 @@ void BME280::readCalibParameters()
     n = n + readReg(0xe1, regE1, 7); // from two different locations
 
 
-    uint16_t dig[] = {
-        ((static_cast<std::uint16_t>(reg88[1]) << 8) | static_cast<std::uint16_t>(reg88[0])),   // dig_T1
-        ((static_cast<std::uint16_t>(reg88[3]) << 8) | static_cast<std::uint16_t>(reg88[2])),   // dig_T2
-        ((static_cast<std::uint16_t>(reg88[5]) << 8) | static_cast<std::uint16_t>(reg88[4])),   // dig_T3
-        ((static_cast<std::uint16_t>(reg88[7]) << 8) | static_cast<std::uint16_t>(reg88[6])),   // dig_P1
-        ((static_cast<std::uint16_t>(reg88[9]) << 8) | static_cast<std::uint16_t>(reg88[8])),   // dig_P2
-        ((static_cast<std::uint16_t>(reg88[11]) << 8) | static_cast<std::uint16_t>(reg88[10])), // dig_P3
-        ((static_cast<std::uint16_t>(reg88[13]) << 8) | static_cast<std::uint16_t>(reg88[12])), // dig_P4
-        ((static_cast<std::uint16_t>(reg88[15]) << 8) | static_cast<std::uint16_t>(reg88[14])), // dig_P5
-        ((static_cast<std::uint16_t>(reg88[17]) << 8) | static_cast<std::uint16_t>(reg88[16])), // dig_P6
-        ((static_cast<std::uint16_t>(reg88[19]) << 8) | static_cast<std::uint16_t>(reg88[18])), // dig_P7
-        ((static_cast<std::uint16_t>(reg88[21]) << 8) | static_cast<std::uint16_t>(reg88[20])), // dig_P8
-        ((static_cast<std::uint16_t>(reg88[23]) << 8) | static_cast<std::uint16_t>(reg88[22])), // dig_P9
+    std::uint16_t dig[] = {
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[1]) << 8) | static_cast<std::uint16_t>(reg88[0])),   // dig_T1
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[3]) << 8) | static_cast<std::uint16_t>(reg88[2])),   // dig_T2
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[5]) << 8) | static_cast<std::uint16_t>(reg88[4])),   // dig_T3
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[7]) << 8) | static_cast<std::uint16_t>(reg88[6])),   // dig_P1
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[9]) << 8) | static_cast<std::uint16_t>(reg88[8])),   // dig_P2
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[11]) << 8) | static_cast<std::uint16_t>(reg88[10])), // dig_P3
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[13]) << 8) | static_cast<std::uint16_t>(reg88[12])), // dig_P4
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[15]) << 8) | static_cast<std::uint16_t>(reg88[14])), // dig_P5
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[17]) << 8) | static_cast<std::uint16_t>(reg88[16])), // dig_P6
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[19]) << 8) | static_cast<std::uint16_t>(reg88[18])), // dig_P7
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[21]) << 8) | static_cast<std::uint16_t>(reg88[20])), // dig_P8
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(reg88[23]) << 8) | static_cast<std::uint16_t>(reg88[22])), // dig_P9
 
         static_cast<std::uint16_t>(reg88[25]),                                                   // dig_H1
-        ((static_cast<std::uint16_t>(regE1[1]) << 8) | static_cast<std::uint16_t>(regE1[0])),         // dig_H2
-        regE1[2],                                                                           // dig_H3
-        ((static_cast<std::uint16_t>(regE1[3]) << 4) | static_cast<std::uint16_t>(regE1[4] & 0x0Fu)), // dig_H4
-        ((static_cast<std::uint16_t>(regE1[5]) << 4) | (static_cast<std::uint16_t>(regE1[4]) >> 4)),  // dig_H5
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(regE1[1]) << 8) | static_cast<std::uint16_t>(regE1[0])),         // dig_H2
+        static_cast<std::uint16_t>(regE1[2]),                                                                           // dig_H3
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(regE1[3]) << 4) | static_cast<std::uint16_t>(regE1[4] & 0x0Fu)), // dig_H4
+        static_cast<std::uint16_t>((static_cast<std::uint16_t>(regE1[5]) << 4) | (static_cast<std::uint16_t>(regE1[4]) >> 4)),  // dig_H5
         static_cast<std::uint16_t>(regE1[6])};
     dig_T1 = static_cast<std::int32_t>(dig[0]);
     dig_T2 = static_cast<std::int32_t>(static_cast<std::int16_t>(dig[1]));
