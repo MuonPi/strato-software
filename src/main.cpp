@@ -23,11 +23,6 @@ CayenneLPP StratoPayload(255);
 
 int main()
 {
-    std::this_thread::sleep_for(std::chrono::seconds(5));
-
-
-
-
     auto start_time = std::chrono::steady_clock::now();
     auto last_message = std::chrono::steady_clock::now();
     const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);

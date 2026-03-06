@@ -16,10 +16,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 # ------------------------------
 # Folders
 # ------------------------------
@@ -30,10 +26,6 @@ set(PROJECT_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/bin")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
-
-
-set(MUONPI_HEADER_DIR "/home/user/muondetector/library/include")
-set(MUONPI_LIB_DIR "/home/user/muondetector/build/output/lib")
 
 # ------------------------------
 # Source & Header Files
@@ -60,18 +52,8 @@ add_executable(strato-software
     ${STRATO_HEADER_FILES}
 )
 
-add_library(muondetector STATIC IMPORTED)
-
-set_target_properties(muondetector PROPERTIES
-    IMPORTED_LOCATION ${MUONPI_LIB_DIR}/libmuondetector.a
-    IMPORTED_LOCATION_RELEASE ${MUONPI_LIB_DIR}/libmuondetector.a
-    IMPORTED_LOCATION_DEBUG ${MUONPI_LIB_DIR}/libmuondetector.a
-    INTERFACE_INCLUDE_DIRECTORIES ${MUONPI_HEADER_DIR}
-)
-
 target_include_directories(strato-software PUBLIC
     ${PROJECT_HEADER_DIR}
-    ${MUONPI_HEADER_DIR}
 )
 
 # ------------------------------
@@ -83,12 +65,7 @@ add_subdirectory(${PROJECT_LIB_DIR}/sensors)
 
 add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
-<<<<<<< Updated upstream
-find_package(Qt5 COMPONENTS Network REQUIRED)
-find_package(Threads REQUIRED)
-=======
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
->>>>>>> Stashed changes
 
 target_link_libraries(strato-software
     gpiod
@@ -97,9 +74,6 @@ target_link_libraries(strato-software
     cayennelpp
     muonpi
     atomic
-    Qt5::Network
-    muondetector
-    Threads::Threads
 )
 
 # ------------------------------
