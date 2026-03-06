@@ -7,7 +7,7 @@ add_library(sensors STATIC
     src/qmc5883.cpp
     src/sen0321.cpp
     src/veml6075.cpp
-    src/muonpi.cpp
+    src/muonpi_old.cpp
     src/ozone3click.cpp
 )
 

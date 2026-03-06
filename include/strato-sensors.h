@@ -31,7 +31,7 @@ public:
     std::atomic<double> AND_mean {0};
     std::atomic<uint16_t> AND_count {0};
 
-    std::atomic<double> coordinates[3] {0};
+    std::atomic<double> position[3] {0};
 
     std::atomic<double> voltage {0};
     std::atomic<double> voltage_mean {0};
@@ -41,10 +41,6 @@ public:
     std::atomic<double> magnet_mean {0};
     std::atomic<double> magnetXYZ[3] {0};
     std::atomic<uint16_t> magnet_count {0};
-
-    // std::atomic<double> temperature {0};
-    // std::atomic<double> temperature_mean {0};
-    // std::atomic<uint16_t> temperature_count {0};
 
     std::atomic<double> uv[4] {0};
     std::atomic<double> uv_mean {0};

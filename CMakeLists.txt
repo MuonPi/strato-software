@@ -83,14 +83,19 @@ add_subdirectory(${PROJECT_LIB_DIR}/sensors)
 
 add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
+<<<<<<< Updated upstream
 find_package(Qt5 COMPONENTS Network REQUIRED)
 find_package(Threads REQUIRED)
+=======
+add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
+>>>>>>> Stashed changes
 
 target_link_libraries(strato-software
     gpiod
     lmic
     sensors
     cayennelpp
+    muonpi
     atomic
     Qt5::Network
     muondetector

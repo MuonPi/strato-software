@@ -44,15 +44,17 @@ int main()
 
         if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
         {
+            std::cerr << "SensorThread timeout" << std::endl;
             StratoSensors.stop();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
             StratoSensors.start();
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
 
         StratoPayload.reset();
-        // std::cout << static_cast<float>(StratoSensors.coordinates[0]) << " " << static_cast<float>(StratoSensors.coordinates[1]) <<  " " << static_cast<float>(StratoSensors.coordinates[2]) << std::endl;
-        StratoPayload.addGPS(2, static_cast<float>(StratoSensors.coordinates[0]), static_cast<float>(StratoSensors.coordinates[1]), static_cast<float>(StratoSensors.coordinates[2]));
+        // std::cout << static_cast<float>(StratoSensors.position[0]) << " " << static_cast<float>(StratoSensors.position[1]) <<  " " << static_cast<float>(StratoSensors.position[2]) << std::endl;
+        StratoPayload.addGPS(2, static_cast<float>(StratoSensors.position[0]), static_cast<float>(StratoSensors.position[1]), static_cast<float>(StratoSensors.position[2]));
         StratoPayload.addAnalogInput(3, static_cast<float>(StratoSensors.voltage_mean));
         StratoSensors.voltage_mean = 0;
         StratoSensors.voltage_count = 0;

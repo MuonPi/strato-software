@@ -44,6 +44,11 @@ bool Sensors::stop()
         return false;
     if (sensorThread.joinable())
         sensorThread.join();
+    
+    #ifdef MUONPI_USED
+    MUONPI instance;
+    instance.stop();
+    #endif
     return true;
 }
 
@@ -70,7 +75,7 @@ void Sensors::threadFunc()
         bool muonpi_inited = false;
         double XOR_temp = 0;
         double AND_temp = 0;
-        double coordinates_temp[3] {0};
+        double position_temp[3] {0};
         #endif
 
         #ifdef ADS1115_ADDR
@@ -120,32 +125,30 @@ void Sensors::threadFunc()
             
 
             #ifdef MUONPI_USED
+            std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
             if (muonpi_inited)
             {
-                if(strato_muonpi.getLogfilePath())
+                if (strato_muonpi.getPosition(position_temp))
                 {
-                    if (strato_muonpi.getXOR(XOR_temp))
-                    {
-                        // std::cout << XOR_temp << std::endl;
-                        XOR = XOR_temp;
-                        XOR_mean = ((XOR_mean * XOR_count) + XOR_temp) / (XOR_count + 1);
-                        XOR_count++;
-                    }
+                    std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
+                    for(size_t i; i < 3; i++)
+                        position[i] = position_temp[i];
+                }
 
-                    if (strato_muonpi.getAND(AND_temp))
-                    {
-                        // std::cout << AND_temp << std::endl;
-                        AND = AND_temp;
-                        AND_mean = ((AND_mean * AND_count) + AND_temp) / (AND_count + 1);
-                        AND_count++;
-                    }
+                if (strato_muonpi.getXOR(XOR_temp))
+                {
+                    std::cout << "getXOR: "  << XOR_temp << std::endl;
+                    XOR = XOR_temp;
+                    XOR_mean = ((XOR_mean * XOR_count) + XOR_temp) / (XOR_count + 1);
+                    XOR_count++;
+                }
 
-                    if (strato_muonpi.getCoordinates(coordinates_temp))
-                    {
-                        // std::cout << coordinates_temp[0] << " " << coordinates_temp[1] <<  " " << coordinates_temp[2] << std::endl;
-                        for(size_t i; i < 3; i++)
-                            coordinates[i] = coordinates_temp[i];
-                    }
+                if (strato_muonpi.getAND(AND_temp))
+                {
+                    std::cout << "getAND: " <<  AND_temp << std::endl;
+                    AND = AND_temp;
+                    AND_mean = ((AND_mean * AND_count) + AND_temp) / (AND_count + 1);
+                    AND_count++;
                 }
                 else
                     muonpi_inited = strato_muonpi.init();
