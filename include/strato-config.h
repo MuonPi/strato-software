@@ -8,8 +8,9 @@
 
 #define SENSORS_INTERVAL 1 //s
 #define SENSORTHREAD_TIMEOUT 10 //s
-#define LORAWAN_INTERVAL 1 //60 //s
+#define LORAWAN_INTERVAL 100 //60 //s
 #define LORAWAN_TIMEOUT 100 //s
+#define RUNLOOP_INTERVAL 100 //ms
 #define LOGFILE_INTERVAL 30 //min
 
 #define MUONPI_USED

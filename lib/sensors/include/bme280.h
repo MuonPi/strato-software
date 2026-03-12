@@ -17,17 +17,17 @@ public:
     BME280()
         : i2cDevice(0x76)
     {
-        init();
+        // init();
     }
     BME280(const char* busAddress, std::int8_t slaveAddress)
         : i2cDevice(busAddress, slaveAddress)
     {
-        init();
+        // init();
     }
     BME280(std::int8_t slaveAddress)
         : i2cDevice(slaveAddress)
     {
-        init();
+        // init();
     }
 
     bool init();

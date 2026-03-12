@@ -99,7 +99,7 @@ void Sensors::threadFunc()
 
         #ifdef BME280_ADDR
         BME280 strato_bme280(BME280_ADDR);
-        bool bme280_inited = true;
+        bool bme280_inited = false;
         TPH tph_temp {0};
         #endif
 
@@ -125,7 +125,7 @@ void Sensors::threadFunc()
             
 
             #ifdef MUONPI_USED
-            std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
+            // std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
             if (muonpi_inited)
             {
                 if (strato_muonpi.getPosition(position_temp))

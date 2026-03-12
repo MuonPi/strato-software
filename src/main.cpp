@@ -4,6 +4,8 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include <QCoreApplication>
+#include <QTimer>
 
 #include "strato-config.h"
 #include "strato-lorawan.h"
@@ -15,38 +17,35 @@
 
 
 bool lorawan_inited = false;
+bool lorawan_ready = true;
 
 Sensors StratoSensors;
 Lorawan StratoLorawan;
 CayenneLPP StratoPayload(255);
 
 
-int main()
+int main(int argc, char** argv)
 {
-    auto start_time = std::chrono::steady_clock::now();
-    auto last_message = std::chrono::steady_clock::now();
-    const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
+    QCoreApplication app(argc, argv);
+
+    // auto start_time = std::chrono::steady_clock::now();
+    // auto last_message = std::chrono::steady_clock::now();
+    // const auto lorawan_interval = std::chrono::seconds(LORAWAN_INTERVAL);
     const auto lorawan_timeout = std::chrono::seconds(LORAWAN_TIMEOUT);
+    // const auto runloop_interval = std::chrono::milliseconds(RUNLOOP_INTERVAL);
     const auto sensorthread_timeout = std::chrono::seconds(SENSORTHREAD_TIMEOUT);
     
+
+    lorawan_inited = StratoLorawan.init();
     StratoSensors.start();
     std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    lorawan_inited = StratoLorawan.init();
 
-    while(true)
+
+    QTimer timer_sending;
+
+    QObject::connect(&timer_sending, &QTimer::timeout, [&]()
     {
-
-        if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
-        {
-            std::cerr << "SensorThread timeout" << std::endl;
-            StratoSensors.stop();
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            StratoSensors.start();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-
-
         StratoPayload.reset();
         // std::cout << static_cast<float>(StratoSensors.position[0]) << " " << static_cast<float>(StratoSensors.position[1]) <<  " " << static_cast<float>(StratoSensors.position[2]) << std::endl;
         StratoPayload.addGPS(2, static_cast<float>(StratoSensors.position[0]), static_cast<float>(StratoSensors.position[1]), static_cast<float>(StratoSensors.position[2]));
@@ -66,40 +65,68 @@ int main()
         StratoSensors.temperature_mean = 0;
         StratoSensors.temperature_count = 0;
 
-
-        if (lorawan_inited)
+        if (lorawan_inited && lorawan_ready)
         {
-            StratoLorawan.sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
-            last_message = std::chrono::steady_clock::now();
-
-            while(true)
-            {
-                StratoLorawan.runloop();
-                if (txcomplete == true)
-                    break;
-                if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
-                {
-                    std::cerr << "LORAWAN timeout" << std::endl;
-                    lorawan_inited = StratoLorawan.reset();
-                    break;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            }
             txcomplete = false;
+            lorawan_ready = false;
+            StratoLorawan.sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
+            // last_message = std::chrono::steady_clock::now();
         }
         else
         {
             lorawan_inited = StratoLorawan.reset();
+            lorawan_ready = true;
+        }
+    });
+
+
+
+
+    QTimer timer_loop;
+
+    QObject::connect(&timer_loop, &QTimer::timeout, [&]()
+    {
+        StratoLorawan.runloop();
+        lorawan_ready = txcomplete;
+        // std::cout << "runloop" << std::endl;
+
+        if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
+        {
+            std::cerr << "SensorThread timeout" << std::endl;
+            StratoSensors.stop();
+            // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            StratoSensors.start();
+            // std::this_thread::sleep_for(std::chrono::seconds(2));
         }
 
 
+        // if (txcomplete == true)
+        //     break;
+        // if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
+        // {
+        //     std::cerr << "LORAWAN timeout" << std::endl;
+        //     lorawan_inited = StratoLorawan.reset();
+        //     // break;
+        // }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    });
+
+
+
+
+    timer_sending.start(LORAWAN_INTERVAL * 1000);
+    timer_loop.start(RUNLOOP_INTERVAL);
+
+
         
-        std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
-    }
+        // std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
+    // }
 
 
-    StratoSensors.stop();
-    return 0;
+    // StratoSensors.stop();
+    // return 0;
+
+    return app.exec(); // Main-Thread Eventloop
 }
 
 
