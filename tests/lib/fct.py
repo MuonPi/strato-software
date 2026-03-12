@@ -8,7 +8,7 @@ import smbus2 as smbus
 import random
 import os
 import pynmea2
-from ADS1x15 import ADS1115
+from lib.ADS1x15 import ADS1115
 
 logger = structlog.get_logger()
 
