@@ -26,6 +26,7 @@ public:
     bool getPosition(double* position);
     bool getXOR(double& rate);
     bool getAND(double& rate);
+    bool isConnected();
 
 private slots:
     void receivedTcpMessage(TcpMessage tcpMessage);
@@ -35,6 +36,7 @@ private:
     QThread* m_tcpThread = nullptr;
     TcpConnection* m_tcpConnection = nullptr;
     void setup();
+    std::atomic<bool> connectionHealthy = false;
 
     // std::thread m_qtThread;
 

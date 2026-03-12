@@ -65,7 +65,6 @@ public:
 private:
     void threadFunc();
     std::unique_ptr<MUONPI> strato_muonpi{nullptr};
-    bool muonpi_inited{false};
     std::thread sensorThread;
 };
 

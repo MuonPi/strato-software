@@ -269,6 +269,7 @@ bool MUONPI::init()
 
 bool MUONPI::start()
 {
+    connectionHealthy = true;
     setup(); // alles einrichten
     if (m_tcpThread)
     {
@@ -307,6 +308,10 @@ void MUONPI::setup()
 
     connect(m_tcpThread, &QThread::finished,
             m_tcpThread, &QObject::deleteLater);
+
+    connect(m_tcpConnection, &TcpConnection::finished, this, [&](){
+        connectionHealthy = false;
+    });
 }
 
 
@@ -328,7 +333,6 @@ void MUONPI::stop()
 
 void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
 {
-    std::cout << "receivedTcpMessage" << std::endl;
     TCP_MSG_KEY msgID = static_cast<TCP_MSG_KEY>(tcpMessage.getMsgID());
 
     if (msgID == TCP_MSG_KEY::MSG_QUIT_CONNECTION)
@@ -353,14 +357,13 @@ void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
         std::cout << "MSG_UBX_FIXSTATUS: " << Gnss::FixType::name[val] << std::endl;
         return;
     }
-    else if (msgID == TCP_MSG_KEY::MSG_GPIO_RATE)
+    else if (msgID == TCP_MSG_KEY::MSG_GPIO_RATE_AVERAGE)
     {
         quint8 whichRate;
-        QVector<QPointF> rate;
-        *(tcpMessage.dStream) >> whichRate >> rate;
-        double rateYValue = !rate.empty() ? rate.last().y() : 0.0;
-        gpio_rate[whichRate] = rateYValue;
-        std::cout << "Rate " << (whichRate == 0 ? "XOR" : "AND") << " " << rateYValue << std::endl;
+        qreal averageValue;
+        *(tcpMessage.dStream) >> whichRate >> averageValue;
+        gpio_rate[whichRate] = averageValue;
+        std::cout << "Rate " << (whichRate == 0 ? "XOR" : "AND") << " " << averageValue << std::endl;
     }
 }
 
@@ -385,4 +388,9 @@ bool MUONPI::getAND(double& rate)
 {
     rate = gpio_rate[1];
     return true;
+}
+
+bool MUONPI::isConnected()
+{
+    return connectionHealthy;
 }

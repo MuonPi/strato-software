@@ -34,7 +34,7 @@ bool Sensors::start()
 
     #ifdef MUONPI_USED
     strato_muonpi = std::make_unique<MUONPI>();
-    muonpi_inited = strato_muonpi->init();
+    strato_muonpi->init();
     #endif
 
     sensorThread = std::thread(&Sensors::threadFunc, this);
@@ -129,7 +129,7 @@ void Sensors::threadFunc()
 
             #ifdef MUONPI_USED
             // std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
-            if (muonpi_inited)
+            if (strato_muonpi->isConnected())
             {
                 if (strato_muonpi->getPosition(position_temp))
                 {
@@ -154,10 +154,10 @@ void Sensors::threadFunc()
                     AND_count++;
                 }
                 else
-                    muonpi_inited = strato_muonpi->init();
+                    strato_muonpi->init();
             }
             else
-                muonpi_inited = strato_muonpi->init();
+                strato_muonpi->init();
             #endif
 
 
