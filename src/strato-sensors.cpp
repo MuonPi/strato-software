@@ -31,6 +31,12 @@ bool Sensors::start()
     bool expected = false;
     if (!running.compare_exchange_strong(expected, true))
         return false;
+
+    #ifdef MUONPI_USED
+    strato_muonpi = std::make_unique<MUONPI>();
+    muonpi_inited = strato_muonpi->init();
+    #endif
+
     sensorThread = std::thread(&Sensors::threadFunc, this);
     return true;
 }
@@ -46,8 +52,7 @@ bool Sensors::stop()
         sensorThread.join();
     
     #ifdef MUONPI_USED
-    MUONPI instance;
-    instance.stop();
+    strato_muonpi->stop();
     #endif
     return true;
 }
@@ -71,8 +76,6 @@ void Sensors::threadFunc()
 
 
         #ifdef MUONPI_USED
-        MUONPI strato_muonpi;
-        bool muonpi_inited = false;
         double XOR_temp = 0;
         double AND_temp = 0;
         double position_temp[3] {0};
@@ -128,14 +131,14 @@ void Sensors::threadFunc()
             // std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
             if (muonpi_inited)
             {
-                if (strato_muonpi.getPosition(position_temp))
+                if (strato_muonpi->getPosition(position_temp))
                 {
                     std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
-                    for(size_t i; i < 3; i++)
+                    for(size_t i{0}; i < 3; i++)
                         position[i] = position_temp[i];
                 }
 
-                if (strato_muonpi.getXOR(XOR_temp))
+                if (strato_muonpi->getXOR(XOR_temp))
                 {
                     std::cout << "getXOR: "  << XOR_temp << std::endl;
                     XOR = XOR_temp;
@@ -143,7 +146,7 @@ void Sensors::threadFunc()
                     XOR_count++;
                 }
 
-                if (strato_muonpi.getAND(AND_temp))
+                if (strato_muonpi->getAND(AND_temp))
                 {
                     std::cout << "getAND: " <<  AND_temp << std::endl;
                     AND = AND_temp;
@@ -151,10 +154,10 @@ void Sensors::threadFunc()
                     AND_count++;
                 }
                 else
-                    muonpi_inited = strato_muonpi.init();
+                    muonpi_inited = strato_muonpi->init();
             }
             else
-                muonpi_inited = strato_muonpi.init();
+                muonpi_inited = strato_muonpi->init();
             #endif
 
 
@@ -184,7 +187,7 @@ void Sensors::threadFunc()
             {
                 if (strato_qmc5883.getMagneticFieldXYZ(magnetXYZ_temp))
                 {
-                    for(size_t i; i < 3; i++)
+                    for(size_t i{0}; i < 3; i++)
                         magnetXYZ[i] = magnetXYZ_temp[i];
                     magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
                     magnet_mean = ((magnet_mean * magnet_count) + magnet) / (magnet_count + 1);
@@ -215,7 +218,7 @@ void Sensors::threadFunc()
             {
                 if (strato_veml6075.getUV(uv_temp))
                 {
-                    for(size_t i; i < 4; i++)
+                    for(size_t i{0}; i < 4; i++)
                         uv[i] = uv_temp[i];
                     uv_mean = (uv_mean * uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (uv_count + 1);
                     uv_count++;

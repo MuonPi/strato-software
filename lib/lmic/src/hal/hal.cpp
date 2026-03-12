@@ -247,7 +247,7 @@ static void hal_spi_init()
         throw std::runtime_error("Tried to initialise spi device multiple times.");
     }
     std::string devAddress = "/dev/spidev0.0";
-    int handle = -1;
+    // int handle = -1;
     std::uint32_t speed = lmic_pins.spi_freq;
     SPI::Mode mode = SPI::Mode::spi_mode_0;
     std::uint8_t bits = 8;
@@ -564,7 +564,7 @@ namespace Arduino_LMIC
         // declare success
         return true;
     }
-}; // namespace Arduino_LMIC
+} // namespace Arduino_LMIC
 
 void hal_failed(const char *file, u2_t line)
 {
