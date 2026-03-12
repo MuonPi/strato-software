@@ -41,8 +41,9 @@ set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/strato-lorawan.h"
     "${PROJECT_HEADER_DIR}/strato-sensors.h"
     "${PROJECT_HEADER_DIR}/strato-config.h"
+    "${PROJECT_HEADER_DIR}/globals.h"
     "${PROJECT_HEADER_DIR}/logfile.h"
-    "${PROJECT_LIB_DIR}/muonpi/muonpi.h"
+    # "${PROJECT_LIB_DIR}/muonpi/muonpi.h"
 )
 
 # ------------------------------
@@ -55,7 +56,7 @@ add_executable(strato-software
 
 target_include_directories(strato-software PUBLIC
     ${PROJECT_HEADER_DIR}
-    ${PROJECT_LIB_DIR}/muonpi
+    # ${PROJECT_LIB_DIR}/muonpi
 )
 
 # ------------------------------

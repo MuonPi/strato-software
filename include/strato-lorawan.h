@@ -5,6 +5,7 @@
 // #include <Wire.h>
 #include "hal/hal.h"
 #include "lmic.h"
+#include "globals.h"
 // #include "hal/gpio.h"
 
 #define LMIC_CLOCK_ERROR_PPM 30000
@@ -12,11 +13,14 @@
 class Lorawan
 {
 public:
-    Lorawan();
+    Lorawan(Globals& globals);
     ~Lorawan();
 
-    // bool start();
-    // bool stop();
+    bool start();
+    bool stop();
+
+    std::atomic<bool> running {false};
+    std::atomic<std::chrono::steady_clock::time_point> heartbeat {std::chrono::steady_clock::now()};
 
     bool init();
     bool sendPayload(uint8_t* payload, uint8_t size);
@@ -28,6 +32,10 @@ public:
     bool SeqNoFile(uint32_t& seqno);
     // uint8_t PayloadFile(uint8_t* payload);
 
+private:
+    Globals& StratoGlobals;
+    void threadFunc();
+    std::thread lorawanThread;
 };
 
 

@@ -3,6 +3,7 @@
 #include <chrono>
 
 #include "strato-config.h"
+#include "globals.h"
 #include "muonpi.h"
 #include "ads1115.h"
 #include "qmc5883.h"
@@ -14,9 +15,9 @@
 
 
 
-Sensors::Sensors()
-    : running(false)
-{ }
+Sensors::Sensors(Globals& globals)
+    : running(false), StratoGlobals(globals)
+{}
 
 
 Sensors::~Sensors()
@@ -66,7 +67,7 @@ void Sensors::threadFunc()
 
         heartbeat = std::chrono::steady_clock::now();
 
-        auto start_time = std::chrono::steady_clock::now();
+        const auto start_time = std::chrono::steady_clock::now();
         const auto sensors_interval = std::chrono::seconds(SENSORS_INTERVAL);
         const auto logfile_interval = std::chrono::minutes(LOGFILE_INTERVAL);
         
@@ -110,7 +111,7 @@ void Sensors::threadFunc()
         #ifdef OZONE3CLICK_ADC_ADDR
         OZONE3CLICK strato_ozone3click(OZONE3CLICK_LMP_ADDR, OZONE3CLICK_ADC_ADDR);
         bool ozone3click_inited = false;
-        double ozone_temp {0};
+        double ozone_temp = 0;
         #endif
         #endif
 
@@ -135,23 +136,23 @@ void Sensors::threadFunc()
                 {
                     std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
                     for(size_t i{0}; i < 3; i++)
-                        position[i] = position_temp[i];
+                        StratoGlobals.position[i] = position_temp[i];
                 }
 
                 if (strato_muonpi->getXOR(XOR_temp))
                 {
                     std::cout << "getXOR: "  << XOR_temp << std::endl;
-                    XOR = XOR_temp;
-                    XOR_mean = ((XOR_mean * XOR_count) + XOR_temp) / (XOR_count + 1);
-                    XOR_count++;
+                    StratoGlobals.XOR = XOR_temp;
+                    StratoGlobals.XOR_mean = ((StratoGlobals.XOR_mean * StratoGlobals.XOR_count) + XOR_temp) / (StratoGlobals.XOR_count + 1);
+                    StratoGlobals.XOR_count++;
                 }
 
                 if (strato_muonpi->getAND(AND_temp))
                 {
                     std::cout << "getAND: " <<  AND_temp << std::endl;
-                    AND = AND_temp;
-                    AND_mean = ((AND_mean * AND_count) + AND_temp) / (AND_count + 1);
-                    AND_count++;
+                    StratoGlobals.AND = AND_temp;
+                    StratoGlobals.AND_mean = ((StratoGlobals.AND_mean * StratoGlobals.AND_count) + AND_temp) / (StratoGlobals.AND_count + 1);
+                    StratoGlobals.AND_count++;
                 }
                 else
                     strato_muonpi->init();
@@ -168,9 +169,9 @@ void Sensors::threadFunc()
                 if (strato_ads1115.getVoltage(voltage_temp))
                 {
                     voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
-                    voltage = voltage_temp;
-                    voltage_mean = ((voltage_mean * voltage_count) + voltage_temp) / (voltage_count + 1);
-                    voltage_count++;
+                    StratoGlobals.voltage = voltage_temp;
+                    StratoGlobals.voltage_mean = ((StratoGlobals.voltage_mean * StratoGlobals.voltage_count) + voltage_temp) / (StratoGlobals.voltage_count + 1);
+                    StratoGlobals.voltage_count++;
                     writeLogfile("voltage", timestamp_filename, timestamp_value, &voltage_temp, 1);
                 }
                 else
@@ -188,10 +189,10 @@ void Sensors::threadFunc()
                 if (strato_qmc5883.getMagneticFieldXYZ(magnetXYZ_temp))
                 {
                     for(size_t i{0}; i < 3; i++)
-                        magnetXYZ[i] = magnetXYZ_temp[i];
-                    magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
-                    magnet_mean = ((magnet_mean * magnet_count) + magnet) / (magnet_count + 1);
-                    magnet_count++;
+                        StratoGlobals.magnetXYZ[i] = magnetXYZ_temp[i];
+                    StratoGlobals.magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
+                    StratoGlobals.magnet_mean = ((StratoGlobals.magnet_mean * StratoGlobals.magnet_count) + StratoGlobals.magnet) / (StratoGlobals.magnet_count + 1);
+                    StratoGlobals.magnet_count++;
                     writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
                 }
                 else
@@ -199,9 +200,9 @@ void Sensors::threadFunc()
             
                 // if (strato_qmc5883.getTemperature(temperature_temp))
                 // {
-                //     temperature = temperature_temp;
-                //     temperature_mean = ((temperature_mean * temperature_count) + temperature_temp) / (temperature_count + 1);
-                //     temperature_count++;
+                //     StratoGlobals.temperature = temperature_temp;
+                //     StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
+                //     StratoGlobals.temperature_count++;
                 //     writeLogfile("temperature_inside", timestamp_filename, timestamp_value, &temperature_temp, 1);
                 // }
                 // else
@@ -219,9 +220,9 @@ void Sensors::threadFunc()
                 if (strato_veml6075.getUV(uv_temp))
                 {
                     for(size_t i{0}; i < 4; i++)
-                        uv[i] = uv_temp[i];
-                    uv_mean = (uv_mean * uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (uv_count + 1);
-                    uv_count++;
+                        StratoGlobals.uv[i] = uv_temp[i];
+                    StratoGlobals.uv_mean = (StratoGlobals.uv_mean * StratoGlobals.uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (StratoGlobals.uv_count + 1);
+                    StratoGlobals.uv_count++;
                     writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 4);
                     // std::cout << uv_temp[0] << "  " << uv_temp[1] << std::endl;
                 }
@@ -243,9 +244,9 @@ void Sensors::threadFunc()
 
                 if (tph_temp.T > -999.0)
                 {
-                    temperature = tph_temp.T;
-                    temperature_mean = ((temperature_mean * temperature_count) + tph_temp.T) / (temperature_count + 1);
-                    temperature_count++;
+                    StratoGlobals.temperature = tph_temp.T;
+                    StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + tph_temp.T) / (StratoGlobals.temperature_count + 1);
+                    StratoGlobals.temperature_count++;
                     writeLogfile("temperature", timestamp_filename, timestamp_value, &tph_temp.T, 1);
                 }
                 else
@@ -253,9 +254,9 @@ void Sensors::threadFunc()
 
                 if (tph_temp.P > -999.0)
                 {
-                    pressure = tph_temp.P;
-                    pressure_mean = ((pressure_mean * pressure_count) + tph_temp.P) / (pressure_count + 1);
-                    pressure_count++;
+                    StratoGlobals.pressure = tph_temp.P;
+                    StratoGlobals.pressure_mean = ((StratoGlobals.pressure_mean * StratoGlobals.pressure_count) + tph_temp.P) / (StratoGlobals.pressure_count + 1);
+                    StratoGlobals.pressure_count++;
                     writeLogfile("pressure", timestamp_filename, timestamp_value, &tph_temp.P, 1);
                 }
                 else
@@ -263,9 +264,9 @@ void Sensors::threadFunc()
 
                 if (tph_temp.H > -999.0)
                 {
-                    humidity = tph_temp.H;
-                    humidity_mean = ((humidity_mean * humidity_count) + tph_temp.H) / (humidity_count + 1);
-                    humidity_count++;
+                    StratoGlobals.humidity = tph_temp.H;
+                    StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + tph_temp.H) / (StratoGlobals.humidity_count + 1);
+                    StratoGlobals.humidity_count++;
                     writeLogfile("humidity", timestamp_filename, timestamp_value, &tph_temp.H, 1);
                 }
                 else
@@ -283,9 +284,9 @@ void Sensors::threadFunc()
             {
                 if (strato_ozone3click.getOzone(ozone_temp))
                 {
-                    ozone = ozone_temp;
-                    ozone_mean = (ozone_mean * ozone_count) + ozone_temp / (ozone_count + 1);
-                    ozone_count++;
+                    StratoGlobals.ozone = ozone_temp;
+                    StratoGlobals.ozone_mean = (StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp / (StratoGlobals.ozone_count + 1);
+                    StratoGlobals.ozone_count++;
                     writeLogfile("ozone", timestamp_filename, timestamp_value, &ozone_temp, 1);
                     // std::cout << ozone_temp << std::endl;
                 }
