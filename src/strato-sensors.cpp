@@ -35,7 +35,7 @@ bool Sensors::start()
 
     #ifdef MUONPI_USED
     strato_muonpi = std::make_unique<MUONPI>();
-    strato_muonpi->init();
+    strato_muonpi->start();
     #endif
 
     sensorThread = std::thread(&Sensors::threadFunc, this);
@@ -129,7 +129,7 @@ void Sensors::threadFunc()
             
 
             #ifdef MUONPI_USED
-            // std::cout << "muonpi_inited: " << muonpi_inited << std::endl;
+            // Should automatically reset if connection drops
             if (strato_muonpi->isConnected())
             {
                 if (strato_muonpi->getPosition(position_temp))
@@ -154,13 +154,8 @@ void Sensors::threadFunc()
                     StratoGlobals.AND_mean = ((StratoGlobals.AND_mean * StratoGlobals.AND_count) + AND_temp) / (StratoGlobals.AND_count + 1);
                     StratoGlobals.AND_count++;
                 }
-                else
-                    strato_muonpi->init();
             }
-            else
-                strato_muonpi->init();
             #endif
-
 
 
             #ifdef ADS1115_ADDR

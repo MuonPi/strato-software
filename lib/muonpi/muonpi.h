@@ -19,8 +19,7 @@ public:
     explicit MUONPI(QObject* parent = nullptr);
     ~MUONPI();
 
-    bool init();
-    bool start();
+    void start();
     void stop();
 
     bool getPosition(double* position);
@@ -32,16 +31,13 @@ private slots:
     void receivedTcpMessage(TcpMessage tcpMessage);
 
 private:
-    // std::unique_ptr<QCoreApplication> m_ownedApp;
     QThread* m_tcpThread = nullptr;
     TcpConnection* m_tcpConnection = nullptr;
     void setup();
     std::atomic<bool> connectionHealthy = false;
 
-    // std::thread m_qtThread;
-
-    std::atomic<double> geo_pos[3] = {0};
-    std::atomic<double> gpio_rate[2] = {0};
+    std::atomic<double> geo_pos[3] = {0.0, 0.0, 0.0};
+    std::atomic<double> gpio_rate[2] = {0.0, 0.0};
 };
 
 #endif
