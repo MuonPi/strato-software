@@ -76,42 +76,31 @@ void Sensors::threadFunc()
 
 
 
-        #ifdef MUONPI_USED
-        double XOR_temp = 0;
-        double AND_temp = 0;
-        double position_temp[3] {0};
-        #endif
 
         #ifdef ADS1115_ADDR
         ADS1115 strato_ads1115(ADS1115_ADDR);
         bool ads1115_inited = false;
-        double voltage_temp = 0;
         #endif
 
         #ifdef QMC5883_ADDR
         QMC5883 strato_qmc5883(QMC5883_ADDR);
         bool qmc5883_inited = false;
-        double magnetXYZ_temp[3] {0};
-        // double temperature_temp = 0;
         #endif
 
         #ifdef VEML6075_ADDR
         VEML6075 strato_veml6075(VEML6075_ADDR);
         bool veml6075_inited = false;
-        double uv_temp[4] {0};
         #endif
 
         #ifdef BME280_ADDR
         BME280 strato_bme280(BME280_ADDR);
         bool bme280_inited = false;
-        TPH tph_temp {0};
         #endif
 
         #ifdef OZONE3CLICK_LMP_ADDR
         #ifdef OZONE3CLICK_ADC_ADDR
         OZONE3CLICK strato_ozone3click(OZONE3CLICK_LMP_ADDR, OZONE3CLICK_ADC_ADDR);
         bool ozone3click_inited = false;
-        double ozone_temp = 0;
         #endif
         #endif
 
@@ -132,27 +121,36 @@ void Sensors::threadFunc()
             // Should automatically reset if connection drops
             if (strato_muonpi->isConnected())
             {
+                double position_temp[3] {0};
                 if (strato_muonpi->getPosition(position_temp))
                 {
-                    std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
+                    // std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
                     for(size_t i{0}; i < 3; i++)
                         StratoGlobals.position[i] = position_temp[i];
                 }
 
+                double XOR_temp = 0;
                 if (strato_muonpi->getXOR(XOR_temp))
                 {
-                    std::cout << "getXOR: "  << XOR_temp << std::endl;
-                    StratoGlobals.XOR = XOR_temp;
-                    StratoGlobals.XOR_mean = ((StratoGlobals.XOR_mean * StratoGlobals.XOR_count) + XOR_temp) / (StratoGlobals.XOR_count + 1);
-                    StratoGlobals.XOR_count++;
+                    if (XOR_temp > -1)
+                    {
+                        std::cout << "getXOR: "  << XOR_temp << std::endl;
+                        StratoGlobals.XOR = XOR_temp;
+                        StratoGlobals.XOR_mean = ((StratoGlobals.XOR_mean * StratoGlobals.XOR_count) + XOR_temp) / (StratoGlobals.XOR_count + 1);
+                        StratoGlobals.XOR_count++;
+                    }
                 }
 
+                double AND_temp = 0;
                 if (strato_muonpi->getAND(AND_temp))
                 {
-                    std::cout << "getAND: " <<  AND_temp << std::endl;
-                    StratoGlobals.AND = AND_temp;
-                    StratoGlobals.AND_mean = ((StratoGlobals.AND_mean * StratoGlobals.AND_count) + AND_temp) / (StratoGlobals.AND_count + 1);
-                    StratoGlobals.AND_count++;
+                    if (AND_temp > -1)
+                    {
+                        std::cout << "getAND: " <<  AND_temp << std::endl;
+                        StratoGlobals.AND = AND_temp;
+                        StratoGlobals.AND_mean = ((StratoGlobals.AND_mean * StratoGlobals.AND_count) + AND_temp) / (StratoGlobals.AND_count + 1);
+                        StratoGlobals.AND_count++;
+                    }
                 }
             }
             #endif
@@ -161,6 +159,7 @@ void Sensors::threadFunc()
             #ifdef ADS1115_ADDR
             if (ads1115_inited)
             {
+                double voltage_temp = 0;
                 if (strato_ads1115.getVoltage(voltage_temp))
                 {
                     voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
@@ -181,20 +180,32 @@ void Sensors::threadFunc()
             #ifdef QMC5883_ADDR
             if (qmc5883_inited)
             {
+                double magnetXYZ_temp[3] {0};
                 if (strato_qmc5883.getMagneticFieldXYZ(magnetXYZ_temp))
                 {
-                    for(size_t i{0}; i < 3; i++)
+                    for(uint8_t i{0}; i < 3; i++)
                         StratoGlobals.magnetXYZ[i] = magnetXYZ_temp[i];
                     StratoGlobals.magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
                     StratoGlobals.magnet_mean = ((StratoGlobals.magnet_mean * StratoGlobals.magnet_count) + StratoGlobals.magnet) / (StratoGlobals.magnet_count + 1);
                     StratoGlobals.magnet_count++;
-                    writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
+
+                    double temperature_temp = 0;
+                    if (strato_qmc5883.getTemperature(temperature_temp))
+                    {
+                        double magnet_temperature_temp[4] {0};
+                        for(uint8_t i{0}; i < 3; i++)
+                            magnet_temperature_temp[i] = magnetXYZ_temp[i];
+                        magnet_temperature_temp[3] = temperature_temp;
+                        writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnet_temperature_temp, 4);
+                    }
+                    else
+                    {
+                        writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
+                    }
                 }
                 else
                     qmc5883_inited = strato_qmc5883.init();
             
-                // if (strato_qmc5883.getTemperature(temperature_temp))
-                // {
                 //     StratoGlobals.temperature = temperature_temp;
                 //     StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
                 //     StratoGlobals.temperature_count++;
@@ -212,6 +223,7 @@ void Sensors::threadFunc()
             #ifdef VEML6075_ADDR
             if (veml6075_inited)
             {
+                double uv_temp[4] {0};
                 if (strato_veml6075.getUV(uv_temp))
                 {
                     for(size_t i{0}; i < 4; i++)
@@ -231,11 +243,9 @@ void Sensors::threadFunc()
 
 
             #ifdef BME280_ADDR
-            tph_temp = {0};
-            // // strato_bme280.softReset();
             if (bme280_inited)
             {
-                tph_temp = strato_bme280.getTPHValues();
+                TPH tph_temp {0};
 
                 if (tph_temp.T > -999.0)
                 {
@@ -277,6 +287,7 @@ void Sensors::threadFunc()
             #ifdef OZONE3CLICK_ADC_ADDR
             if (ozone3click_inited)
             {
+                double ozone_temp = 0;
                 if (strato_ozone3click.getOzone(ozone_temp))
                 {
                     StratoGlobals.ozone = ozone_temp;

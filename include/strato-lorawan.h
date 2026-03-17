@@ -2,11 +2,11 @@
 #ifndef _STRATO_LORAWAN_H_
 #define _STRATO_LORAWAN_H_
 
-// #include <Wire.h>
+
 #include "hal/hal.h"
 #include "lmic.h"
 #include "globals.h"
-// #include "hal/gpio.h"
+
 
 #define LMIC_CLOCK_ERROR_PPM 30000
 

@@ -127,21 +127,25 @@ void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
 
 bool MUONPI::getPosition(double *position)
 {
-    position[0] = geo_pos[0];
-    position[1] = geo_pos[1];
-    position[2] = geo_pos[2];
+    for(uint8_t i = 0; i < 3; i++)
+    {
+        position[i] = geo_pos[i];
+        geo_pos[i] = -1;
+    }
     return true;
 }
 
 bool MUONPI::getXOR(double &rate)
 {
     rate = gpio_rate[0];
+    gpio_rate[0] = -1;
     return true;
 }
 
 bool MUONPI::getAND(double &rate)
 {
     rate = gpio_rate[1];
+    gpio_rate[1] = -1;
     return true;
 }
 
