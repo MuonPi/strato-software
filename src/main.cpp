@@ -37,16 +37,23 @@ int main(int argc, char** argv)
 
 
     QTimer timer_sensorthread;
+    bool timer_sensorthread_enabled = true;
 
     QObject::connect(&timer_sensorthread, &QTimer::timeout, [&]()
     {
-        if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
+        if (timer_sensorthread_enabled)
         {
-            std::cerr << "SensorThread timeout" << std::endl;
-            StratoSensors.stop();
-            // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            StratoSensors.start();
-            // std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
+            {
+                std::cerr << "SensorThread timeout" << std::endl;
+                StratoSensors.stop();
+                QTimer::singleShot(WATCHDOG_INTERVAL * 10, [&]()
+                {
+                    StratoSensors.start();
+                    timer_sensorthread_enabled = true;
+                });
+                timer_sensorthread_enabled = false;
+            }
         }
     });
 
@@ -54,16 +61,23 @@ int main(int argc, char** argv)
 
 
     QTimer timer_lorawanthread;
+    bool timer_lorawanthread_enabled = true;
 
     QObject::connect(&timer_lorawanthread, &QTimer::timeout, [&]()
     {
-        if (StratoLorawan.running == false || std::chrono::steady_clock::now() - StratoLorawan.heartbeat.load() > lorawanthread_timeout)
+        if (timer_lorawanthread_enabled)
         {
-            std::cerr << "LorawanThread timeout" << std::endl;
-            StratoSensors.stop();
-            // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            StratoSensors.start();
-            // std::this_thread::sleep_for(std::chrono::seconds(1));
+            if (StratoLorawan.running == false || std::chrono::steady_clock::now() - StratoLorawan.heartbeat.load() > lorawanthread_timeout)
+            {
+                std::cerr << "LorawanThread timeout" << std::endl;
+                StratoLorawan.stop();
+                QTimer::singleShot(WATCHDOG_INTERVAL, [&]()
+                {
+                    StratoLorawan.start();
+                    timer_lorawanthread_enabled = true;
+                });
+                timer_lorawanthread_enabled = false;
+            }
         }
     });
 
