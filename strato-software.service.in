@@ -1,6 +1,6 @@
 [Unit]
 Description= Service for stratospheric balloon flights
-Requires=muondetector-daemon.service
+Wants=muondetector-daemon.service
 After=muondetector-daemon.service
 
 [Service]
