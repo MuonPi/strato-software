@@ -151,6 +151,9 @@ auto BME280::getTPHValues() -> TPH
     vals.T = BME280_compensate_T_int32(vals.adc_T)/100.;
     vals.P = BME280_compensate_P_int64(vals.adc_P)/256.;
     vals.H = BME280_compensate_H_int32(vals.adc_H)/1024.;
+    // std::cout << "Temperature: " << vals.T << std::endl;
+    // std::cout << "Pressure: " << vals.P << std::endl;
+    // std::cout << "Humidity: " << vals.H << std::endl;
     return vals;
 }
 

@@ -169,7 +169,7 @@ void do_send(osjob_t *j)
         std::cout << std::endl;
         std::cout << "UplinkSequenceNumber: " << static_cast<uint32_t>(LMIC.seqnoUp) << std::endl;
         LMIC_setTxData2(1, data, data_size, 0); // ,0 NKRG
-        std::cout << "Packet queued" << std::endl;
+        // std::cout << "Packet queued" << std::endl;
     }
     // Next TX is scheduled after TX_COMPLETE event.
 }
@@ -361,7 +361,7 @@ bool Lorawan::setup(devaddr_t devaddr, const lmic_pinmap &lmic_pins, unsigned ch
 {
     os_init_ex(&lmic_pins); // LMIC init
 
-    std::cout << "Starting" << std::endl;
+    // std::cout << "Starting" << std::endl;
     LMIC_reset(); // Reset the MAC state. Session and pending data transfers will be discarded.
     // network ID 0x01 = Expiremental
     // network ID 0x13 = The Things Network

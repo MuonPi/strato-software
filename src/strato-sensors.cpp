@@ -248,7 +248,7 @@ void Sensors::threadFunc()
                 tph_temp = strato_bme280.getTPHValues();
 
 
-                if (tph_temp.T > -999.0)
+                if (tph_temp.T > -141.0)
                 {
                     StratoGlobals.temperature = tph_temp.T;
                     StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + tph_temp.T) / (StratoGlobals.temperature_count + 1);

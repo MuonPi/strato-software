@@ -102,7 +102,7 @@ void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
         geo_pos[0] = static_cast<double>(pos.lat) * 1e-7;
         geo_pos[1] = static_cast<double>(pos.lon) * 1e-7;
         geo_pos[2] = static_cast<double>(pos.height) / 1e3;
-        std::cout << "MSG_GEO_POS: " << geo_pos[0] << " " << geo_pos[1] << " " << geo_pos[2] << std::endl;
+        // std::cout << "MSG_GEO_POS: " << geo_pos[0] << " " << geo_pos[1] << " " << geo_pos[2] << std::endl;
         return;
     }
     else if (msgID == TCP_MSG_KEY::MSG_UBX_FIXSTATUS)
