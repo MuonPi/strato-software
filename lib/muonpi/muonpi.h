@@ -36,8 +36,8 @@ private:
     void setup();
     std::atomic<bool> connectionHealthy = false;
 
-    std::atomic<double> geo_pos[3] = {-1, -1, -1};
-    std::atomic<double> gpio_rate[2] = {-1, -1};
+    std::atomic<double> geo_pos[3] = {-999, -999, -999};
+    std::atomic<double> gpio_rate[2] = {-999, -999};
 };
 
 #endif

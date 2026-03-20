@@ -25,25 +25,22 @@ MUONPI::~MUONPI()
 
 void MUONPI::start()
 {
-    setup(); // alles einrichten
+    setup();
     if (m_tcpThread != nullptr)
     {
-        m_tcpThread->start(); // Startet Eventloop des TCP-Threads
+        m_tcpThread->start();
     }
+    std::cout << "MUONPI inited" << std::endl;
 }
 
 void MUONPI::setup()
 {
-    // TCP-Thread anlegen
     m_tcpThread = new QThread();
 
-    // TcpConnection **ohne Parent** erstellen
     m_tcpConnection = new TcpConnection("localhost", 51508, 0, timeout_ms);
 
-    // Connection in den Thread verschieben
     m_tcpConnection->moveToThread(m_tcpThread);
 
-    // Signals verbinden
     connect(m_tcpThread, &QThread::started, m_tcpConnection, &TcpConnection::makeConnection);
 
     connect(m_tcpConnection, &TcpConnection::receivedTcpMessage, this, &MUONPI::receivedTcpMessage);
@@ -105,7 +102,7 @@ void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
         geo_pos[0] = static_cast<double>(pos.lat) * 1e-7;
         geo_pos[1] = static_cast<double>(pos.lon) * 1e-7;
         geo_pos[2] = static_cast<double>(pos.height) / 1e3;
-        // std::cout << "MSG_GEO_POS: " << geo_pos[0] << " " << geo_pos[1] << " " << geo_pos[2] << std::endl;
+        std::cout << "MSG_GEO_POS: " << geo_pos[0] << " " << geo_pos[1] << " " << geo_pos[2] << std::endl;
         return;
     }
     else if (msgID == TCP_MSG_KEY::MSG_UBX_FIXSTATUS)
@@ -125,27 +122,27 @@ void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
     }
 }
 
-bool MUONPI::getPosition(double *position)
+bool MUONPI::getPosition(double* position)
 {
     for(uint8_t i = 0; i < 3; i++)
     {
         position[i] = geo_pos[i];
-        geo_pos[i] = -1;
+        geo_pos[i] = -999;
     }
     return true;
 }
 
-bool MUONPI::getXOR(double &rate)
+bool MUONPI::getXOR(double& rate)
 {
     rate = gpio_rate[0];
-    gpio_rate[0] = -1;
+    gpio_rate[0] = -999;
     return true;
 }
 
-bool MUONPI::getAND(double &rate)
+bool MUONPI::getAND(double& rate)
 {
     rate = gpio_rate[1];
-    gpio_rate[1] = -1;
+    gpio_rate[1] = -999;
     return true;
 }
 

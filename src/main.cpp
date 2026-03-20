@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     
 
     StratoSensors.start();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     StratoLorawan.start();
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
