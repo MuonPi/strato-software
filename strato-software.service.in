@@ -6,6 +6,7 @@ After=muondetector-daemon.service
 [Service]
 Type=simple
 User=@SERVICE_USER@
+ExecStartPre=/bin/sleep 5
 ExecStart=@BIN_INSTALL_DIR@/strato-software
 Restart=always
 RestartSec=5

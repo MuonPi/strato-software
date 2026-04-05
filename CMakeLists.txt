@@ -87,7 +87,7 @@ set(BIN_INSTALL_DIR "/usr/bin")
 set(DATA_INSTALL_DIR "/var/strato-software")
 set(SERVICE_NAME "strato-software")
 set(SERVICE_INSTALL_DIR "/etc/systemd/system")
-set(SERVICE_USER "user")
+set(SERVICE_USER $ENV{SUDO_USER})
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in
