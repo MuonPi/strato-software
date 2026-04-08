@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-#include <gpiod.h>
+// #include <gpiod.h>
 #include <stdint.h>
 #include <time.h>
 #include "raspi.h"
@@ -50,15 +50,47 @@ uint32_t millis()
 
 void interrupts()
 {
-    // not possible to enable interrupts on raspi ??
+    // not possible to enable interrupts on raspi
 }
 
 void noInterrupts()
 {
-    // not possible to disable interrupts on raspi ??
+    // not possible to disable interrupts on raspi
 }
 
+void SerialClass::begin()
+{}
+
+void SerialClass::println(const std::string& msg)
+{
+    std::cout << msg << std::endl;
+}
+
+void SerialClass::println(const short unsigned int& msg)
+{
+    std::cout << msg << std::endl;
+}
+
+void SerialClass::print(const std::string& msg)
+{
+    std::cout << msg;
+}
+
+void SerialClass::print(const char& msg)
+{
+    std::cout << msg << std::endl;
+}
+
+void SerialClass::flush()
+{
+    std::cout.flush();
+}
+
+SerialClass Serial;
+
+
 // ====================================================================================================
+
 
 void pinMode(uint8_t pin, uint8_t mode)
 {
@@ -88,4 +120,56 @@ void digitalWrite(uint8_t pin, uint8_t value)
     // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
 
+
 // ====================================================================================================
+
+
+void SPIClass::begin()
+{
+    device.init("/dev/spidev0.0", 1000000, Mode::spi_mode_0, 8);
+}
+
+void SPIClass::end()
+{
+}
+
+void SPIClass::beginTransaction(SPISettings settings)
+{
+    Mode mode = Mode::spi_mode_0;
+
+    switch(settings.dataMode)
+    {
+        case SPI_MODE0: mode = Mode::spi_mode_0; break;
+        case SPI_MODE1: mode = Mode::spi_mode_1; break;
+        case SPI_MODE2: mode = Mode::spi_mode_2; break;
+        case SPI_MODE3: mode = Mode::spi_mode_3; break;
+    }
+
+    device.init("/dev/spidev0.0", settings.clock, mode, 8);
+}
+
+void SPIClass::endTransaction()
+{
+}
+
+uint8_t SPIClass::transfer(uint8_t data)
+{
+    std::string tx;
+    tx.push_back(data);
+
+    device.write(0, tx);     // send data
+    auto rx = device.read(0,1);
+
+    if(rx.size())
+        return rx[0];
+
+    return 0;
+}
+
+void SPIClass::transfer(uint8_t* buf, size_t len)
+{
+    for(size_t i=0;i<len;i++)
+        buf[i] = transfer(buf[i]);
+}
+
+SPIClass SPI;
