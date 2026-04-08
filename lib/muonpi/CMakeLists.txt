@@ -16,8 +16,8 @@ find_package(Threads REQUIRED)
 # -------------------------------
 # Externe Lib muondetector
 # -------------------------------
-set(MUONPI_HEADER_DIR "/home/pi/muondetector/library/include")
-set(MUONPI_LIB_DIR "/home/pi/muondetector/build/output/lib")
+set(MUONPI_HEADER_DIR "/home/user/muondetector/library/include")
+set(MUONPI_LIB_DIR "/home/user/muondetector/build/output/lib")
 add_library(muondetector STATIC IMPORTED)
 set_target_properties(muondetector PROPERTIES
     IMPORTED_LOCATION "${MUONPI_LIB_DIR}/libmuondetector.a"

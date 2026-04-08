@@ -1,29 +1,36 @@
 
+
+set(LMIC_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/src")
+set(LMIC_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/project_config")
+set(LMIC_RASPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/raspi")
+
+
 add_library(lmic STATIC
-    src/aes/lmic.c
-    src/aes/other.c
-    src/aes/ideetron/AES-128_V10.cpp
-    src/hal/hal.cpp
-    src/lmic/lmic_channelshuffle.c
-    src/lmic/lmic_compliance.c
-    src/lmic/lmic_eu_like.c
-    src/lmic/lmic_eu868.c
-    src/lmic/lmic_util.c
-    src/lmic/lmic.c
-    src/lmic/oslmic.c
-    src/lmic/radio.c
-    src/raspi/raspi.cpp
-    src/raspi/spidevice.cpp
-    src/raspi/gpiodevice.cpp
+    ${LMIC_SRC_DIR}/aes/lmic.c
+    ${LMIC_SRC_DIR}/aes/other.c
+    ${LMIC_SRC_DIR}/aes/ideetron/AES-128_V10.cpp
+    ${LMIC_SRC_DIR}/hal/hal.cpp
+    ${LMIC_SRC_DIR}/lmic/lmic_channelshuffle.c
+    ${LMIC_SRC_DIR}/lmic/lmic_compliance.c
+    ${LMIC_SRC_DIR}/lmic/lmic_eu_like.c
+    ${LMIC_SRC_DIR}/lmic/lmic_eu868.c
+    ${LMIC_SRC_DIR}/lmic/lmic_util.c
+    ${LMIC_SRC_DIR}/lmic/lmic.c
+    ${LMIC_SRC_DIR}/lmic/oslmic.c
+    ${LMIC_SRC_DIR}/lmic/radio_sx126x.c
+    ${LMIC_SRC_DIR}/lmic/radio_sx127x.c
+    ${LMIC_RASPI_DIR}/raspi.cpp
+    ${LMIC_RASPI_DIR}/spidevice.cpp
+    ${LMIC_RASPI_DIR}/gpiodevice.cpp
 )
 
 target_include_directories(lmic PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/project_config
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/aes
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/hal
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/lmic
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/raspi
+    ${LMIC_CONFIG_DIR}
+    ${LMIC_SRC_DIR}
+    ${LMIC_SRC_DIR}/aes
+    ${LMIC_SRC_DIR}/hal
+    ${LMIC_SRC_DIR}/lmic
+    ${LMIC_RASPI_DIR}
 )
 
 # target_compile_definitions(lmic PUBLIC
