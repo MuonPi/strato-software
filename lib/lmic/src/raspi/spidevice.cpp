@@ -200,6 +200,9 @@ auto spiDevice::spi_xfer(const int handle, const uint32_t speed, const uint8_t m
 		* Depending on spidev version there are different parameters in struct
 		*/
 	};
+	
+	tr.tx_nbits = 0; 	// NKRG
+	tr.rx_nbits = 0; 	// NKRG
 
 	ret = ioctl(handle, SPI_IOC_MESSAGE(1), &tr);
 	if (ret < 1) {
