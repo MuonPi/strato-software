@@ -17,16 +17,16 @@
 
 #define OUTPUT 1      // only temporary, should be removed, random value
 #define INPUT 0       // only temporary, should be removed, random value
-#define HIGH 1        // only temporary, should be removed, random value
-#define LOW 0         // only temporary, should be removed, random value
+#define HIGH 1
+#define LOW 0
 
-#define MSBFIRST 1
 #define LSBFIRST 0
+#define MSBFIRST 1
 
-#define SPI_MODE0 0
-#define SPI_MODE1 1
-#define SPI_MODE2 2
-#define SPI_MODE3 3
+#define SPI_MODE0 0x00
+#define SPI_MODE1 0x04
+#define SPI_MODE2 0x08
+#define SPI_MODE3 0x0C
 
 uint32_t micros();
 uint32_t millis();
@@ -78,7 +78,7 @@ public:
     void endTransaction();
 
     uint8_t transfer(uint8_t data);
-    void transfer(uint8_t* buf, size_t len);
+    void transfer(uint8_t* buf, size_t count);
 
 private:
     spiDevice device;

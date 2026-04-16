@@ -20,7 +20,8 @@ public:
 	spiDevice() = default;
 	virtual ~spiDevice();
 
-	auto init(std::string busAddress = "/dev/spidev0.0", std::uint32_t speed = 61035, Mode mode = Mode::spi_mode_0, uint8_t bits = 8)->bool;
+	auto init(std::string busAddress = "/dev/spidev0.0")->bool;
+	auto configure(std::uint32_t speed = 61035, Mode mode = Mode::spi_mode_0, uint8_t bits = 8)->bool;
 
 	/**
 	* Writes to physical device

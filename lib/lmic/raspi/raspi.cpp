@@ -95,6 +95,8 @@ SerialClass Serial;
 void pinMode(uint8_t pin, uint8_t mode)
 {
     // std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
+    if (pin == 0x07 || pin == 0x08)
+        return;
     if(gpio_init_state == 0)
     {
         init_gpio();
@@ -108,22 +110,16 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 bool digitalRead(uint8_t pin)
 {
-    if(gpio_init_state == 0)
-    {
-        init_gpio();
-        gpio_init_state = 1;
-    }
+    if (pin == 0x07 || pin == 0x08)
+        return 0;
     pinMode(pin, INPUT);
     return read_line(pin);
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)
 {
-    if(gpio_init_state == 0)
-    {
-        init_gpio();
-        gpio_init_state = 1;
-    }
+    if (pin == 0x07 || pin == 0x08)
+        return;
     pinMode(pin, OUTPUT);
     write_line(pin, value);
 }
@@ -134,8 +130,8 @@ void digitalWrite(uint8_t pin, uint8_t value)
 
 void SPIClass::begin()
 {
-    std::cout << "spi begin" << std::endl;
-    device.init("/dev/spidev0.0", 1000000, Mode::spi_mode_0, 8);
+    // std::cout << "spi begin" << std::endl;
+    device.init("/dev/spidev0.0");
 }
 
 void SPIClass::end()
@@ -144,6 +140,7 @@ void SPIClass::end()
 
 void SPIClass::beginTransaction(SPISettings settings)
 {
+
     Mode mode = Mode::spi_mode_0;
 
     switch(settings.dataMode)
@@ -154,7 +151,7 @@ void SPIClass::beginTransaction(SPISettings settings)
         case SPI_MODE3: mode = Mode::spi_mode_3; break;
     }
 
-    device.init("/dev/spidev0.0", settings.clock, mode, 8);
+    device.configure(settings.clock, mode, 8);
 }
 
 void SPIClass::endTransaction()
@@ -163,11 +160,15 @@ void SPIClass::endTransaction()
 
 uint8_t SPIClass::transfer(uint8_t data)
 {
+    std::cout << "spi transfer: " << data << std::endl;
+
     std::string tx;
     tx.push_back(data);
 
     device.write(0, tx);     // send data
-    auto rx = device.read(0,1);
+    auto rx = device.read(0, 1);
+
+    std::cout << "spi receive: " << rx << std::endl;
 
     if(rx.size())
         return rx[0];
@@ -175,10 +176,22 @@ uint8_t SPIClass::transfer(uint8_t data)
     return 0;
 }
 
-void SPIClass::transfer(uint8_t* buf, size_t len)
+void SPIClass::transfer(uint8_t* buf, size_t count)
 {
-    for(size_t i=0;i<len;i++)
-        buf[i] = transfer(buf[i]);
+    std::vector<uint8_t> rx(count);
+
+    spiDevice::spi_xfer(
+        device.fHandle,
+        device.fSpeed,
+        device.fMode,
+        device.fNrBits,
+        buf,
+        rx.data(),
+        count
+    );
+
+    for(size_t i = 0; i < count; i++)
+        buf[i] = rx[i];
 }
 
 SPIClass SPI;

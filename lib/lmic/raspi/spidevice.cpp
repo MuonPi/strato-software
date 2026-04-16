@@ -29,7 +29,23 @@ spiDevice::~spiDevice() {
 	}
 }
 
-auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, uint8_t bits)->bool {
+auto spiDevice::init(std::string busAddress)->bool
+{
+
+	fHandle = open(busAddress.c_str(), O_RDWR);
+	if (fHandle < 0) {
+		std::cerr << "Could not open spi device" << std::endl;
+		return false;
+	}
+	fNrDevices++;
+	fGlobalDeviceList.push_back(this);
+
+}
+
+auto spiDevice::configure(std::uint32_t speed, Mode mode, uint8_t bits)->bool
+{
+    // std::cout << speed << " " << static_cast<int>(mode) << std::endl;
+
 	fNrBits = bits;
 	fSpeed = speed;
 
@@ -52,13 +68,6 @@ auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, uin
 		break;
 	}
 
-	fHandle = open(busAddress.c_str(), O_RDWR);
-	if (fHandle < 0) {
-		std::cerr << "Could not open spi device" << std::endl;
-		return false;
-	}
-	fNrDevices++;
-	fGlobalDeviceList.push_back(this);
 
 	/*
 	 * spi mode
@@ -101,7 +110,7 @@ auto spiDevice::init(std::string busAddress, std::uint32_t speed, Mode mode, uin
 		std::cerr << "can't get max speed hz" << std::endl;
 	}
 
-	std::cout << "spi initialise successful\n"; //Luisa
+	std::cout << "SPI initialise successful" << std::endl; //Luisa
 
 	return true;
 }

@@ -96,8 +96,29 @@ int main(int argc, char** argv)
 
 
     StratoLorawan.start();
+
+
+
 }
 
 
+// #include "raspi.h"
 
+// int main()
+// {
+//     // pinMode(CS, OUTPUT);
+//     // digitalWrite(CS, HIGH);
 
+//     SPI.begin();
+
+//     SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+
+//     // digitalWrite(CS, LOW);
+
+//     SPI.transfer(0x42);   // Register
+//     SPI.transfer(0xAA);   // Wert
+
+//     // digitalWrite(CS, HIGH);
+
+//     SPI.endTransaction();
+// }
