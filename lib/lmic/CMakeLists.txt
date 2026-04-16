@@ -19,6 +19,7 @@ add_library(lmic STATIC
     ${LMIC_SRC_DIR}/lmic/oslmic.c
     ${LMIC_SRC_DIR}/lmic/radio_sx126x.c
     ${LMIC_SRC_DIR}/lmic/radio_sx127x.c
+    ${LMIC_SRC_DIR}/se/drivers/default/lmic_se_default.c
     ${LMIC_RASPI_DIR}/raspi.cpp
     ${LMIC_RASPI_DIR}/spidevice.cpp
     ${LMIC_RASPI_DIR}/gpiodevice.cpp
@@ -30,6 +31,7 @@ target_include_directories(lmic PUBLIC
     ${LMIC_SRC_DIR}/aes
     ${LMIC_SRC_DIR}/hal
     ${LMIC_SRC_DIR}/lmic
+    ${LMIC_SRC_DIR}/se
     ${LMIC_RASPI_DIR}
 )
 

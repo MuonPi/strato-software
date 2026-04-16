@@ -67,6 +67,8 @@ bool read_line(int pin)
     {
         throw std::runtime_error("Nullpointer in reading line");
     }
+    if (gpiod_line_direction(line) != GPIOD_LINE_DIRECTION_INPUT)
+        set_line_input(pin);
     int val = gpiod_line_get_value(line);
     if (val < 0)
     {
@@ -85,6 +87,8 @@ bool write_line(int pin, int level)
     {
         throw std::runtime_error("Nullpointer in writing line");
     }
+    if (gpiod_line_direction(line) != GPIOD_LINE_DIRECTION_OUTPUT)
+        set_line_output(pin);
     int val = gpiod_line_set_value(line, level); // level == 1 ? 0 : 1);
     if (val != 0)
     {

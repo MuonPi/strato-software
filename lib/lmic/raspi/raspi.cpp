@@ -108,16 +108,24 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 bool digitalRead(uint8_t pin)
 {
-    // std::cout << "digital Read" << std::endl;
+    if(gpio_init_state == 0)
+    {
+        init_gpio();
+        gpio_init_state = 1;
+    }
+    pinMode(pin, INPUT);
     return read_line(pin);
-    // std::cout << "after read line" << std::endl;
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)
 {
-    // std::cout << "digital Write" << std::endl;
+    if(gpio_init_state == 0)
+    {
+        init_gpio();
+        gpio_init_state = 1;
+    }
+    pinMode(pin, OUTPUT);
     write_line(pin, value);
-    // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
 
 
@@ -126,6 +134,7 @@ void digitalWrite(uint8_t pin, uint8_t value)
 
 void SPIClass::begin()
 {
+    std::cout << "spi begin" << std::endl;
     device.init("/dev/spidev0.0", 1000000, Mode::spi_mode_0, 8);
 }
 

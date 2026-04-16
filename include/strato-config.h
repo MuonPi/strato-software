@@ -43,6 +43,9 @@
 // #define DISABLE_JOIN 1
 // #define DISABLE_PING 1
 // #define LMIC_DEBUG_LEVEL 1
+// #define CFG_eu868 1
+// #define CFG_sx1276_radio 1
+#define LMIC_CLOCK_ERROR_PPM 30000
 
 
 

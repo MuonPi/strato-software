@@ -8,7 +8,6 @@
 #include "globals.h"
 
 
-#define LMIC_CLOCK_ERROR_PPM 30000
 
 class Lorawan
 {
