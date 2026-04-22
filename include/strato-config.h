@@ -20,8 +20,8 @@
 #define QMC5883_ADDR 0x0D
 #define VEML6075_ADDR 0x10
 #define BME280_ADDR 0x76
-#define OZONE3CLICK_LMP_ADDR 0x48
-#define OZONE3CLICK_ADC_ADDR 0x4D
+// #define OZONE3CLICK_LMP_ADDR 0x48
+// #define OZONE3CLICK_ADC_ADDR 0x4D
 
 #define VOLTAGE_DIVIDER_A0_R1 20
 #define VOLTAGE_DIVIDER_A0_R2 51
@@ -43,6 +43,9 @@
 // #define DISABLE_JOIN 1
 // #define DISABLE_PING 1
 // #define LMIC_DEBUG_LEVEL 1
+// #define CFG_eu868 1
+// #define CFG_sx1276_radio 1
+#define LMIC_CLOCK_ERROR_PPM 30000
 
 
 
