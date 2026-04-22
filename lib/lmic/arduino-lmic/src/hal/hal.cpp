@@ -219,14 +219,18 @@ static void lmic_hal_spi_trx(u1_t cmd, u1_t* buf, size_t len, bit_t is_read) {
     while (lmic_hal_radio_spi_is_busy());
 #endif
 
-    SPI.transfer(cmd);
+    // SPI.transfer(cmd);   // NKRG
 
-    for (; len > 0; --len, ++buf) {
-        u1_t data = is_read ? 0x00 : *buf;
-        data = SPI.transfer(data);
-        if (is_read)
-            *buf = data;
-    }
+    // for (; len > 0; --len, ++buf) {  // NKRG
+    //     u1_t data = is_read ? 0x00 : *buf;
+    //     data = SPI.transfer(data);
+    //     if (is_read)
+    //         *buf = data;
+    // }
+
+    SPI.transfer(cmd, buf, len, is_read);    // NKRG
+
+
 
     digitalWrite(nss, 1);
     SPI.endTransaction();

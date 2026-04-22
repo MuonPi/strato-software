@@ -4,7 +4,6 @@
 #include <vector>
 #include <iostream>
 #include <unistd.h>
-// #include <gpiod.h>
 #include <stdint.h>
 #include <time.h>
 #include "raspi.h"
@@ -15,7 +14,12 @@
 
 
 
+static const Arduino_LMIC::HalPinmap_t *plmic_pins = &lmic_pins;
+
+
 bool gpio_init_state = 0;
+bool spi_init_state = 0;
+
 
 
 void delay(uint32_t milliseconds)
@@ -95,7 +99,8 @@ SerialClass Serial;
 void pinMode(uint8_t pin, uint8_t mode)
 {
     // std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
-    if (pin == 0x07 || pin == 0x08)
+    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    if (pin == plmic_pins->nss)
         return;
     if(gpio_init_state == 0)
     {
@@ -110,7 +115,8 @@ void pinMode(uint8_t pin, uint8_t mode)
 
 bool digitalRead(uint8_t pin)
 {
-    if (pin == 0x07 || pin == 0x08)
+    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    if (pin == plmic_pins->nss)
         return 0;
     pinMode(pin, INPUT);
     return read_line(pin);
@@ -118,7 +124,8 @@ bool digitalRead(uint8_t pin)
 
 void digitalWrite(uint8_t pin, uint8_t value)
 {
-    if (pin == 0x07 || pin == 0x08)
+    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    if (pin == plmic_pins->nss)
         return;
     pinMode(pin, OUTPUT);
     write_line(pin, value);
@@ -140,6 +147,8 @@ void SPIClass::end()
 
 void SPIClass::beginTransaction(SPISettings settings)
 {
+    if(spi_init_state == 1)
+        return;
 
     Mode mode = Mode::spi_mode_0;
 
@@ -152,6 +161,8 @@ void SPIClass::beginTransaction(SPISettings settings)
     }
 
     device.configure(settings.clock, mode, 8);
+    
+    spi_init_state = 1;
 }
 
 void SPIClass::endTransaction()
@@ -160,15 +171,15 @@ void SPIClass::endTransaction()
 
 uint8_t SPIClass::transfer(uint8_t data)
 {
-    std::cout << "spi transfer: " << data << std::endl;
+    // std::cout << "spi transfer: " << data << std::endl;
 
     std::string tx;
     tx.push_back(data);
 
-    device.write(0, tx);     // send data
+    device.write(tx);     // send data
     auto rx = device.read(0, 1);
 
-    std::cout << "spi receive: " << rx << std::endl;
+    // std::cout << "spi receive: " << rx << std::endl;
 
     if(rx.size())
         return rx[0];
@@ -176,22 +187,74 @@ uint8_t SPIClass::transfer(uint8_t data)
     return 0;
 }
 
-void SPIClass::transfer(uint8_t* buf, size_t count)
-{
-    std::vector<uint8_t> rx(count);
+// void SPIClass::transfer(uint8_t* buf, size_t count)
+// {
+//     std::cout << "spi transfer: " << count << " bytes" << std::endl;
 
-    spiDevice::spi_xfer(
-        device.fHandle,
-        device.fSpeed,
-        device.fMode,
-        device.fNrBits,
-        buf,
-        rx.data(),
-        count
-    );
+//     std::string tx;
+//     tx.resize(count);
+
+//     for(size_t i = 0; i < count; i++)
+//         tx[i] = buf[i];
+
+//     device.write(tx);     // send data
+//     auto rx = device.read(0, 1);
+
+//     // std::cout << "spi receive: " << rx << std::endl;
+
+//     // if(rx.size())
+//     //     return rx[0];
+
+//     return;
+// }
+
+
+void SPIClass::transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read)
+{
+    // std::cout << "spi transfer: " << count << " bytes" << std::endl;
+
+    std::string buf_str;
+    buf_str.resize(count);
 
     for(size_t i = 0; i < count; i++)
-        buf[i] = rx[i];
+        buf_str[i] = buf[i];
+
+    if (is_read)
+    {
+        buf_str = device.read(cmd, count);
+
+        for(size_t i = 0; i < count; i++)
+            buf[i] = static_cast<uint8_t>(buf_str[i]);
+    }
+    else
+    {
+        device.write(cmd, buf_str);
+
+        for(size_t i = 0; i < count; i++)
+            buf[i] = 0x00;
+    }
+    return;
 }
+
+
+
+
+
+
+//     std::vector<uint8_t> rx(count);
+
+//     spiDevice::spi_xfer(
+//         device.fHandle,
+//         device.fSpeed,
+//         device.fMode,
+//         device.fNrBits,
+//         buf,
+//         rx.data(),
+//         count
+//     );
+
+//     for(size_t i = 0; i < count; i++)
+//         buf[i] = rx[i];
+// }
 
 SPIClass SPI;

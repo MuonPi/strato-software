@@ -78,7 +78,8 @@ public:
     void endTransaction();
 
     uint8_t transfer(uint8_t data);
-    void transfer(uint8_t* buf, size_t count);
+    // void transfer(uint8_t* buf, size_t count);
+    void transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read);
 
 private:
     spiDevice device;

@@ -110,7 +110,7 @@ auto spiDevice::configure(std::uint32_t speed, Mode mode, uint8_t bits)->bool
 		std::cerr << "can't get max speed hz" << std::endl;
 	}
 
-	std::cout << "SPI initialise successful" << std::endl; //Luisa
+	std::cout << "SPI initialize successful" << std::endl; //Luisa
 
 	return true;
 }
@@ -134,6 +134,7 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 	}
 
 	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
+
     // std::cout << "write:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
 	// {
@@ -153,6 +154,25 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 	return true;
 }
 
+auto spiDevice::write(const std::string& data)->bool {
+	if (fHandle==-1) {
+		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
+		return false;
+	}
+	const std::size_t n = data.size();
+
+	auto txBuf{ std::make_unique<std::uint8_t[]>(n) };
+	auto rxBuf{ std::make_unique<std::uint8_t[]>(n) };
+
+	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
+	
+	if (status != static_cast<decltype(status)>(n)) {
+		std::cerr << "transfer size mismatch: spi_xfer returned " << status << " bytes transfered but should write" << n << " bytes." << std::endl;
+		return false;
+	}
+	return true;
+}
+
 auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std::string {
 	if (fHandle == -1) {
 		std::cerr << "tried to read from spi without initialising." << std::endl;
@@ -165,6 +185,7 @@ auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std:
 	txBuf[0] = command;
 
 	auto status = spi_xfer(fHandle, fSpeed, fMode, fNrBits, txBuf.get(), rxBuf.get(), n);
+
     // std::cout << "read:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
 	// {

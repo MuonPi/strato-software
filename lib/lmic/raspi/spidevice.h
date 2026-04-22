@@ -30,6 +30,7 @@ public:
 	* @return
 	*/
 	auto write(const std::uint8_t command, const std::string& data)->bool;
+	auto write(const std::string& data)->bool;
 
 	/**
 	* Reads from physical device
