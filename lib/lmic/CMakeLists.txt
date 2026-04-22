@@ -23,6 +23,7 @@ add_library(lmic STATIC
     ${LMIC_RASPI_DIR}/raspi.cpp
     ${LMIC_RASPI_DIR}/spidevice.cpp
     ${LMIC_RASPI_DIR}/gpiodevice.cpp
+    ${LMIC_RASPI_DIR}/lmic_lorawan.cpp
 )
 
 target_include_directories(lmic PUBLIC
