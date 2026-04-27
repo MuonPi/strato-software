@@ -4,19 +4,19 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
-#include "../lmic.h"
+#include "lmic.h"
 #include <string>
 #include <vector>
-#include <cstdint> //Luisa
+#include <cstdint>
 #include "spidevice.h"
-// #include <gpiod.h>
+#include "gpiodevice.h"
 
 
 // write manual arduino functions for raspi
 
 
-#define OUTPUT 1      // only temporary, should be removed, random value
-#define INPUT 0       // only temporary, should be removed, random value
+#define OUTPUT 1
+#define INPUT 0
 #define HIGH 1
 #define LOW 0
 
@@ -28,11 +28,14 @@
 #define SPI_MODE2 0x08
 #define SPI_MODE3 0x0C
 
+
 uint32_t micros();
 uint32_t millis();
 
 void delay(uint32_t milliseconds);
 void delayMicroseconds(uint32_t microseconds);
+
+// gpioDevice lmicGpioDevice;
 
 bool init_gpio();
 void pinMode(uint8_t pin, uint8_t mode);
@@ -81,8 +84,8 @@ public:
     // void transfer(uint8_t* buf, size_t count);
     void transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read);
 
-private:
-    spiDevice device;
+// private:
+    // spiDevice lmicSpiDevice;
 };
 extern SPIClass SPI;
 

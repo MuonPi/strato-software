@@ -4,7 +4,6 @@ set(LMIC_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/src")
 set(LMIC_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/project_config")
 set(LMIC_RASPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/raspi")
 
-
 add_library(lmic STATIC
     ${LMIC_SRC_DIR}/aes/lmic.c
     ${LMIC_SRC_DIR}/aes/other.c
@@ -52,5 +51,13 @@ target_compile_options(lmic PRIVATE
     -Wshadow
     -Wpedantic
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGPIOD libgpiod)
+if(LIBGPIOD_VERSION VERSION_LESS "2.0.0")
+    add_definitions(-DLIBGPIOD_V1)
+else()
+    add_definitions(-DLIBGPIOD_V2)
+endif()
 
 target_link_libraries(lmic PRIVATE gpiod)

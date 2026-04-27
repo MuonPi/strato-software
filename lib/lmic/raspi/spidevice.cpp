@@ -17,7 +17,13 @@ unsigned long int spiDevice::fGlobalNrBytesWritten{ 0 };
 unsigned long int spiDevice::fGlobalNrBytesRead{ 0 };
 std::vector<spiDevice*> spiDevice::fGlobalDeviceList;
 
-spiDevice::~spiDevice() {
+
+spiDevice::spiDevice()
+{
+}
+
+spiDevice::~spiDevice()
+{
 	if (fHandle > 0) {
 		fNrDevices--;
 	}
@@ -31,7 +37,6 @@ spiDevice::~spiDevice() {
 
 auto spiDevice::init(std::string busAddress)->bool
 {
-
 	fHandle = open(busAddress.c_str(), O_RDWR);
 	if (fHandle < 0) {
 		std::cerr << "Could not open spi device" << std::endl;
