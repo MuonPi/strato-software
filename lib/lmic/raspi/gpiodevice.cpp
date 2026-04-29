@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdint>
-#include <unordered_map>
 #include <gpiod.h>
 
 #include "gpiodevice.h"
@@ -18,12 +17,6 @@ gpioDevice::gpioDevice()
 
 gpioDevice::~gpioDevice()
 {
-    for (auto &p : pins)
-    {
-        if (p.second.request)
-            gpiod_line_request_release(p.second.request);
-    }
-
     if (chip)
         gpiod_chip_close(chip);
 }
@@ -34,98 +27,71 @@ bool gpioDevice::init_gpio()
     chip = gpiod_chip_open("/dev/gpiochip0");
     if (chip == nullptr)
     {
-        throw std::runtime_error("could not open gpiochip0");
+        throw std::runtime_error("Could not open /dev/gpiochip0");
     }
     return true;
 }
 
 
-bool gpioDevice::set_line_input(unsigned int pin)
+gpiod_line_request* gpioDevice::set_line_input(unsigned int pin)
 {
-    auto &p = pins[pin];
+    gpiod_line_settings *settings = gpiod_line_settings_new();
+    gpiod_line_config *config = gpiod_line_config_new();
+    gpiod_request_config *req_cfg = gpiod_request_config_new();
 
-    if (p.request)
-        return true;
-
-    gpiod_line_settings* settings = gpiod_line_settings_new();
     gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
 
-    gpiod_line_config* cfg = gpiod_line_config_new();
+    gpiod_line_config_add_line_settings(config, &pin, 1, settings);
 
-    unsigned int offset = pin;
-    gpiod_line_config_add_line_settings(cfg, &offset, 1, settings);
+    gpiod_line_request *request = gpiod_chip_request_lines(chip, req_cfg, config);
 
-    p.request = gpiod_chip_request_lines(chip, nullptr, cfg);
-
-    gpiod_line_config_free(cfg);
     gpiod_line_settings_free(settings);
+    gpiod_line_config_free(config);
+    gpiod_request_config_free(req_cfg);
 
-    if (!p.request)
-        throw std::runtime_error("input failed");
+    if (!request)
+    {
+        throw std::runtime_error("Could not set line direction input");
+    }
 
-    return true;
+    return request;
 }
 
 
-bool gpioDevice::set_line_output(unsigned int pin)
+gpiod_line_request* gpioDevice::set_line_output(unsigned int pin)
 {
-    auto &p = pins[pin];
+    gpiod_line_settings *settings = gpiod_line_settings_new();
+    gpiod_line_config *config = gpiod_line_config_new();
+    gpiod_request_config *req_cfg = gpiod_request_config_new();
 
-    if (p.request)
-        return true;
-
-    gpiod_line_settings* settings = gpiod_line_settings_new();
     gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_OUTPUT);
-    gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_INACTIVE);
 
-    gpiod_line_config* cfg = gpiod_line_config_new();
+    gpiod_line_config_add_line_settings(config, &pin, 1, settings);
 
-    unsigned int offset = pin;
-    gpiod_line_config_add_line_settings(cfg, &offset, 1, settings);
+    gpiod_line_request *request = gpiod_chip_request_lines(chip, req_cfg, config);
 
-    p.request = gpiod_chip_request_lines(chip, nullptr, cfg);
-
-    gpiod_line_config_free(cfg);
     gpiod_line_settings_free(settings);
+    gpiod_line_config_free(config);
+    gpiod_request_config_free(req_cfg);
 
-    if (!p.request)
-        throw std::runtime_error("output failed");
+    if (!request)
+    {
+        throw std::runtime_error("Could not set line direction output");
+    }
 
-    return true;
+    return request;
 }
 
 
-bool gpioDevice::read_line(unsigned int pin)
+bool gpioDevice::read_line(gpiod_line_request* request, unsigned int pin)
 {
-    auto it = pins.find(pin);
-    if (it == pins.end() || !it->second.request)
-        throw std::runtime_error("pin not initialized");
-
-    int val = gpiod_line_request_get_value(it->second.request, pin);
-
-    if (val < 0)
-        throw std::runtime_error("read failed");
-
-    return val;
+    return gpiod_line_request_get_value(request, pin);
 }
 
 
-bool gpioDevice::write_line(unsigned int pin, unsigned int level)
+void gpioDevice::write_line(gpiod_line_request* request, unsigned int pin, bool value)
 {
-    auto it = pins.find(pin);
-    if (it == pins.end() || !it->second.request)
-        throw std::runtime_error("pin not initialized");
-
-    int ret = gpiod_line_request_set_value(
-        it->second.request,
-        pin,
-        static_cast<gpiod_line_value>(level)
-    );
-
-    if (ret < 0)
-        throw std::runtime_error("write failed");
-
-    return true;
+    gpiod_line_request_set_value(request, pin, static_cast<enum gpiod_line_value>(value));
 }
 
 

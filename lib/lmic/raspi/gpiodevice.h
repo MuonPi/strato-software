@@ -2,12 +2,34 @@
 #define GPIO_DEVICE_H
 
 #include <cstdint>
-#include <unordered_map>
 #include <gpiod.h>
 
 
 
+
+#if defined(LIBGPIOD_V2)
+
 class gpioDevice
+{
+public:
+    gpioDevice();
+    ~gpioDevice();
+    bool init_gpio();
+    gpiod_line_request* set_line_input(unsigned int pin);
+    gpiod_line_request* set_line_output(unsigned int pin);
+    bool read_line(gpiod_line_request* request, unsigned int pin);
+    void write_line(gpiod_line_request* request, unsigned int pin, bool value);
+private:
+
+    gpiod_chip* chip = nullptr;
+
+};
+
+
+#elif defined(LIBGPIOD_V1)
+
+
+class gpioDevice_V1
 {
 public:
     gpioDevice();
@@ -20,20 +42,10 @@ public:
 private:
 
     gpiod_chip* chip = nullptr;
-
-    #if defined(LIBGPIOD_V2)
-    struct PinHandle
-    {
-        gpiod_line_request* request = nullptr;
-    };
-    std::unordered_map<unsigned int, PinHandle> pins;
-
-    #elif defined(LIBGPIOD_V1)
     gpiod_line* line = nullptr;
     
-    #endif
 };
 
-
+#endif
 
 #endif // GPIO_DEVICE_H
