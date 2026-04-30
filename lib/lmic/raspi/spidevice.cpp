@@ -126,7 +126,7 @@ auto spiDevice::devicePresent()->bool {
 
 auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool {
 	if (fHandle==-1) {
-		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
+		std::cerr << "tried to write to spi without initializing (calling init(..) first)." << std::endl;
 		return false;
 	}
 	const std::size_t n = data.size() + 1;
@@ -142,14 +142,10 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 
     // std::cout << "write:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	// }
 	// std::cout << "\nrxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	// }
 	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {
@@ -161,7 +157,7 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 
 auto spiDevice::write(const std::string& data)->bool {
 	if (fHandle==-1) {
-		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
+		std::cerr << "tried to write to spi without initializing (calling init(..) first)." << std::endl;
 		return false;
 	}
 	const std::size_t n = data.size();
@@ -180,7 +176,7 @@ auto spiDevice::write(const std::string& data)->bool {
 
 auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std::string {
 	if (fHandle == -1) {
-		std::cerr << "tried to read from spi without initialising." << std::endl;
+		std::cerr << "tried to read from spi without initializing." << std::endl;
 		return "";
 	}
 	const std::size_t n = nBytes + 1;
@@ -193,14 +189,10 @@ auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std:
 
     // std::cout << "read:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	// }
 	// std::cout << "\nrxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	// }
 	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {

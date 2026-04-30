@@ -180,7 +180,7 @@ bool Lorawan::sendPayload(uint8_t* payload, uint8_t size)
     uint32_t uplinkSequenceNo = 0;
     if(!SeqNoFile(uplinkSequenceNo))
     {
-        std::cerr << "could not send payload" << std::endl;
+        std::cerr << "Could not send payload" << std::endl;
         return false;
     }
     // std::cout << static_cast<int>(uplinkSequenceNo) << std::endl;
@@ -269,7 +269,7 @@ bool Lorawan::SeqNoFile(uint32_t& seqno)
     std::ifstream readfile(path);
     if (!readfile.is_open())
     {
-        std::cerr << "could not open file " << path << std::endl;
+        std::cerr << "Could not open file " << path << std::endl;
         return false;
     }
     std::getline(readfile, line);
@@ -279,7 +279,7 @@ bool Lorawan::SeqNoFile(uint32_t& seqno)
     std::ofstream writefile(path, std::ios::trunc);
     if (!writefile.is_open())
     {
-        std::cerr << "could not open file " << path << std::endl;
+        std::cerr << "Could not open file " << path << std::endl;
         return false;
     }
     seqno++;

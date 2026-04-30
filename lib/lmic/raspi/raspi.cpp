@@ -95,63 +95,58 @@ void SerialClass::flush()
 SerialClass Serial;
 
 
-// ====================================================================================================
+// =========================================== GPIO =========================================================
 
 
 gpioDevice lmicGpioDevice;
 
 void pinMode(uint8_t pin, uint8_t mode)
 {
-    std::cout << "pinMode" << std::endl;
-    // std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
-    // if (pin == plmic_pins->nss)
-    //     return;
-    // if(mode == INPUT)
-    //     lmicGpioDevice.set_line_input(pin);
-    // else if(mode == OUTPUT)
-    //     lmicGpioDevice.set_line_output(pin);
-}
-
-bool digitalRead(uint8_t pin)
-{
-    std::cout << "digitalRead" << std::endl;
-    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
-    if(pin == plmic_pins->nss)
-        return 0;
-    if(gpio_init_state == 0)
-    {
-        std::cout << "not inited" << std::endl;
-        lmicGpioDevice.init_gpio();
-        gpio_init_state = 1;
-        std::cout << "gpio chip inited" << std::endl;
-    }
-    std::cout << "vor read gpiod_line_request* request" << std::endl;
-    gpiod_line_request* request = lmicGpioDevice.set_line_input(pin);
-    std::cout << "read gpiod_line_request* request" << std::endl;
-    return lmicGpioDevice.read_line(request, pin);
-}
-
-void digitalWrite(uint8_t pin, uint8_t value)
-{
-    std::cout << "digitalWrite" << std::endl;
-    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    // std::cout << "pinMode" << std::endl;
     if (pin == plmic_pins->nss)
         return;
     if(gpio_init_state == 0)
     {
-        std::cout << "not inited" << std::endl;
         lmicGpioDevice.init_gpio();
         gpio_init_state = 1;
-        std::cout << "gpio chip inited" << std::endl;
     }
-    std::cout << "vor wite gpiod_line_request* request" << std::endl;
-    gpiod_line_request* request = lmicGpioDevice.set_line_output(pin);
-    std::cout << "wite gpiod_line_request* request" << std::endl;
-    lmicGpioDevice.write_line(request, pin, value);
+    if(mode == INPUT)
+        lmicGpioDevice.set_line_input(static_cast<unsigned int>(pin));
+    else if(mode == OUTPUT)
+        lmicGpioDevice.set_line_output(static_cast<unsigned int>(pin));
+    // std::cout << "pinMode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
+    return;
+}
+
+bool digitalRead(uint8_t pin)
+{
+    // std::cout << "digitalRead" << std::endl;
+    if(pin == plmic_pins->nss)
+        return 0;
+    if(gpio_init_state == 0)
+    {
+        lmicGpioDevice.init_gpio();
+        gpio_init_state = 1;
+    }
+    return lmicGpioDevice.read_line(static_cast<unsigned int>(pin));
+}
+
+void digitalWrite(uint8_t pin, uint8_t value)
+{
+    // std::cout << "digitalWrite" << std::endl;
+    if (pin == plmic_pins->nss)
+        return;
+    if(gpio_init_state == 0)
+    {
+        lmicGpioDevice.init_gpio();
+        gpio_init_state = 1;
+    }
+    lmicGpioDevice.write_line(static_cast<unsigned int>(pin), static_cast<bool>(value));
+    return;
 }
 
 
-// ====================================================================================================
+// =========================================== SPI =========================================================
 
 
 spiDevice lmicSpiDevice;
