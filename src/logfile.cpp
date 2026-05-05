@@ -72,7 +72,7 @@ bool writeLogfile(const std::string& filename, const std::string& timestamp_file
     std::ofstream writefile(path, std::ios::out | std::ios::app); // anhängen
     if (!writefile.is_open())
     {
-        std::cerr << "could not open file " << path << std::endl;
+        std::cerr << "Could not open file " << path << std::endl;
         return false;
     }
 

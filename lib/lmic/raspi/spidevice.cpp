@@ -17,7 +17,13 @@ unsigned long int spiDevice::fGlobalNrBytesWritten{ 0 };
 unsigned long int spiDevice::fGlobalNrBytesRead{ 0 };
 std::vector<spiDevice*> spiDevice::fGlobalDeviceList;
 
-spiDevice::~spiDevice() {
+
+spiDevice::spiDevice()
+{
+}
+
+spiDevice::~spiDevice()
+{
 	if (fHandle > 0) {
 		fNrDevices--;
 	}
@@ -31,7 +37,6 @@ spiDevice::~spiDevice() {
 
 auto spiDevice::init(std::string busAddress)->bool
 {
-
 	fHandle = open(busAddress.c_str(), O_RDWR);
 	if (fHandle < 0) {
 		std::cerr << "Could not open spi device" << std::endl;
@@ -39,7 +44,7 @@ auto spiDevice::init(std::string busAddress)->bool
 	}
 	fNrDevices++;
 	fGlobalDeviceList.push_back(this);
-
+	return true;
 }
 
 auto spiDevice::configure(std::uint32_t speed, Mode mode, uint8_t bits)->bool
@@ -121,7 +126,7 @@ auto spiDevice::devicePresent()->bool {
 
 auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool {
 	if (fHandle==-1) {
-		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
+		std::cerr << "tried to write to spi without initializing (calling init(..) first)." << std::endl;
 		return false;
 	}
 	const std::size_t n = data.size() + 1;
@@ -137,14 +142,10 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 
     // std::cout << "write:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	// }
 	// std::cout << "\nrxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	// }
 	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {
@@ -156,7 +157,7 @@ auto spiDevice::write(const std::uint8_t command, const std::string& data)->bool
 
 auto spiDevice::write(const std::string& data)->bool {
 	if (fHandle==-1) {
-		std::cerr << "tried to write to spi without initialising (calling init(..) first)." << std::endl;
+		std::cerr << "tried to write to spi without initializing (calling init(..) first)." << std::endl;
 		return false;
 	}
 	const std::size_t n = data.size();
@@ -175,7 +176,7 @@ auto spiDevice::write(const std::string& data)->bool {
 
 auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std::string {
 	if (fHandle == -1) {
-		std::cerr << "tried to read from spi without initialising." << std::endl;
+		std::cerr << "tried to read from spi without initializing." << std::endl;
 		return "";
 	}
 	const std::size_t n = nBytes + 1;
@@ -188,14 +189,10 @@ auto spiDevice::read(const std::uint8_t command, const std::size_t nBytes)->std:
 
     // std::cout << "read:\ntxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(txBuf[i]) << " ";
-	// }
 	// std::cout << "\nrxbuf: ";
 	// for (std::size_t i = 0; i < n ; i++)
-	// {
 	// 	std::cout << std::hex << static_cast<unsigned>(rxBuf[i]) << " ";
-	// }
 	// std::cout << "\n";
 
 	if (status != static_cast<decltype(status)>(n)) {
@@ -242,109 +239,3 @@ auto spiDevice::spi_xfer(const int handle, const uint32_t speed, const uint8_t m
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// #include "spidevice.h"
-// #include <fcntl.h>
-// #include <unistd.h>
-// #include <sys/ioctl.h>
-// #include <linux/spi/spidev.h>
-// #include <cstring>
-// #include <iostream>
-
-// SPIClass SPI;
-
-// bool SPIClass::initDevice(const std::string& dev) {
-//     if (fHandle >= 0) return true;
-//     fHandle = open(dev.c_str(), O_RDWR);
-//     if (fHandle < 0) {
-//         std::cerr << "Failed to open SPI device: " << dev << "\n";
-//         return false;
-//     }
-//     return true;
-// }
-
-// void SPIClass::begin() {
-//     if (!initDevice()) return;
-//     // evtl. Default-Einstellungen hier setzen
-// }
-
-// void SPIClass::end() {
-//     if (fHandle >= 0) {
-//         close(fHandle);
-//         fHandle = -1;
-//     }
-// }
-
-// void SPIClass::beginTransaction(SPISettings settings) {
-//     fSettings = settings;
-//     if (fHandle < 0) return;
-
-//     // SPI-Modus setzen
-//     if (ioctl(fHandle, SPI_IOC_WR_MODE, &fSettings.mode) < 0) std::cerr << "Can't set SPI mode\n";
-//     if (ioctl(fHandle, SPI_IOC_WR_BITS_PER_WORD, &(uint8_t){8}) < 0) std::cerr << "Can't set bits per word\n";
-//     if (ioctl(fHandle, SPI_IOC_WR_MAX_SPEED_HZ, &fSettings.clock) < 0) std::cerr << "Can't set SPI speed\n";
-// }
-
-// void SPIClass::endTransaction() {
-//     // bei Raspberry Pi gibt es kein echtes Transaction-Konzept
-// }
-
-// uint8_t SPIClass::transfer(uint8_t data) {
-//     if (fHandle < 0) return 0;
-//     uint8_t rx{};
-//     struct spi_ioc_transfer tr{};
-//     tr.tx_buf = (unsigned long)&data;
-//     tr.rx_buf = (unsigned long)&rx;
-//     tr.len = 1;
-//     tr.speed_hz = fSettings.clock;
-//     tr.bits_per_word = 8;
-//     tr.delay_usecs = 0;
-//     tr.cs_change = 0;
-
-//     if (ioctl(fHandle, SPI_IOC_MESSAGE(1), &tr) < 1) {
-//         std::cerr << "SPI transfer failed\n";
-//         return 0;
-//     }
-//     return rx;
-// }
-
-// void SPIClass::transfer(uint8_t* buf, size_t len) {
-//     if (fHandle < 0 || !buf) return;
-//     struct spi_ioc_transfer tr{};
-//     tr.tx_buf = (unsigned long)buf;
-//     tr.rx_buf = (unsigned long)buf;
-//     tr.len = len;
-//     tr.speed_hz = fSettings.clock;
-//     tr.bits_per_word = 8;
-//     tr.delay_usecs = 0;
-//     tr.cs_change = 0;
-
-//     if (ioctl(fHandle, SPI_IOC_MESSAGE(1), &tr) < 1) {
-//         std::cerr << "SPI transfer failed\n";
-//     }
-// }

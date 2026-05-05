@@ -4,16 +4,21 @@ set(LMIC_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/src")
 set(LMIC_CONFIG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/arduino-lmic/project_config")
 set(LMIC_RASPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/raspi")
 
-
 add_library(lmic STATIC
     ${LMIC_SRC_DIR}/aes/lmic.c
     ${LMIC_SRC_DIR}/aes/other.c
     ${LMIC_SRC_DIR}/aes/ideetron/AES-128_V10.cpp
     ${LMIC_SRC_DIR}/hal/hal.cpp
+    ${LMIC_SRC_DIR}/lmic/lmic_as923.c
+    ${LMIC_SRC_DIR}/lmic/lmic_au915.c
     ${LMIC_SRC_DIR}/lmic/lmic_channelshuffle.c
     ${LMIC_SRC_DIR}/lmic/lmic_compliance.c
     ${LMIC_SRC_DIR}/lmic/lmic_eu_like.c
     ${LMIC_SRC_DIR}/lmic/lmic_eu868.c
+    ${LMIC_SRC_DIR}/lmic/lmic_in866.c
+    ${LMIC_SRC_DIR}/lmic/lmic_kr920.c
+    ${LMIC_SRC_DIR}/lmic/lmic_us_like.c
+    ${LMIC_SRC_DIR}/lmic/lmic_us915.c
     ${LMIC_SRC_DIR}/lmic/lmic_util.c
     ${LMIC_SRC_DIR}/lmic/lmic.c
     ${LMIC_SRC_DIR}/lmic/oslmic.c
@@ -30,9 +35,12 @@ target_include_directories(lmic PUBLIC
     ${LMIC_CONFIG_DIR}
     ${LMIC_SRC_DIR}
     ${LMIC_SRC_DIR}/aes
+    ${LMIC_SRC_DIR}/aes/ideetron
     ${LMIC_SRC_DIR}/hal
     ${LMIC_SRC_DIR}/lmic
     ${LMIC_SRC_DIR}/se
+    ${LMIC_SRC_DIR}/se/drivers/default
+    ${LMIC_SRC_DIR}/se/i
     ${LMIC_RASPI_DIR}
 )
 
@@ -52,5 +60,13 @@ target_compile_options(lmic PRIVATE
     -Wshadow
     -Wpedantic
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBGPIOD libgpiod)
+if(LIBGPIOD_VERSION VERSION_LESS "2.0.0")
+    add_definitions(-DLIBGPIOD_V1)
+else()
+    add_definitions(-DLIBGPIOD_V2)
+endif()
 
 target_link_libraries(lmic PRIVATE gpiod)

@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <time.h>
+#include <gpiod.h>
+
 #include "raspi.h"
 #include "spidevice.h"
 #include "gpiodevice.h"
@@ -93,52 +95,66 @@ void SerialClass::flush()
 SerialClass Serial;
 
 
-// ====================================================================================================
+// =========================================== GPIO =========================================================
 
+
+gpioDevice lmicGpioDevice;
 
 void pinMode(uint8_t pin, uint8_t mode)
 {
-    // std::cout << "pinmode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
-    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    // std::cout << "pinMode" << std::endl;
     if (pin == plmic_pins->nss)
         return;
     if(gpio_init_state == 0)
     {
-        init_gpio();
+        lmicGpioDevice.init_gpio();
         gpio_init_state = 1;
     }
     if(mode == INPUT)
-        set_line_input(pin);
+        lmicGpioDevice.set_line_input(static_cast<unsigned int>(pin));
     else if(mode == OUTPUT)
-        set_line_output(pin);
+        lmicGpioDevice.set_line_output(static_cast<unsigned int>(pin));
+    // std::cout << "pinMode set pin " << std::dec << static_cast<unsigned>(pin) << " to mode " << static_cast<unsigned>(mode) << std::endl;
+    return;
 }
 
 bool digitalRead(uint8_t pin)
 {
-    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
-    if (pin == plmic_pins->nss)
+    // std::cout << "digitalRead" << std::endl;
+    if(pin == plmic_pins->nss)
         return 0;
-    pinMode(pin, INPUT);
-    return read_line(pin);
+    if(gpio_init_state == 0)
+    {
+        lmicGpioDevice.init_gpio();
+        gpio_init_state = 1;
+    }
+    return lmicGpioDevice.read_line(static_cast<unsigned int>(pin));
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)
 {
-    // std::cout << "nss pin: " << static_cast<int>(plmic_pins->nss) << std::endl;
+    // std::cout << "digitalWrite" << std::endl;
     if (pin == plmic_pins->nss)
         return;
-    pinMode(pin, OUTPUT);
-    write_line(pin, value);
+    if(gpio_init_state == 0)
+    {
+        lmicGpioDevice.init_gpio();
+        gpio_init_state = 1;
+    }
+    lmicGpioDevice.write_line(static_cast<unsigned int>(pin), static_cast<bool>(value));
+    return;
 }
 
 
-// ====================================================================================================
+// =========================================== SPI =========================================================
 
+
+spiDevice lmicSpiDevice;
 
 void SPIClass::begin()
 {
     // std::cout << "spi begin" << std::endl;
-    device.init("/dev/spidev0.0");
+    lmicSpiDevice.init("/dev/spidev0.0");
 }
 
 void SPIClass::end()
@@ -160,7 +176,7 @@ void SPIClass::beginTransaction(SPISettings settings)
         case SPI_MODE3: mode = Mode::spi_mode_3; break;
     }
 
-    device.configure(settings.clock, mode, 8);
+    lmicSpiDevice.configure(settings.clock, mode, 8);
     
     spi_init_state = 1;
 }
@@ -176,8 +192,8 @@ uint8_t SPIClass::transfer(uint8_t data)
     std::string tx;
     tx.push_back(data);
 
-    device.write(tx);     // send data
-    auto rx = device.read(0, 1);
+    lmicSpiDevice.write(tx);     // send data
+    auto rx = lmicSpiDevice.read(0, 1);
 
     // std::cout << "spi receive: " << rx << std::endl;
 
@@ -186,27 +202,6 @@ uint8_t SPIClass::transfer(uint8_t data)
 
     return 0;
 }
-
-// void SPIClass::transfer(uint8_t* buf, size_t count)
-// {
-//     std::cout << "spi transfer: " << count << " bytes" << std::endl;
-
-//     std::string tx;
-//     tx.resize(count);
-
-//     for(size_t i = 0; i < count; i++)
-//         tx[i] = buf[i];
-
-//     device.write(tx);     // send data
-//     auto rx = device.read(0, 1);
-
-//     // std::cout << "spi receive: " << rx << std::endl;
-
-//     // if(rx.size())
-//     //     return rx[0];
-
-//     return;
-// }
 
 
 void SPIClass::transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read)
@@ -221,14 +216,14 @@ void SPIClass::transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read)
 
     if (is_read)
     {
-        buf_str = device.read(cmd, count);
+        buf_str = lmicSpiDevice.read(cmd, count);
 
         for(size_t i = 0; i < count; i++)
             buf[i] = static_cast<uint8_t>(buf_str[i]);
     }
     else
     {
-        device.write(cmd, buf_str);
+        lmicSpiDevice.write(cmd, buf_str);
 
         for(size_t i = 0; i < count; i++)
             buf[i] = 0x00;
@@ -237,24 +232,5 @@ void SPIClass::transfer(uint8_t cmd, uint8_t* buf, size_t count, bit_t is_read)
 }
 
 
-
-
-
-
-//     std::vector<uint8_t> rx(count);
-
-//     spiDevice::spi_xfer(
-//         device.fHandle,
-//         device.fSpeed,
-//         device.fMode,
-//         device.fNrBits,
-//         buf,
-//         rx.data(),
-//         count
-//     );
-
-//     for(size_t i = 0; i < count; i++)
-//         buf[i] = rx[i];
-// }
 
 SPIClass SPI;

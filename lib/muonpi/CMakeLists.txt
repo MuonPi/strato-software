@@ -16,8 +16,12 @@ find_package(Threads REQUIRED)
 # -------------------------------
 # Externe Lib muondetector
 # -------------------------------
-set(MUONPI_HEADER_DIR "/home/user/muondetector/library/include")
-set(MUONPI_LIB_DIR "/home/user/muondetector/build/output/lib")
+set(MUONPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../muondetector")
+set(MUONPI_HEADER_DIR "${MUONPI_DIR}/library/include")
+set(MUONPI_LIB_DIR "${MUONPI_DIR}/build/output/lib")
+if(NOT EXISTS "${MUONPI_LIB_DIR}/libmuondetector.a")
+    message(FATAL_ERROR "Library not found: ${MUONPI_LIB_DIR}/libmuondetector.a")
+endif()
 add_library(muondetector STATIC IMPORTED)
 set_target_properties(muondetector PROPERTIES
     IMPORTED_LOCATION "${MUONPI_LIB_DIR}/libmuondetector.a"

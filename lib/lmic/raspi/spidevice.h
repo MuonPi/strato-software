@@ -17,7 +17,7 @@ enum class Mode {
 
 class spiDevice {
 public:
-	spiDevice() = default;
+	spiDevice();
 	virtual ~spiDevice();
 
 	auto init(std::string busAddress = "/dev/spidev0.0")->bool;
