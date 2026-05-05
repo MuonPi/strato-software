@@ -55,7 +55,6 @@ void gpioDevice::set_line_input(unsigned int pin)
     gpiod_line_settings_set_direction(settings, GPIOD_LINE_DIRECTION_INPUT);
     gpiod_line_config_add_line_settings(config, &pin, 1, settings);
     line_request[pin] = gpiod_chip_request_lines(chip, req_cfg, config);
-    line_direction[pin] = GPIOD_LINE_DIRECTION_INPUT;
 
     gpiod_line_settings_free(settings);
     gpiod_line_config_free(config);
@@ -65,6 +64,8 @@ void gpioDevice::set_line_input(unsigned int pin)
     {
         throw std::runtime_error("Could not set line direction input");
     }
+
+    line_direction[pin] = GPIOD_LINE_DIRECTION_INPUT;
 
     return;
 }
@@ -92,7 +93,6 @@ void gpioDevice::set_line_output(unsigned int pin)
     gpiod_line_settings_set_output_value(settings, GPIOD_LINE_VALUE_INACTIVE);
     gpiod_line_config_add_line_settings(config, &pin, 1, settings);
     line_request[pin] = gpiod_chip_request_lines(chip, req_cfg, config);
-    line_direction[pin] = GPIOD_LINE_DIRECTION_OUTPUT;
 
     gpiod_line_settings_free(settings);
     gpiod_line_config_free(config);
@@ -102,6 +102,8 @@ void gpioDevice::set_line_output(unsigned int pin)
     {
         throw std::runtime_error("Could not set line direction output");
     }
+
+    line_direction[pin] = GPIOD_LINE_DIRECTION_OUTPUT;
 
     return;
 }
@@ -120,6 +122,7 @@ void gpioDevice::write_line(unsigned int pin, bool value)
     if(line_request[pin] == nullptr || line_direction[pin] != GPIOD_LINE_DIRECTION_OUTPUT)
         set_line_output(pin);
     gpiod_line_request_set_value(line_request[pin], pin, static_cast<enum gpiod_line_value>(value));
+    return;
 }
 
 
@@ -132,67 +135,72 @@ void gpioDevice::write_line(unsigned int pin, bool value)
 
 void gpioDevice::set_line_input(unsigned int pin)
 {
-    line = gpiod_chip_get_line(chip, pin);
-    gpiod_line_release(line);
-    if (line == nullptr)
+    if(line_request[pin] != nullptr)
     {
-        throw std::runtime_error("Could not get line");
+        if(line_direction[pin] == GPIOD_LINE_DIRECTION_INPUT)
+            return;
+        else
+        {
+            gpiod_line_release(line_request[pin]);
+            line_request[pin] = nullptr;
+        }
     }
-    int val = gpiod_line_request_input(line, "gpiodevice in");     // is it possible to give same names to pins ???
-    if (val != 0)
+
+    line_request[pin] = gpiod_chip_get_line(chip, pin);
+    int val = gpiod_line_request_input(line_request[pin], "strato-software");
+    
+    if (!line_request[pin])
     {
-        throw std::runtime_error("Could not set pin direction input");
+        throw std::runtime_error("Could not set line direction input");
     }
-    return true;
+
+    line_direction[pin] = GPIOD_LINE_DIRECTION_INPUT;
+
+    return;
 }
 
 
 void gpioDevice::set_line_output(unsigned int pin)
 {
-    line = gpiod_chip_get_line(chip, pin);
-    gpiod_line_release(line);
-    if (line == nullptr)
+    if(line_request[pin] != nullptr)
     {
-        throw std::runtime_error("Could not get line");
+        if(line_direction[pin] == GPIOD_LINE_DIRECTION_OUTPUT)
+            return;
+        else
+        {
+            gpiod_line_release(line_request[pin]);
+            line_request[pin] = nullptr;
+        }
     }
-    int val = gpiod_line_request_output(line, "gpiodevice out", 0);
-    if (val != 0)
+
+    line_request[pin] = gpiod_chip_get_line(chip, pin);
+    int val = gpiod_line_request_output(line_request[pin], "strato-software", 0);
+    
+    if (!line_request[pin])
     {
-        throw std::runtime_error("Could not set pin direction output");
+        throw std::runtime_error("Could not set line direction output");
     }
-    return true;
+
+    line_direction[pin] = GPIOD_LINE_DIRECTION_OUTPUT;
+
+    return;
 }
 
 
 bool gpioDevice::read_line(unsigned int pin)
 {
-    line = gpiod_chip_get_line(chip, pin);
-    if (line == nullptr)
-    {
-        throw std::runtime_error("Nullpointer in reading line");
-    }
-    int val = gpiod_line_get_value(line);
-    if (val < 0)
-    {
-        throw std::runtime_error("Error trying to read line");
-    }
-    return static_cast<bool>(val);
+    if(line_request[pin] == nullptr || line_direction[pin] != GPIOD_LINE_DIRECTION_INPUT)
+        set_line_input(pin);
+    return static_cast<bool>(gpiod_line_get_value(line_request[pin]));
 }
 
 
 void gpioDevice::write_line(unsigned int pin, bool value)
 {
-    line = gpiod_chip_get_line(chip, pin);
-    if (line == nullptr)
-    {
-        throw std::runtime_error("Nullpointer in writing line");
-    }
-    int val = gpiod_line_set_value(line, level);
-    if (val != 0)
-    {
-        throw std::runtime_error("Error trying to write line");
-    }
-    return true;
+    if(line_request[pin] == nullptr || line_direction[pin] != GPIOD_LINE_DIRECTION_OUTPUT)
+        set_line_output(pin);
+    gpiod_line_set_value(line_request[pin], value);
+    return;
 }
 
 #endif
