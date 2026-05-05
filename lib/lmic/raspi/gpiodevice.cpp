@@ -129,34 +129,8 @@ void gpioDevice::write_line(unsigned int pin, bool value)
 
 #elif defined(LIBGPIOD_V1)
 
-gpioDevice::~gpioDevice()
-{
-    if (line)
-    {
-        gpiod_line_release(line);
-        line = nullptr;
-    }
 
-    if (chip)
-    {
-        gpiod_chip_close(chip);
-        chip = nullptr;
-    }
-}
-
-
-bool gpioDevice::init_gpio()
-{
-    chip = gpiod_chip_open("/dev/gpiochip0");
-    if (chip == nullptr)
-    {
-        throw std::runtime_error("could not open gpiochip0");
-    }
-    return true;
-}
-
-
-bool gpioDevice::set_line_input(unsigned int pin)
+void gpioDevice::set_line_input(unsigned int pin)
 {
     line = gpiod_chip_get_line(chip, pin);
     gpiod_line_release(line);
@@ -173,7 +147,7 @@ bool gpioDevice::set_line_input(unsigned int pin)
 }
 
 
-bool gpioDevice::set_line_output(unsigned int pin)
+void gpioDevice::set_line_output(unsigned int pin)
 {
     line = gpiod_chip_get_line(chip, pin);
     gpiod_line_release(line);
@@ -206,7 +180,7 @@ bool gpioDevice::read_line(unsigned int pin)
 }
 
 
-bool gpioDevice::write_line(unsigned int pin, unsigned int level)
+void gpioDevice::write_line(unsigned int pin, bool value)
 {
     line = gpiod_chip_get_line(chip, pin);
     if (line == nullptr)
