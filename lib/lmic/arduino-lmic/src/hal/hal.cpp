@@ -541,10 +541,12 @@ void lmic_hal_failed (const char *file, u2_t line) {
 
     lmic_hal_disableIRQs();
 
+    throw std::runtime_error("LMIC ASSERT Error");
+
     // Infinite loop
-    while (1) {
-        ;
-    }
+    // while (1) {
+    //     ;
+    // }
 }
 
 void lmic_hal_set_failure_handler(const lmic_hal_failure_handler_t* const handler) {

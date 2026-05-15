@@ -16,6 +16,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 # ------------------------------
 # Folders
 # ------------------------------
@@ -88,7 +92,7 @@ set(DATA_INSTALL_DIR "/var/strato-software")
 set(SERVICE_NAME "strato-software")
 set(SERVICE_INSTALL_DIR "/etc/systemd/system")
 set(SERVICE_USER $ENV{USER})
-message(STATUS "USER='${SERVICE_USER}'")
+message(STATUS "user '${SERVICE_USER}'")
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in

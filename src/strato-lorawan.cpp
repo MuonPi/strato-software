@@ -11,8 +11,9 @@
 #include <vector>
 #include <filesystem>
 
-// #include "hal/hal.h"
-// #include "lmic.h"
+#include <QThread>
+#include <QObject>
+
 #include "lmic_lorawan.h"
 
 #include "strato-config.h"
@@ -39,119 +40,68 @@ const lmic_pinmap lmic_pins =
 
 
 Lorawan::Lorawan(Globals& globals)
-    : running(false), StratoGlobals(globals)
+    : StratoGlobals(globals)
 {}
 
 
+
 Lorawan::~Lorawan()
-{
-    stop();
-}
+{}
 
 
-bool Lorawan::start()
-{
-    std::cout << "LorawanThread starting ..." << std::endl;
-    bool expected = false;
-    if (!running.compare_exchange_strong(expected, true))
-        return false;
 
-    lorawanThread = std::thread(&Lorawan::threadFunc, this);
-    return true;
-}
-
-
-bool Lorawan::stop()
-{
-    std::cout << "LorawanThread stopping ..." << std::endl;
-    bool expected = true;
-    if (!running.compare_exchange_strong(expected, false))
-        return false;
-    if (lorawanThread.joinable())
-        lorawanThread.join();
-    return true;
-}
-
-
-void Lorawan::threadFunc()
+bool Lorawan::execute()
 {
     try
     {
-        std::cout << "LorawanThread started" << std::endl;
-
-        heartbeat = std::chrono::steady_clock::now();
-
-        const auto start_time = std::chrono::steady_clock::now();
-        auto last_message = std::chrono::steady_clock::now();
-        const auto interval = std::chrono::seconds(LORAWAN_INTERVAL);
-        const auto lorawan_timeout = std::chrono::seconds(LORAWAN_TIMEOUT);
-        const auto runloop_interval = std::chrono::milliseconds(RUNLOOP_INTERVAL);
-
-        bool lorawan_inited = false;
-        lorawan_inited = init();
+        if(inited == false)
+        {
+            inited = init();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
 
         CayenneLPP StratoPayload(255);
 
-        while(running)
+        StratoPayload.reset();
+        StratoPayload.addGPS(2, static_cast<float>(StratoGlobals.position[0]), static_cast<float>(StratoGlobals.position[1]), static_cast<float>(StratoGlobals.position[2]));
+        StratoPayload.addAnalogInput(3, static_cast<float>(StratoGlobals.voltage_mean));
+        StratoGlobals.voltage_mean = 0;
+        StratoGlobals.voltage_count = 0;
+        StratoPayload.addAnalogInput(4, static_cast<float>(StratoGlobals.XOR_mean));
+        StratoGlobals.XOR_mean = 0;
+        StratoGlobals.XOR_count = 0;
+        StratoPayload.addAnalogInput(5, static_cast<float>(StratoGlobals.AND_mean));
+        StratoGlobals.AND_mean = 0;
+        StratoGlobals.AND_count = 0;
+        StratoPayload.addBarometricPressure(7, static_cast<float>(StratoGlobals.pressure_mean / 100));
+        StratoGlobals.pressure_mean = 0;
+        StratoGlobals.pressure_count = 0;
+        StratoPayload.addTemperature(8, static_cast<float>(StratoGlobals.temperature_mean));
+        StratoGlobals.temperature_mean = 0;
+        StratoGlobals.temperature_count = 0;
+
+
+        sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
+        // auto last_message = std::chrono::steady_clock::now();
+
+        while(getTXcomplete() == false && running == true)
         {
-            heartbeat = std::chrono::steady_clock::now();
-
-            StratoPayload.reset();
-            StratoPayload.addGPS(2, static_cast<float>(StratoGlobals.position[0]), static_cast<float>(StratoGlobals.position[1]), static_cast<float>(StratoGlobals.position[2]));
-            StratoPayload.addAnalogInput(3, static_cast<float>(StratoGlobals.voltage_mean));
-            StratoGlobals.voltage_mean = 0;
-            StratoGlobals.voltage_count = 0;
-            StratoPayload.addAnalogInput(4, static_cast<float>(StratoGlobals.XOR_mean));
-            StratoGlobals.XOR_mean = 0;
-            StratoGlobals.XOR_count = 0;
-            StratoPayload.addAnalogInput(5, static_cast<float>(StratoGlobals.AND_mean));
-            StratoGlobals.AND_mean = 0;
-            StratoGlobals.AND_count = 0;
-            StratoPayload.addBarometricPressure(7, static_cast<float>(StratoGlobals.pressure_mean / 100));
-            StratoGlobals.pressure_mean = 0;
-            StratoGlobals.pressure_count = 0;
-            StratoPayload.addTemperature(8, static_cast<float>(StratoGlobals.temperature_mean));
-            StratoGlobals.temperature_mean = 0;
-            StratoGlobals.temperature_count = 0;
-
-
-            if (lorawan_inited)
-            {
-                sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
-                last_message = std::chrono::steady_clock::now();
-
-                while(true)
-                {
-                    runloop();
-                    if (getTXcomplete() == true)
-                        break;
-                    if (std::chrono::steady_clock::now() - last_message > lorawan_timeout)
-                    {
-                        std::cerr << "LORAWAN timeout" << std::endl;
-                        lorawan_inited = reset();
-                        break;
-                    }
-                    std::this_thread::sleep_for(runloop_interval);
-                }
-                setTXcomplete(false);
-            }
-            else
-            {
-                lorawan_inited = reset();
-            }
-            
-            std::this_thread::sleep_for(interval - ((std::chrono::steady_clock::now() - start_time) % interval));
+            runloop();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-
-        std::cout << "LorawanThread stopped" << std::endl;
-        running = false;
+        
+        setTXcomplete(false);
+        return true;
     }
     catch(...)
     {
-        std::cout << "LorawanThread failed" << std::endl;
+        std::cerr << "Lorawan execute failed" << std::endl;
         running = false;
+        inited = false;
+        return false;
     }
 }
+
 
 
 bool Lorawan::init()
