@@ -54,6 +54,17 @@ bool Lorawan::execute()
 {
     try
     {
+        starttime = std::chrono::steady_clock::now();
+        active = true;
+
+        auto now = std::chrono::system_clock::now();
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+        std::tm* tm = std::localtime(&now_c);
+        std::cout << std::put_time(tm, "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
+
+
+
         if(inited == false)
         {
             inited = init();
@@ -84,19 +95,21 @@ bool Lorawan::execute()
         sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
         // auto last_message = std::chrono::steady_clock::now();
 
-        while(getTXcomplete() == false && running == true)
+        while(getTXcomplete() == false && activated == true)
         {
             runloop();
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         
         setTXcomplete(false);
+        while(true){}
+        active = false;
         return true;
     }
     catch(...)
     {
         std::cerr << "Lorawan execute failed" << std::endl;
-        running = false;
+        active = false;
         inited = false;
         return false;
     }

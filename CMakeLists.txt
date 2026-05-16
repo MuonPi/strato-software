@@ -60,7 +60,6 @@ add_executable(strato-software
 
 target_include_directories(strato-software PUBLIC
     ${PROJECT_HEADER_DIR}
-    # ${PROJECT_LIB_DIR}/muonpi
 )
 
 # ------------------------------
@@ -74,6 +73,8 @@ add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
 
+find_package(Qt5 REQUIRED COMPONENTS Core)
+
 target_link_libraries(strato-software
     gpiod
     lmic
@@ -82,6 +83,8 @@ target_link_libraries(strato-software
     muonpi
     atomic
     stdc++fs
+    Qt5::Core
+
 )
 
 # ------------------------------

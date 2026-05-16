@@ -17,14 +17,16 @@ class Lorawan : public QObject
 public:
     Lorawan(Globals& globals);
     ~Lorawan();
-    bool running = false;
-    bool inited = false;
+    std::atomic<bool> active = false;
+    std::atomic<bool> activated = false;
+    std::atomic<bool> inited = false;
+    std::chrono::steady_clock::time_point starttime;
 
 public slots:
     bool execute();
 
-signals:
-    void finished();
+// signals:
+//     void finished();
 
 private:
     Globals& StratoGlobals;
