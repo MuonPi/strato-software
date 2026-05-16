@@ -11,9 +11,6 @@
 #include <vector>
 #include <filesystem>
 
-#include <QThread>
-#include <QObject>
-
 #include "lmic_lorawan.h"
 
 #include "strato-config.h"
@@ -102,15 +99,14 @@ bool Lorawan::execute()
         }
         
         setTXcomplete(false);
-        while(true){}
         active = false;
         return true;
     }
     catch(...)
     {
         std::cerr << "Lorawan execute failed" << std::endl;
-        active = false;
         inited = false;
+        active = false;
         return false;
     }
 }

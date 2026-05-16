@@ -3,32 +3,38 @@
 #define _STRATO_SENSORS_H_
 
 
-#include <thread>
-#include <atomic>
-#include <mutex>
 #include <chrono>
-#include <functional>
+#include <QObject>
 
 #include "globals.h"
 #include "muonpi.h"
 
-class Sensors
+
+
+class Sensors : public QObject
 {
+    Q_OBJECT
+
 public:
     Sensors(Globals& globals);
     ~Sensors();
+    std::atomic<bool> active = false;
+    std::atomic<bool> activated = false;
+    std::atomic<bool> inited = false;
+    std::chrono::steady_clock::time_point starttime;
 
-    bool start();
-    bool stop();
-
-    std::atomic<bool> running {false};
-    std::atomic<std::chrono::steady_clock::time_point> heartbeat {std::chrono::steady_clock::now()};
+public slots:
+    bool execute();
 
 private:
     Globals& StratoGlobals;
-    void threadFunc();
     std::unique_ptr<MUONPI> strato_muonpi{nullptr};
-    std::thread sensorThread;
+
+    bool ads1115_inited = false;
+    bool qmc5883_inited = false;
+    bool veml6075_inited = false;
+    bool bme280_inited = false;
+    bool ozone3click_inited = false;
 };
 
 

@@ -3,6 +3,7 @@
 #define _STRATO_LORAWAN_H_
 
 
+#include <chrono>
 #include <QObject>
 
 #include "lmic_lorawan.h"
@@ -24,9 +25,6 @@ public:
 
 public slots:
     bool execute();
-
-// signals:
-//     void finished();
 
 private:
     Globals& StratoGlobals;

@@ -2,19 +2,18 @@
 #ifndef _STRATO_CONFIG_H_
 #define _STRATO_CONFIG_H_
 
-// #include "lmic.h"
-// #include "hal/hal.h"
 
 
 #define SENSORS_INTERVAL 1 //s
-#define SENSORTHREAD_TIMEOUT 10 //s
+#define SENSORS_TIMEOUT 10 //s
+#define SENSORS_RESTART 5 //s
 #define LORAWAN_INTERVAL 60 //s
 #define LORAWAN_TIMEOUT 30 //s
 #define LORAWAN_RESTART 5 //s
 #define WATCHDOG_INTERVAL 1000 //ms
 #define LOGFILE_INTERVAL 30 //min
 
-#define MUONPI_USED
+// #define MUONPI_USED
 #define ADS1115_ADDR 0x4A
 // #define QMC5883_ADDR 0x0D
 // #define VEML6075_ADDR 0x10

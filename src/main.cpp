@@ -14,25 +14,56 @@
 #include "globals.h"
 #include "strato-lorawan.h"
 #include "strato-sensors.h"
-#include "CayenneLPP.h"
-#include "logfile.h"
 
 
 
 
 Globals StratoGlobals;
-// Sensors StratoSensors(StratoGlobals);
-// Lorawan StratoLorawan(StratoGlobals);
 
 
 
 
 int main(int argc, char** argv)
 {
+
     QCoreApplication StratoApp(argc, argv);
 
 
-    // Lorawan
+
+
+
+    // ========================== Sensors ==========================
+
+    QThread* StratoSensorsThread = new QThread;
+    Sensors* StratoSensors = new Sensors(StratoGlobals);
+    QTimer* StratoSensorsTimer = new QTimer(StratoSensors);
+
+    StratoSensors->moveToThread(StratoSensorsThread);
+    StratoSensorsTimer->moveToThread(StratoSensorsThread);
+    StratoSensorsTimer->setTimerType(Qt::PreciseTimer);
+    StratoSensorsTimer->setInterval(SENSORS_INTERVAL * 1000);
+
+    StratoSensors->activated = true;
+    StratoSensors->inited = false;
+
+    QObject::connect(StratoSensorsTimer, &QTimer::timeout, StratoSensors, &Sensors::execute);
+
+    QObject::connect(StratoSensorsThread, &QThread::started, [&]()
+        {
+            StratoSensorsTimer->start();
+            QTimer::singleShot(0, StratoSensors, &Sensors::execute);
+        });
+
+    QObject::connect(StratoSensorsThread, &QThread::finished, StratoSensorsTimer, &QObject::deleteLater);
+    QObject::connect(StratoSensorsThread, &QThread::finished, StratoSensors, &QObject::deleteLater);
+    QObject::connect(StratoSensorsThread, &QThread::finished, StratoSensorsThread, &QObject::deleteLater);
+
+
+
+
+
+
+    // ========================== Lorawan ==========================
 
     QThread* StratoLorawanThread = new QThread;
     Lorawan* StratoLorawan = new Lorawan(StratoGlobals);
@@ -58,12 +89,9 @@ int main(int argc, char** argv)
     QObject::connect(StratoLorawanThread, &QThread::finished, StratoLorawan, &QObject::deleteLater);
     QObject::connect(StratoLorawanThread, &QThread::finished, StratoLorawanThread, &QObject::deleteLater);
 
-    QObject::connect(&StratoApp, &QCoreApplication::aboutToQuit, [&]()
-    {
-        StratoLorawanThread->quit();
-        StratoLorawanThread->wait();
-    });
 
+
+    
 
 
 
@@ -93,6 +121,19 @@ int main(int argc, char** argv)
     });
 
 
+
+
+
+    QObject::connect(&StratoApp, &QCoreApplication::aboutToQuit, [&]()
+    {
+        StratoSensorsThread->quit();
+        StratoSensorsThread->wait();
+        StratoLorawanThread->quit();
+        StratoLorawanThread->wait();
+    });
+
+
+    StratoSensorsThread->start();
     StratoLorawanThread->start();
     Watchdog->start(WATCHDOG_INTERVAL);
 
