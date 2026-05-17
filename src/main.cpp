@@ -62,7 +62,6 @@ int main(int argc, char** argv)
 
 
 
-
     // ========================== Lorawan ==========================
 
     QThread* StratoLorawanThread = new QThread;
@@ -93,29 +92,100 @@ int main(int argc, char** argv)
 
     
 
+    // ========================== Watchdog Sensors ==========================
+
+    QTimer* StratoSensorsWatchdog = new QTimer();
+
+    bool sensors_cycle_missed = false;
+
+    QObject::connect(StratoSensorsWatchdog, &QTimer::timeout, [&]()
+    {
+        if(!StratoSensors->active)
+            return;
+
+        auto now = std::chrono::steady_clock::now();
+
+        if(now - StratoSensors->starttime > std::chrono::seconds(SENSORS_INTERVAL))
+        {
+            if(sensors_cycle_missed == false)
+                std::cerr << "StratoSensorsThread cycle missed" << std::endl;
+            sensors_cycle_missed = true;
+            StratoSensors->inited = false;
+        }
+        else
+            sensors_cycle_missed = false;
+
+        if(now - StratoSensors->starttime > std::chrono::seconds(SENSORS_TIMEOUT))
+        {
+            if(StratoSensors->activated)
+                std::cerr << "StratoSensorsThread timeout" << std::endl;
+            StratoSensors->activated = false;
+            StratoSensors->inited = false;
+
+            QTimer::singleShot(SENSORS_RESTART * 1000, [&]()
+            {
+                if(!StratoSensors->active)
+                {
+                    std::cerr << "StratoSensorsThread recovered" << std::endl;
+                    StratoSensors->activated = true;
+                    return;
+                }
+                else
+                {
+                    std::cerr << "StratoSensorsThread not responding\nKilling ..." << std::endl;
+                    std::exit(1);
+                }
+            });
+        }
+    });
 
 
-    // Watchdog
 
-    QTimer* Watchdog = new QTimer();
 
-    QObject::connect(Watchdog, &QTimer::timeout, [&]()
+
+    // ========================== Watchdog Lorawan ==========================
+
+    QTimer* StratoLorawanWatchdog = new QTimer();
+
+    bool lorawan_cycle_missed = false;
+
+    QObject::connect(StratoLorawanWatchdog, &QTimer::timeout, [&]()
     {
         if(!StratoLorawan->active)
             return;
 
         auto now = std::chrono::steady_clock::now();
+
+        if(now - StratoLorawan->starttime > std::chrono::seconds(LORAWAN_INTERVAL))
+        {
+            if(lorawan_cycle_missed == false)
+                std::cerr << "StratoLorawanThread cycle missed" << std::endl;
+            lorawan_cycle_missed = true;
+            StratoLorawan->inited = false;
+        }
+        else
+            lorawan_cycle_missed = false;
+
         if(now - StratoLorawan->starttime > std::chrono::seconds(LORAWAN_TIMEOUT))
         {
-            std::cerr << "StratoLorawanThread timeout" << std::endl;
+            if(StratoLorawan->activated)
+                std::cerr << "StratoLorawanThread timeout" << std::endl;
             StratoLorawan->activated = false;
             StratoLorawan->inited = false;
 
             QTimer::singleShot(LORAWAN_RESTART * 1000, [&]()
             {
                 if(!StratoLorawan->active)
+                {
+                    std::cerr << "StratoLorawanThread recovered" << std::endl;
+                    StratoLorawan->activated = true;
                     return;
-                std::exit(1);
+                }
+                else
+                {
+                    std::cerr << "StratoLorawanThread not responding\nKilling ..." << std::endl;
+                    std::exit(1);
+                }
             });
         }
     });
@@ -133,112 +203,14 @@ int main(int argc, char** argv)
     });
 
 
+
     StratoSensorsThread->start();
     StratoLorawanThread->start();
-    Watchdog->start(WATCHDOG_INTERVAL);
+    StratoSensorsWatchdog->start(WATCHDOG_INTERVAL);
+    StratoLorawanWatchdog->start(WATCHDOG_INTERVAL);
 
     return StratoApp.exec();
 
 }
-
-
-
-
-
-
-
-
-    // const auto sensorthread_timeout = std::chrono::seconds(SENSORTHREAD_TIMEOUT);
-    // const auto lorawanthread_timeout = std::chrono::seconds(LORAWANTHREAD_TIMEOUT);
-    
-
-    // StratoSensors.start();
-    // std::this_thread::sleep_for(std::chrono::seconds(1));
-    // StratoLorawan.start();
-
-    // std::this_thread::sleep_for(std::chrono::seconds(1));
-
-
-
-    // QTimer timer_sensorthread;
-    // bool timer_sensorthread_enabled = true;
-
-    // QObject::connect(&timer_sensorthread, &QTimer::timeout, [&]()
-    // {
-    //     if (timer_sensorthread_enabled)
-    //     {
-    //         if (StratoSensors.running == false || std::chrono::steady_clock::now() - StratoSensors.heartbeat.load() > sensorthread_timeout)
-    //         {
-    //             std::cerr << "SensorThread timeout" << std::endl;
-    //             StratoSensors.stop();
-    //             QTimer::singleShot(WATCHDOG_INTERVAL * 2, [&]()
-    //             {
-    //                 StratoSensors.start();
-    //                 timer_sensorthread_enabled = true;
-    //             });
-    //             timer_sensorthread_enabled = false;
-    //         }
-    //     }
-    // });
-
-
-
-
-
-
-
-//     QObject::connect(&StratoLorawanTimer, &QTimer::timeout, [&](){StratoLorawan.execute();});
-
-
-
-
-
-//     // bool timer_lorawanthread_enabled = true;
-
-//     // QObject::connect(&StratoLorawanTimer, &QTimer::timeout, [&]()
-//     // {
-//     //     if (timer_lorawanthread_enabled)
-//     //     {
-//     //         std::cout << lorawanthread_timeout - (std::chrono::steady_clock::now() - StratoLorawan.heartbeat.load()) << std::endl;
-//     //         if (StratoLorawan.running == false || std::chrono::steady_clock::now() - StratoLorawan.heartbeat.load() > lorawanthread_timeout)
-//     //         {
-//     //             std::cerr << "LorawanThread timeout" << std::endl;
-//     //             StratoLorawan.stop();
-//     //             QTimer::singleShot(WATCHDOG_INTERVAL * 2, Qt::PreciseTimer, [&]()
-//     //             {
-//     //                 std::cout << "singleShot fired" << std::endl;
-//     //                 StratoLorawan.start();
-//     //                 timer_lorawanthread_enabled = true;
-//     //             });
-//     //             timer_lorawanthread_enabled = false;
-//     //         }
-//     //     }
-//     // });
-
-
-
-//     // QThread* StratoLorawanThread = new QThread;
-//     // Lorawan* StratoLorawan = new Lorawan(StratoGlobals);
-
-//     // StratoLorawan->moveToThread(StratoLorawanThread);
-
-//     // QObject::connect(StratoLorawanThread, &QThread::started, StratoLorawan, &Lorawan::threadFunc);
-//     // QObject::connect(StratoLorawan, &Lorawan::finished, StratoLorawanThread, &QThread::quit);
-//     // QObject::connect(StratoLorawan, &Lorawan::finished, StratoLorawan, &QObject::deleteLater);
-//     // QObject::connect(StratoLorawanThread, &QThread::finished, StratoLorawanThread, &QObject::deleteLater);
-
-//     // StratoLorawanThread->start();
-
-//     // timer_sensorthread.start(WATCHDOG_INTERVAL);
-//     // timer_lorawanthread.start(WATCHDOG_INTERVAL);
-
-//     StratoLorawanTimer.start(LORAWAN_INTERVAL * 1000);
-
-
-
-
-
-
-
 
 

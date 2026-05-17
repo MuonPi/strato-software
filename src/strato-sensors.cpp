@@ -64,27 +64,15 @@ bool Sensors::execute()
         if(!activated)
             return false;
         
-        starttime = std::chrono::steady_clock::now();
         active = true;
+        starttime = std::chrono::steady_clock::now();
 
-        auto now = std::chrono::system_clock::now();
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-        std::tm* tm = std::localtime(&now_c);
-        std::cout << std::put_time(tm, "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
+        // auto now = std::chrono::system_clock::now();
+        // auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+        // std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+        // std::tm* tm = std::localtime(&now_c);
+        // std::cout << std::put_time(tm, "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
 
-
-
-
-        if(inited == false)
-        {
-            bool ads1115_inited = false;
-            bool qmc5883_inited = false;
-            bool veml6075_inited = false;
-            bool bme280_inited = false;
-            bool ozone3click_inited = false;
-        }
-        
 
         std::string timestamp_value {0};
         std::string timestamp_filename {0};
@@ -93,6 +81,17 @@ bool Sensors::execute()
         getTimestampFilename(timestamp_filename, logfile_interval);
         getTimestampValue(timestamp_value);
 
+
+        if(inited == false)
+        {
+            ads1115_inited = false;
+            qmc5883_inited = false;
+            veml6075_inited = false;
+            bme280_inited = false;
+            ozone3click_inited = false;
+            inited = true;
+        }
+        
 
         #ifdef MUONPI_USED
         // Should automatically reset if connection drops
@@ -284,7 +283,6 @@ bool Sensors::execute()
         #endif
         #endif
 
-        
         active = false;
         return true;
     }

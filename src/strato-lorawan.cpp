@@ -51,21 +51,22 @@ bool Lorawan::execute()
 {
     try
     {
-        starttime = std::chrono::steady_clock::now();
+        if(!activated)
+            return false;
+        
         active = true;
+        starttime = std::chrono::steady_clock::now();
 
-        auto now = std::chrono::system_clock::now();
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-        std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-        std::tm* tm = std::localtime(&now_c);
-        std::cout << std::put_time(tm, "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
-
-
+        // auto now = std::chrono::system_clock::now();
+        // auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+        // std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+        // std::tm* tm = std::localtime(&now_c);
+        // std::cout << std::put_time(tm, "%H:%M:%S") << '.' << std::setfill('0') << std::setw(3) << ms.count() << std::endl;
 
         if(inited == false)
         {
             inited = init();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
 
         CayenneLPP StratoPayload(255);
@@ -90,7 +91,6 @@ bool Lorawan::execute()
 
 
         sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
-        // auto last_message = std::chrono::steady_clock::now();
 
         while(getTXcomplete() == false && activated == true)
         {

@@ -5,12 +5,12 @@
 
 
 #define SENSORS_INTERVAL 1 //s
-#define SENSORS_TIMEOUT 10 //s
-#define SENSORS_RESTART 5 //s
+#define SENSORS_TIMEOUT 3 //s
+#define SENSORS_RESTART 2 //s
 #define LORAWAN_INTERVAL 60 //s
 #define LORAWAN_TIMEOUT 30 //s
 #define LORAWAN_RESTART 5 //s
-#define WATCHDOG_INTERVAL 1000 //ms
+#define WATCHDOG_INTERVAL 500 //ms
 #define LOGFILE_INTERVAL 30 //min
 
 // #define MUONPI_USED
