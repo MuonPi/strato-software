@@ -1,5 +1,10 @@
-read me
+# Strato-Software
 
-install gpiod
-sudo apt install gpiod
-sudo apt install libgpiod-dev
+All documentation in folder "doc"
+
+SkyMi Discussion in https://github.com/MuonPi/strato-software/discussions/5
+
+## Dependecies
+
+- gpiod
+- qt5

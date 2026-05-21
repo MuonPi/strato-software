@@ -16,6 +16,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
 # ------------------------------
 # Folders
 # ------------------------------
@@ -56,7 +60,6 @@ add_executable(strato-software
 
 target_include_directories(strato-software PUBLIC
     ${PROJECT_HEADER_DIR}
-    # ${PROJECT_LIB_DIR}/muonpi
 )
 
 # ------------------------------
@@ -70,6 +73,8 @@ add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
 
+find_package(Qt5 REQUIRED COMPONENTS Core)
+
 target_link_libraries(strato-software
     gpiod
     lmic
@@ -78,6 +83,8 @@ target_link_libraries(strato-software
     muonpi
     atomic
     stdc++fs
+    Qt5::Core
+
 )
 
 # ------------------------------
@@ -88,7 +95,7 @@ set(DATA_INSTALL_DIR "/var/strato-software")
 set(SERVICE_NAME "strato-software")
 set(SERVICE_INSTALL_DIR "/etc/systemd/system")
 set(SERVICE_USER $ENV{USER})
-message(STATUS "USER='${SERVICE_USER}'")
+message(STATUS "user '${SERVICE_USER}'")
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/${SERVICE_NAME}.service.in

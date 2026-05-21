@@ -28,6 +28,15 @@
     SPI.transfer(cmd, buf, len, is_read);
     ```
 
-3. add files for Arduino commands in Raspi translation
+3. force program exit when lmic assert error is thrown
+
+    in file "hal.cpp" at line 543 in function "lmic_hal_failed()"
+
+    after "lmic_hal_disableIRQs();" insert:
+    ```c++
+    throw std::runtime_error("LMIC ASSERT Error");
+    ```
+
+4. add files for Arduino commands in Raspi translation
 
     the folder "raspi" and the CMakeLists.txt has to be copied next to the folder "arduino-lmic"

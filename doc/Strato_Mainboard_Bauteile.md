@@ -1,0 +1,52 @@
+# Liste der benötigten Komponenten
+
+Bestückung für ein Strato-Mainboard
+
+Die Links sind beispielhaft, Bauteile können aber auch auf anderen Plattformen bestellt werden
+
+- 1x Raspberry Pi Zero 2  
+  <https://www.ebay.de/itm/116873478576?_skw=raspberry+pi+zero+2&itmmeta=01KMG4C0WZR8A4AYDDS5GMXDF7&hash=item1b3633c1b0:g:OLoAAeSwUEtpwp-q&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xA6ABWwZgaPbBOgJYFRjFUHqHeX7paeccn8UZwbmW2SnvkTmSGiYuVRaS5nZdiJ2WRZ6hRjbY893WtAGHM%2FvYp%2BEWENx0R36sqxQK6tdMIktQjHoiK9%2FIEJEg3vDZikA760ZCsuq4kJEgnQr0IN4VKCkAfYvs4FOYIcdrHX%2FIItgIghJtbY0JCZtuJhyVeFmcU4x5YCE39IGnUC3QLb8VIzh9OpqAsA9cC9gRxL%2F6neAMV1jlv49bf%2FyCnolPgTWwM%3D%7Ctkp%3ABk9SR-aOsISkZw>
+- 1x Pinheader 2.54mm; 2x20  
+  <https://www.ebay.de/itm/317001298089?_skw=pinheader+2x20&itmmeta=01KMG4FB1XD745K5MXH8S888EV&hash=item49cebff0a9:g:rocAAeSwgwVoUSgF&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xAcma2cv0GJ6qRZLg3qHiOd0qvEcInTai%2FU6GDreKZKOdZHQihquz%2F%2B8E4JvcwnDv7%2FWCihyxqH%2F%2B9cGkUlFO7eAY6s8jwr9geNr4mvVfQCFN2SaW7FIrRxAEPLzvuaQqmQM9YgHkX9wfrNXdtwbNeie%2FqltzHTtBTBqt8bCn9h2JL0Kl0iAAyIVmj%2BHiCy1mjHjIkofGAUHUjomy7XIOPbUes2Q3Amkg0bJyq5XKWdVqVCIlL8O0t0iwljzjmda6RKWeMUQyLBlIc4LWfdZIjJ4zyChkeUY9%2BogsN7qM4uuw%3D%3D%7Ctkp%3ABFBMurG9hKRn>
+- 1x LoRa Chip RFM95  
+  <https://www.ebay.de/itm/406791083521?_skw=rfm95&itmmeta=01KMG5B4XQP0PM8K39NJ8MQYNF&hash=item5eb6a35601:g:vR8AAeSwLlxpv98E&itmprp=enc%3AAQALAAAAwGfYFPkwiKCW4ZNSs2u11xDvxQH0yD%2FNYwg1EsfEjc7C1odaslzWyjf11n6bYbMOuQMux1X66wW%2BgmHIVVHHoqIMSyH5%2BIrSfYpF7hTahfkN6l%2FkOAsK21qGHS6JTlqAIF6i%2FJTu7TlBem9xDigfMiwkLbJj57HlhtCLvkn7V0olHBAfDIUMLr%2BGcGeiEZWxVbRqTNXHbn9kEqDBm0Xj3YJx77gpoxuoRDiz3V7l8Hb4Cx%2BRoh1T6h7sRP8yhxs0Rw%3D%3D%7Ctkp%3ABlBMUJjPrIWkZw>
+- 1x Schalter 2.54mm; 0,5A; 2-3mm Schieberhöhe  
+  <https://www.ebay.de/itm/284103678228?_skw=schiebeschalter+2%2C54&itmmeta=01KPTJZSMCZA09KMJRWAYRRH0A&hash=item4225e61914:g:ecgAAOSw5wJc-NQF&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xDjjjQfhCOYFqMdLuNl6jYITokdN99hi9MHV7QZVbimHe8lNIZGoQ3XOOW3q4sFcYTiVPJG4K7T5M9Vd0BGq9Eg%2FztHJc2VJfzdnIQ0LcIg4wqPohEvM3DKsLZqLWYb0nm97qqbEdKNvYhl%2FJuIPwzEAcrEcoOok7edrTMCXeM6CQlg1FjnmdCfGdsE3R29eswiw7LcTMyi9pVtNIGUsloQqzRZbnLs9S%2FSDfFzIUOuQJYBnTpsMEfRqT%2FuEdymt4UdKBKAtawRh9qdB6ciTAPR%2Ft%2B81mHwM6crwPMw2M97wQ%3D%3D%7Ctkp%3ABk9SR8aa_9K2Zw>
+- 1x Spannungsregler SDB628  
+  <https://www.ebay.de/itm/153982312719?_skw=Mini+Step-Up+Spannungswandler+Modul+5V+8V+9V+12V+Boost+Converter+f%C3%BCr+Arduino&itmmeta=01KMG4TRVJY0X8PBR0V2WJ5GH6&hash=item23da0fa10f:g:rkwAAOSweDNe84ot&itmprp=enc%3AAQALAAABMGfYFPkwiKCW4ZNSs2u11xBzCgdjiyTTrDm%2FbgP4WLapab%2BgciWKJ%2BNVpSYFgs%2BtTga%2F0vssYnT0fMk4g9fTnoiO6czcOnGZ5jP5km6KLkgih8%2BPue9h0RPYmQBtkQLL5pjX8wyCj0HnSesVMaN5EpKe78kiFVx8AbbU%2FqMdSXKEMdYlMygi6IOST8R74HbxHMN5sD2eA2vhfQ%2FHQMkSUn%2B9xEOtsw3oMO6BxTjXDkDnDPk7gcs45CcaHCjBZZoJP99rmj6p7a%2BjjmMfl2l5%2B1d0lR%2B092BdPRegJ6K6ja%2BXVm%2FDWvbyYFEzLlSTwxnauec2D2WGJ%2BYlce6LHgcL%2F7B3T%2BxTw4GwKhnZNRo%2BBkIFcwAyTFH4fnfsHy9lUzec8MSO0DvBxnAl4UMM60absd4%3D%7Ctkp%3ABk9SR4iO64SkZw>
+- 1x Laderegler 03962A USB-C  
+  <https://www.ebay.de/itm/177392745720?_skw=lipo+laderegler&itmmeta=01KMG4WA3D1M37WJ5B5ETQ162P&hash=item294d6e7cf8:g:5GIAAOSwlFdjg5NR&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xAsgf9f%2B%2FHCj%2Bje0TYuoNYcJJVns9iig%2FqFYqNFxvKiY4sDa0qL0XuInlreVH1UF4PZxWwt5kq0jJuobgifX9pnRJvRjDeNtOzO9rfZ10enujNcirHH3nPdzt2DCt8Sec2T2que%2FI9uWybkxdfz1JCwplJJ%2BGH9FqorF1we8Ic8N9qcWdiyACmQXxKZCzJtntMzYEMzh3Z%2BcXzwyVuPdlgZp%2FMK1RQSUX6dh7%2F8xXShX2TDl3GdNz6aRZacsytkM%2Fk%3D%7Ctkp%3ABk9SR_6h8YSkZw>
+- 1x LiPo Akku 3,7V; 10000mAh  
+  <https://www.ebay.de/itm/357001847616?_skw=lipo+10000&itmmeta=01KMG57YW04PJNGBF8PK7B4BYJ&hash=item531ef7e340:g:0pYAAeSwMX9pW2f6&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xD0J3%2F47fpT%2FMvLhphD4gu6%2FJ03vhkIGOd1cODgew%2BtjyZPsUD05SGhmqEbq3TSmo0b2wyeJOAukUSFqA7ttC9iDqzvo6tCekDVIOJMj5oAaZxMH%2FRTcALUOlNgNzW2TNB6VqOFsrIX2tAwhCMtlSn4%2BACjTEsSEEZ5kpCiJMw5PcBmgkcwgh6DrmWr5ZaA1ec0S1Xu9Fkz8P6St4CH%2BeldrYS3Tblk%2BHkX%2FF5FR%2Fz2IfN3pGMiugLKpGD37CqSiPlZcqvEi4htCBWnecez6dv4oqKsWQyBUc5QG7RPT%2BfOAw%3D%3D%7Ctkp%3ABk9SR6Lun4WkZw>
+- 1x Analog-Digital-Converter (ADC) ADS1115  
+  <https://www.ebay.de/itm/266772266186?_skw=ads+1115&itmmeta=01KMG4ZXFNANBQ8A3HPV6P29XY&hash=item3e1cddbcca:g:i7cAAeSwWNVpwbmn&itmprp=enc%3AAQALAAAA4GfYFPkwiKCW4ZNSs2u11xA7%2FG25xIt3GWSXGuh3%2Fo9HPknmCmOlTtjRApEFMhZ6lBz21fYazVu3og122uYoVhRgQyME0rSWNrHUaWmQQ65fPd1XUzjv5hKtW%2B0LpNlD%2FlRzdtwFB20YfkIwlptJB93bTCYdl1%2Bzz3bFor3lZhZ%2BazXohF2ziv9GrWLJk5PIyWfZ1xqNKMigXbatjKcflNmDs2z39p%2B09vYccz%2B95NKRD7TO%2BcFln%2B%2FxyGJiuyDWXGsGvDk2CSiGZkUh4ispDib%2Fcfb3sCaPLfXqtVJ2p63z%7Ctkp%3ABk9SR4LY_4SkZw>
+- 10x JST Kabel 2.54mm; 4Pin  
+  <https://www.ebay.de/itm/183748172867?_skw=jst+kabel&itmmeta=01KMG5PW38VPY7M1H1H9XRRA0D&hash=item2ac83e9c43:g:-aoAAOSwpMZcmbia&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xDpig6p6ZumlhoGIDgEh0G19ukbzueV7XnsMqQKAORcMX%2FPCT1W4Hhf0u4pLoBY0GwSJl%2FVm4lcc72i%2B%2FeFhiVNG8pgypYmaXNjYxoZSoUKYwtr6YnlnowGsrn1v7R%2BS3LpkjNlm6HXPzZFee9zbNjlU177IlXx46NqosjG%2BqDx34hHnB8jPkQTCySy4gIy6kDDMA96NWmvZwv9dG964Q7vF6Ujeyrw7hfmHYSd7pfX9KGDvNaiNH2gPjsl7gy4bz4%3D%7Ctkp%3ABk9SR4bC24WkZw>
+- 1x JST Stecker-Set mit Crimp-Zange 2.54mm  
+  <https://www.ebay.de/itm/357312760127?_skw=jst+stecker+set&itmmeta=01KPTGGGR0MX33DN6NBPYE8BPT&hash=item533180093f%3Ag%3AgcAAAeSwBjJoe1Fh&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xDXkqsmIzcxv%2Bz6p%2BhCtUIwmELW2J85eNHDJ6KWUnsNM2xW6z0hyxrygxb0sWpNdh03zR2MZ%2BdxKsARrQRN2Evty4MljdEa6CQFhQP4KxcD6%2FJRDlklCLOXZiWOhquYtLA%2B1Le99DYCjZqT8gGaRLlC3bgXxu%2FGy3H%2FqY6NIrU%2BihSOQtj0i9XkiP55J%2Fxm8kJJiKe%2FotUApBObzzYeX5piLN9NgLKSbrFzjKTQn--eIwQZBSa4JmP6HsKp664aW534GTD9tS4fQ9sIR%2FgP0yFI3ivrlGr9TFAm8Mx%2Bn6azdg%3D%3D%7Ctkp%3ABFBMpozC0LZn&var=626011532405>
+- 1x Sensor für Temperatur, Druck, Luftfeuchtigkeit BME280
+  https://www.ebay.de/itm/116048143022?\_skw=bme280&itmmeta=01KMG3Q3P7ZXM678441DE572PN&hash=item1b050222ae:g:KKcAAOSwx~hkY5YA&itmprp=enc%3AAQALAAAA4GfYFPkwiKCW4ZNSs2u11xD1XZqdqXC7O%2BiItlgrNh%2BWCvypR5mjASMLI0zuTlw95eeM3wjErrzdbDUA16OXAUagn1eQY6W4DTb%2Bd14cZqOngwnlaAoQbO2wUZBeL6a8D3rX8oqDbPd234tAW1dWVw15Oum3ZQ%2BwiVZqD8JeWqdygqhs0YrRdYETT1sZhHPBkdxs6NGOmkjTObVWtM1VTVaO%2FsbGPFkLNrRwyPzqFYOL8eEQ1%2FRnZ3RTb%2FjnNd8NN9xftiTAFTIz2UF7V%2FXJstjQk%2BBwPLICebmc958L%2Bxmz%7Ctkp%3ABk9SR5683IOkZw](https://www.ebay.de/itm/116048143022?_skw=bme280&itmmeta=01KMG3Q3P7ZXM678441DE572PN&hash=item1b050222ae:g:KKcAAOSwx~hkY5YA&itmprp=enc%3AAQALAAAA4GfYFPkwiKCW4ZNSs2u11xD1XZqdqXC7O%2BiItlgrNh%2BWCvypR5mjASMLI0zuTlw95eeM3wjErrzdbDUA16OXAUagn1eQY6W4DTb%2Bd14cZqOngwnlaAoQbO2wUZBeL6a8D3rX8oqDbPd234tAW1dWVw15Oum3ZQ%2BwiVZqD8JeWqdygqhs0YrRdYETT1sZhHPBkdxs6NGOmkjTObVWtM1VTVaO%2FsbGPFkLNrRwyPzqFYOL8eEQ1%2FRnZ3RTb%2FjnNd8NN9xftiTAFTIz2UF7V%2FXJstjQk%2BBwPLICebmc958L%2Bxmz%7Ctkp%3ABk9SR5683IOkZw)
+- 1x GPS Antenne SMA-Stecker  
+  <https://www.ebay.de/itm/137096280537?_skw=gps+antenne+sma&itmmeta=01KMG6F1YYX7GKX8FFP09HWW3P&hash=item1feb9339d9:g:67gAAeSwtj1pqSuR&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xD%2Bt8YtuxbxNxNa1Z9bpKOLN6pNGEmFTpXrJkjNHGwYpQrkjYVN8u%2FRA5ZuhziBzqvwYx1kPOYDds2dTeeDA%2BugjQxJ1eAXFWvfAlr7BINQuaogtpcGjEbZMmDq8%2FJYyU2XFIYkCEJ7EIIr55VcOro%2FXaGKPvJ2lCfvaOEhZng8wIRf%2BZwYqfiOB2nOafdLzzyIh0%2FUzQdQvqb5iIFkLulauBlCb9bs3Yc5q4OR0dqD%2Fgkfyy5zsGvzMNtgA%2BjsctvVtwGEXXFJIlen%2BDFH%2FZYfGsxyshStscAwZb58hGWAfg%3D%3D%7Ctkp%3ABk9SR-SfvIakZw>
+- 1x SMA Kabel Buchse-Buchse (female) 10cm  
+  <https://www.ebay.de/itm/376634184181?_skw=sma+stecker&itmmeta=01KMG6MFNERCXM9SQNETZK6Y1K&hash=item57b12591f5:g:k00AAeSwVRRpH4Xs&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xDbi0%2B0EMDwUTn6P65u9MGGc8sN5goFje0ohgfz09w62DdozWK%2FxG89voYO4aOGXb%2ByCeirshv2ZT8If5op3%2FWSwTLC7AbYlbFo4UE5Z77O505a1vORszhoGuiXQ3cHOp3XpTFXPuSABQA1ANfbutK7iqPzZUHHp8%2FSZoTPfSxPijH8RBIrFFSFH%2FDlTR%2BddMjOUhqKNTXAnPDcsf1Hw8rkt6G9i6zSRqJFeYUyv8ccQLPkbltgisi%2Bm34Uhz37vb6EVLtQK21P38rWvM%2FFMqUaekCfC6jyjjWWQDUo9jdK6A%3D%3D%7Ctkp%3ABFBMkvvRhqRn>
+- 2x SMA Stecker (male)  
+  <https://www.ebay.de/itm/284115539074?_skw=sma+buchse&itmmeta=01KMG6RWF2PTR8VY3C7FRMNCND&hash=item42269b1482:g:Hw8AAOSwiGRf2GvI&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xAibwwasQr5hI1ilbbBG4FNOxdvS57l3g3n5IAvupkv2p%2Bl2gbb9oBcfRH54tvaNwQpv5WIJpXbXiFvJ39r8Nm7EBl5vJbg96QX6GwvymhKg6grt9HP0K8UADdqLX9bcWXpaGDufXs%2Fpj%2FYc84c0mGzCzB6Ose%2BaejATQ8spvi8eSCGSI6dcw5uAmz%2BINYfYmjJdmC0Uvkn%2FdhjNZRN5OYQIFOnWKmfguepvf6z%2BWO9pVMfDWOIYpm5VhZcjSDHU6N5RNc%2FOlrfNCuRRNByPV3ihIn2W1UPiE6tBZVQWnMhUg%3D%3D%7Ctkp%3ABk9SR_TH44akZw>
+- 1x SMA Stecker (male) mit Flansch
+
+  <https://www.ebay.de/itm/355986880487?_skw=sma+flansch&itmmeta=01KN775BWPJMA1FJCF1JNJVMX2&hash=item52e278b7e7:g:D5sAAOSwgzlmzHKH&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xBSDpT645LGHx6QAgpE7qlObx0TTZTTLyQXiGBzUSpMSseGhvp5V1pMX8EUqKDOF6yvQa8jqdxXfEHnEKdi8vu9ZozrqCmgAOVBHcsmAHns6ggDIP92Vdp7ehUrDgWRaC%2FuQ6kfno1P7BvlO3swVtGPBIsvWxpnnCVdrY0Bk5Isqq8260aBGXvtyu2N13bqAsRasug%2FA1EgGCUtiURkKCI%2FtxjGy8Ul2FhzHJDFybLgBmsVbokkEAj7Gtsexw2KpKA%3D%7Ctkp%3ABk9SR8i-leepZw>
+
+Sonstige Komponenten:
+
+- 1x Micro-SD-Karte (mindestens 8GB)
+- 1x Netzteil mit USB-A-Buchse 5V; 2A
+- 1x Kabel USB-A auf USB-Micro
+- 1x Kabel USB-A auf USB-C
+- 2x Schrauben M2,5x30mm
+- 2x Schrauben M2,5x15mm
+- 2x Platinen-Spacer M2,5x8mm
+
+In der AG Brinkmann vorhanden:
+
+- SMD Widerstände 0805: 2x 4,7k; 3x 51k; 1× 20k
+- Dioden: 3x LL4148 oder ähnlich
