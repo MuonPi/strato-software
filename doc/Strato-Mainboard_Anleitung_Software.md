@@ -73,10 +73,10 @@
   sudo apt install libgpiod-dev
   ```
 
-- Library installieren: Qt5
+- Library installieren: Qt6
 
   ```bash
-  sudo apt install qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools pyqt5-dev libqt5serialport5-dev libqt5svg5-dev libqwt-qt5-dev qtdeclarative5-dev
+  sudo apt install qtbase5-dev qtchooser qt6-qmake qtbase5-dev-tools pyqt6-dev libqt6serialport5-dev libqt6svg5-dev libqwt-qt6-dev qtdeclarative6-dev
   ```
 
   Sonstige Tools installieren:

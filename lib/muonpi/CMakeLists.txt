@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(muonpi)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # -------------------------------
@@ -10,21 +10,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC OFF)
 set(CMAKE_AUTORCC OFF)
-find_package(Qt5 5.15 COMPONENTS Core Network REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Network)
 find_package(Threads REQUIRED)
 
 # -------------------------------
 # Externe Lib muondetector
 # -------------------------------
-set(MUONPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../muondetector")
-set(MUONPI_HEADER_DIR "${MUONPI_DIR}/library/include")
+set(MUONPI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../muondetector_v2")
+set(MUONPI_HEADER_DIR "${MUONPI_DIR}/library/src")
 set(MUONPI_LIB_DIR "${MUONPI_DIR}/build/output/lib")
-if(NOT EXISTS "${MUONPI_LIB_DIR}/libmuondetector.a")
-    message(FATAL_ERROR "Library not found: ${MUONPI_LIB_DIR}/libmuondetector.a")
+if(NOT EXISTS "${MUONPI_LIB_DIR}/libmuondetector-protocol.a")
+    message(FATAL_ERROR "Library not found: ${MUONPI_LIB_DIR}/libmuondetector-protocol.a")
 endif()
 add_library(muondetector STATIC IMPORTED)
 set_target_properties(muondetector PROPERTIES
-    IMPORTED_LOCATION "${MUONPI_LIB_DIR}/libmuondetector.a"
+    IMPORTED_LOCATION "${MUONPI_LIB_DIR}/libmuondetector-protocol.a"
 )
 
 # -------------------------------
@@ -44,7 +44,7 @@ target_include_directories(muonpi PUBLIC
 # Link externe Libraries
 target_link_libraries(muonpi PUBLIC
     muondetector
-    Qt5::Core
-    Qt5::Network
+    Qt6::Core
+    Qt6::Network
     Threads::Threads
 )

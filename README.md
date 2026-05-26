@@ -7,4 +7,4 @@ SkyMi Discussion in https://github.com/MuonPi/strato-software/discussions/5
 ## Dependecies
 
 - gpiod
-- qt5
+- qt6

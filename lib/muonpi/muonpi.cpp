@@ -1,10 +1,12 @@
 
 #include "muonpi.h"
 
-#include "tcpconnection.h"
-#include "tcpmessage.h"
-#include "tcpmessage_keys.h"
-#include "ublox_structs.h"
+#include "network/tcpconnection.h"
+#include "network/tcpmessage_keys.h"
+#include "data/events/ubx_event.h"
+#include "data/events/gpio_rate_event.h"
+#include "capnp/capnp_codec.h"
+#include <boost/asio.hpp>
 #include <QCoreApplication>
 #include <QMetaType>
 #include <QPointF>
@@ -13,112 +15,77 @@
 
 constexpr unsigned timeout_ms = 1000;
 
-MUONPI::MUONPI(QObject *parent) : QObject(parent), m_tcpThread(nullptr), m_tcpConnection(nullptr)
+MUONPI::MUONPI(QObject *parent) : QObject(parent), io{},
+thread{[&]() { io.run(); }}
 {
-    qRegisterMetaType<TcpMessage>("TcpMessage");
 }
 
 MUONPI::~MUONPI()
-{
-    stop();
-}
+{}
 
-void MUONPI::start()
-{
-    setup();
-    if (m_tcpThread != nullptr)
-    {
-        m_tcpThread->start();
-    }
-    std::cout << "MUONPI inited" << std::endl;
-}
-
-void MUONPI::setup()
-{
-    m_tcpThread = new QThread();
-
-    m_tcpConnection = new TcpConnection("localhost", 51508, 0, timeout_ms);
-
-    m_tcpConnection->moveToThread(m_tcpThread);
-
-    connect(m_tcpThread, &QThread::started, m_tcpConnection, &TcpConnection::makeConnection);
-
-    connect(m_tcpConnection, &TcpConnection::receivedTcpMessage, this, &MUONPI::receivedTcpMessage);
-
-    connect(m_tcpConnection, &TcpConnection::finished, m_tcpThread, &QThread::quit);
-
-    connect(m_tcpThread, &QThread::finished, m_tcpConnection, &QObject::deleteLater);
-    connect(m_tcpThread, &QThread::finished, m_tcpThread, &QObject::deleteLater);
-    connect(m_tcpConnection, &TcpConnection::connectionTimeout, this, [this](QString remotePeerAddress, quint16 remotePeerPort, QString localAddress, quint16 localPort,
-        quint32 timeoutTime, quint32 connectionDuration){
-            m_tcpThread->quit();
-        });
-    connect(m_tcpThread, &QThread::finished, this, [this](){
-        m_tcpConnection = nullptr;
-        m_tcpThread = nullptr;
-        connectionHealthy = false;
-        QTimer::singleShot(timeout_ms, this, [this]() {
-            start();
-        });
-    });
-    connect(m_tcpConnection, &TcpConnection::connected, this, [this]() {
-        connectionHealthy = true;
-    });
-}
-
-void MUONPI::stop()
-{
-    if (m_tcpConnection != nullptr)
-    {
-        m_tcpConnection->closeThisConnection();
-    }
-
-    if (m_tcpThread != nullptr)
-    {
-        m_tcpThread->quit();
-        m_tcpThread->wait();
-    }
-
-    m_tcpThread = nullptr;
-    m_tcpConnection = nullptr;
-}
-
-void MUONPI::receivedTcpMessage(TcpMessage tcpMessage)
-{
-    TCP_MSG_KEY msgID = static_cast<TCP_MSG_KEY>(tcpMessage.getMsgID());
-
-    if (msgID == TCP_MSG_KEY::MSG_QUIT_CONNECTION)
-    {
-        std::cout << "TCP QUIT RECEIVED. Restarting TCP Connection..." << std::endl;
-        // Restart TCP connection
-        connectionHealthy = false;
-        stop(); // will automatically restart due to defined signal
+void MUONPI::makeConnection() {
+    boost::system::error_code ec;
+    auto socket = std::make_shared<tcp::socket>(io);
+    auto server_ip = boost::asio::ip::make_address_v4(ipAddress.toStdString(), ec);
+    if (ec) {
         return;
     }
-    else if (msgID == TCP_MSG_KEY::MSG_GEO_POS)
+    tcp::endpoint endpoint(server_ip, port);
+
+    socket->connect(endpoint, ec);
+
+    if (ec) {
+        // Error handling -> reconnect
+    }
+
+    clientConn_ = std::make_shared<TcpConnection>(std::move(*socket));
+
+    auto weakConn = std::weak_ptr<TcpConnection>(clientConn_);
+    clientConn_->setDisconnectHandler([this](const boost::system::error_code& code) {
+        clientConn_->setDisconnectHandler(
+            nullptr); // stop disconnect handling after stopped
+        clientConn_->setPacketHandler(
+            nullptr); // wait for dangling async read processes...
+        clientConn_.reset();
+    });
+    clientConn_->setPacketHandler([weakConn, this](const TcpPacket& packet) {
+        if (auto conn = weakConn.lock()) {
+            if (static_cast<TCP_MSG_KEY>(packet.key) == TCP_MSG_KEY::MSG_PING) {
+                conn->sendPacket(static_cast<std::uint16_t>(TCP_MSG_KEY::MSG_PONG),
+                                    packet.payload);
+                return;
+            }
+            decode(packet);
+        }
+    });
+    clientConn_->start();
+}
+
+void MUONPI::decode(const TcpPacket& packet) {
+    TCP_MSG_KEY msgID = static_cast<TCP_MSG_KEY>(packet.key);
+
+    if (msgID == TCP_MSG_KEY::MSG_GEO_POS)
     {
-        GnssPosStruct pos{};
-        *(tcpMessage.dStream) >> pos.iTOW >> pos.lon >> pos.lat >> pos.height >> pos.hMSL >> pos.hAcc >> pos.vAcc;
+        auto pos = CapnpCodec<GnssPosStruct>::decode(packet.payload);
         geo_pos[0] = static_cast<double>(pos.lat) * 1e-7;
         geo_pos[1] = static_cast<double>(pos.lon) * 1e-7;
         geo_pos[2] = static_cast<double>(pos.height) / 1e3;
         // std::cout << "MSG_GEO_POS: " << geo_pos[0] << " " << geo_pos[1] << " " << geo_pos[2] << std::endl;
         return;
     }
-    else if (msgID == TCP_MSG_KEY::MSG_UBX_FIXSTATUS)
+    else if (msgID == TCP_MSG_KEY::MSG_UBX_NAVSTATUS)
     {
-        quint8 val = 0;
-        *(tcpMessage.dStream) >> val;
-        // std::cout << "MSG_UBX_FIXSTATUS: " << Gnss::FixType::name[val] << std::endl;
+        auto event = CapnpCodec<NavStatus>::decode(packet.payload);
+        // emit ubxUptimeReceived(event.msss / 1000);
+        // emit gpsFixReceived(event.gpsFix);
         return;
     }
-    else if (msgID == TCP_MSG_KEY::MSG_GPIO_RATE_AVERAGE)
+    else if (msgID == TCP_MSG_KEY::MSG_GPIO_RATE)
     {
-        quint8 whichRate;
-        qreal averageValue;
-        *(tcpMessage.dStream) >> whichRate >> averageValue;
-        gpio_rate[whichRate] = averageValue;
+        auto event = CapnpCodec<GpioRateEvent>::decode(packet.payload);
+        // gpio_rate[event.whichRate] = event.rate.at(0); // Fix
         // std::cout << "Rate " << (whichRate == 0 ? "XOR" : "AND") << " " << averageValue << std::endl;
+        return;
     }
 }
 

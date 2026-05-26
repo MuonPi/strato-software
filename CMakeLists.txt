@@ -73,7 +73,7 @@ add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 target_link_libraries(strato-software
     gpiod
@@ -83,7 +83,7 @@ target_link_libraries(strato-software
     muonpi
     atomic
     stdc++fs
-    Qt5::Core
+    Qt6::Core
 
 )
 
