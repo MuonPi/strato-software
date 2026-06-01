@@ -15,7 +15,7 @@
 
 constexpr unsigned timeout_ms = 1000;
 
-MUONPI::MUONPI(QObject *parent) : QObject(parent), io{},
+MUONPI::MUONPI(QObject *parent) : QObject(parent), io{}, reconnectTimer{io},
 thread{[&]() { io.run(); }}
 {
 }
@@ -23,42 +23,82 @@ thread{[&]() { io.run(); }}
 MUONPI::~MUONPI()
 {}
 
-void MUONPI::makeConnection() {
+
+void MUONPI::makeConnection()
+{
     boost::system::error_code ec;
+
     auto socket = std::make_shared<tcp::socket>(io);
-    auto server_ip = boost::asio::ip::make_address_v4(ipAddress.toStdString(), ec);
-    if (ec) {
+
+    auto server_ip =
+        boost::asio::ip::make_address_v4(ipAddress.toStdString(), ec);
+
+    if (ec)
+    {
+        scheduleReconnect();
         return;
     }
+
     tcp::endpoint endpoint(server_ip, port);
 
     socket->connect(endpoint, ec);
 
-    if (ec) {
-        // Error handling -> reconnect
+    if (ec)
+    {
+        std::cerr << "Connect failed:" << ec.message();
+        scheduleReconnect();
+        return;
     }
 
-    clientConn_ = std::make_shared<TcpConnection>(std::move(*socket));
+    clientConn_ =
+        std::make_shared<TcpConnection>(std::move(*socket));
 
     auto weakConn = std::weak_ptr<TcpConnection>(clientConn_);
-    clientConn_->setDisconnectHandler([this](const boost::system::error_code& code) {
-        clientConn_->setDisconnectHandler(
-            nullptr); // stop disconnect handling after stopped
-        clientConn_->setPacketHandler(
-            nullptr); // wait for dangling async read processes...
-        clientConn_.reset();
-    });
-    clientConn_->setPacketHandler([weakConn, this](const TcpPacket& packet) {
-        if (auto conn = weakConn.lock()) {
-            if (static_cast<TCP_MSG_KEY>(packet.key) == TCP_MSG_KEY::MSG_PING) {
-                conn->sendPacket(static_cast<std::uint16_t>(TCP_MSG_KEY::MSG_PONG),
-                                    packet.payload);
-                return;
+
+    clientConn_->setDisconnectHandler(
+        [this](const boost::system::error_code& code)
+        {
+            std::cerr << "Disconnected:"
+                       << code.message();
+
+            clientConn_.reset();
+
+            scheduleReconnect();
+        });
+
+    clientConn_->setPacketHandler(
+        [weakConn, this](const TcpPacket& packet)
+        {
+            if (auto conn = weakConn.lock())
+            {
+                if (static_cast<TCP_MSG_KEY>(packet.key) ==
+                    TCP_MSG_KEY::MSG_PING)
+                {
+                    conn->sendPacket(
+                        static_cast<std::uint16_t>(TCP_MSG_KEY::MSG_PONG),
+                        packet.payload);
+                    return;
+                }
+
+                decode(packet);
             }
-            decode(packet);
-        }
-    });
+        });
+
     clientConn_->start();
+}
+
+void MUONPI::scheduleReconnect()
+{
+    reconnectTimer.expires_after(reconnectDelay);
+
+    reconnectTimer.async_wait(
+        [this](const boost::system::error_code& ec)
+        {
+            if (!ec)
+            {
+                makeConnection();
+            }
+        });
 }
 
 void MUONPI::decode(const TcpPacket& packet) {
