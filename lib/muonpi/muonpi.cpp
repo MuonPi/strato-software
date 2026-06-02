@@ -15,14 +15,31 @@
 
 constexpr unsigned timeout_ms = 1000;
 
-MUONPI::MUONPI(QObject *parent) : QObject(parent), io{}, reconnectTimer{io},
+MUONPI::MUONPI(const std::string ip, std::uint16_t port, QObject *parent)
+: QObject(parent), io{}, workGuard(boost::asio::make_work_guard(io)), reconnectTimer{io},
+ip_{ip}, port_{port},
 thread{[&]() { io.run(); }}
 {
 }
 
 MUONPI::~MUONPI()
-{}
+{
+    workGuard.reset();
+    io.stop();
 
+    if(thread.joinable()) {
+        thread.join();
+    }
+}
+
+void MUONPI::start()
+{
+    boost::asio::post(io,
+        [this]
+        {
+            makeConnection();
+        });
+}
 
 void MUONPI::makeConnection()
 {
@@ -31,7 +48,7 @@ void MUONPI::makeConnection()
     auto socket = std::make_shared<tcp::socket>(io);
 
     auto server_ip =
-        boost::asio::ip::make_address_v4(ipAddress.toStdString(), ec);
+        boost::asio::ip::make_address_v4(ip_, ec);
 
     if (ec)
     {
@@ -39,7 +56,7 @@ void MUONPI::makeConnection()
         return;
     }
 
-    tcp::endpoint endpoint(server_ip, port);
+    tcp::endpoint endpoint(server_ip, port_);
 
     socket->connect(endpoint, ec);
 
@@ -83,12 +100,13 @@ void MUONPI::makeConnection()
                 decode(packet);
             }
         });
-
+    connectionHealthy = true;
     clientConn_->start();
 }
 
 void MUONPI::scheduleReconnect()
 {
+    connectionHealthy = false;
     reconnectTimer.expires_after(reconnectDelay);
 
     reconnectTimer.async_wait(

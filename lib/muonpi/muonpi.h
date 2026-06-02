@@ -19,8 +19,9 @@ class MUONPI : public QObject
     Q_OBJECT
 
 public:
-    explicit MUONPI(QObject* parent = nullptr);
+    explicit MUONPI(const std::string ip = "127.0.0.1", std::uint16_t port = 51508, QObject* parent = nullptr);
     ~MUONPI();
+    void start();
     bool getPosition(double* position);
     bool getXOR(double& rate);
     bool getAND(double& rate);
@@ -31,12 +32,13 @@ private:
     void scheduleReconnect();
     void decode(const TcpPacket& packet);
     boost::asio::io_context io;
+    boost::asio::executor_work_guard<boost::asio::io_context::executor_type> workGuard;
     boost::asio::steady_timer reconnectTimer;
 
+    std::string ip_;
+    std::uint16_t port_;
     std::thread thread;
     std::shared_ptr<TcpConnection> clientConn_{nullptr};
-    QString ipAddress{"127.0.0.1"};
-    quint16 port{51508};
     std::atomic<bool> connectionHealthy = false;
     std::chrono::seconds reconnectDelay{5};
 
