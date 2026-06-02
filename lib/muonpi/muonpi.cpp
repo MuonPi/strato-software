@@ -20,6 +20,7 @@ MUONPI::MUONPI(const std::string ip, std::uint16_t port, QObject *parent)
 ip_{ip}, port_{port},
 thread{[&]() { io.run(); }}
 {
+    start();
 }
 
 MUONPI::~MUONPI()
