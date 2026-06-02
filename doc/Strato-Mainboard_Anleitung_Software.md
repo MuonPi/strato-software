@@ -33,6 +33,29 @@
 - Interface Options > SPI, I2C, Remote GPIO aktivieren
 - Interface Options > Serial Port > login shell über serial port deaktivieren > serial port hardware aktivieren
 
+## Netzwerk konfigurieren
+
+- Anzeigen der Netzwerk Konfigurationen
+  ```bash
+  nmcli connection show
+  ```
+- Speichern der aktuellen Netzwerk Konfiguration
+  ```bash
+  sudo nmcli connection clone "netplan..." "Name"
+  ```
+- Anzeigen der verfügbaren Netzwerke
+  ```bash
+  nmcli device wifi list
+  ```
+- Anlegen einer neuen Verbindung, falls erforderlich
+  ```bash
+  sudo nmcli connection add type wifi ifname wlan0 con-name "Name" ssid "ssid"
+  ```
+  sudo nmcli connection modify "Name" wifi-sec.key-mgmt wpa-psk
+  ```bash
+  sudo nmcli connection modify "Name" wifi-sec.psk "Passwort"
+  ```
+
 ## Installation von benötigten Paketen
 
 - Aktualisierung des Installers: apt
@@ -45,7 +68,9 @@
 
   ```bash
   sudo apt install i2c-tools
-  i2c-detect -y 1
+  ```
+  ```bash
+  i2cdetect -y 1
   ```
 
   sollte alle I²C-Sensoradressen anzeigen
@@ -82,7 +107,7 @@
   Sonstige Tools installieren:
 
   ```bash
-  libcrypto++-dev libcrypto++-doc libcrypto++-utils lftp libmosquitto-dev libconfig++-dev file  
+  sudo apt install libcrypto++-dev libcrypto++-doc libcrypto++-utils lftp libmosquitto-dev libconfig++-dev file  
   ```
 
 - Raspberry Pi neu starten
@@ -98,13 +123,18 @@
 - Repository herunterladen
 
   ```bash
-  git clone -b high-altitude-flight-rebase https://github.com/MuonPi/muondetector.git
+  cd
+  ```
+  ```bash
+  git clone -b dev https://github.com/MuonPi/muondetector_v2.git
   ```
 
 - Build Verzeichnis erstellen
 
   ```bash
-  cd muondetector
+  cd ~/muondetector
+  ```
+  ```bash
   mkdir build
   ```
 
@@ -112,8 +142,12 @@
 
   ```bash
   cd build
+  ```
+  ```bash
   cmake ..
-  make package
+  ```
+  ```bash
+  make package -j2
   ```
 
   dies dauert auf dem Pi Zero sehr lange
@@ -127,6 +161,8 @@
 
   ```bash
   sudo systemctl daemon-reload
+  ```
+  ```bash
   sudo systemctl start muondetector-daemon.service
   ```
 
@@ -135,13 +171,18 @@
 - Repository herunterladen
 
   ```bash
+  cd
+  ```
+  ```bash
   git clone https://github.com/MuonPi/strato-software.git
   ```
 
 - Build Verzeichnis erstellen
 
   ```bash
-  cd strato-software
+  cd ~/strato-software
+  ```
+  ```bash
   mkdir build
   ```
 
@@ -149,8 +190,12 @@
 
   ```bash
   cd build
+  ```
+  ```bash
   cmake ..
-  make
+  ```
+  ```bash
+  make -j2
   ```
 
 - Installieren
@@ -163,6 +208,8 @@
 
   ```bash
   sudo systemctl daemon-reload
+  ```
+  ```bash
   sudo systemctl start strato-software.service
   ```
 
@@ -172,6 +219,8 @@
 
   ```bash
   curl -fsSL https://tailscale.com/install.sh | sh
+  ```
+  ```bash
   sudo tailscale up
   ```
 
