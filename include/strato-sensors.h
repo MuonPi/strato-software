@@ -28,7 +28,6 @@ public slots:
 
 private:
     Globals& StratoGlobals;
-    std::unique_ptr<MUONPI> strato_muonpi{nullptr};
 
     bool ads1115_inited = false;
     bool qmc5883_inited = false;

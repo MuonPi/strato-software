@@ -1,25 +1,15 @@
 #ifndef MUONPI_H
 #define MUONPI_H
 
-#include <QObject>
-#include <QString>
 #include <memory>
 #include <thread>
-
 #include "network/tcpconnection.h"
-
 #include <boost/asio.hpp>
 
 
-class QThread;
-class QCoreApplication;
-
-class MUONPI : public QObject
-{
-    Q_OBJECT
-
+class MUONPI {
 public:
-    explicit MUONPI(const std::string ip = "127.0.0.1", std::uint16_t port = 51508, QObject* parent = nullptr);
+    explicit MUONPI(const std::string ip = "127.0.0.1", std::uint16_t port = 51508);
     ~MUONPI();
     void start();
     bool getPosition(double* position);

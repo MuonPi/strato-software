@@ -17,6 +17,9 @@
 
 
 
+#ifdef MUONPI_USED
+MUONPI strato_muonpi{};
+#endif
 
 #ifdef ADS1115_ADDR
 ADS1115 strato_ads1115(ADS1115_ADDR);
@@ -95,10 +98,10 @@ bool Sensors::execute()
 
         #ifdef MUONPI_USED
         // Should automatically reset if connection drops
-        if (strato_muonpi->isConnected())
+        if (strato_muonpi.isConnected())
         {
             double position_temp[3] {0};
-            if (strato_muonpi->getPosition(position_temp))
+            if (strato_muonpi.getPosition(position_temp))
             {
                 if (position_temp[0] > -999)
                 {
@@ -109,7 +112,7 @@ bool Sensors::execute()
             }
 
             double XOR_temp = 0;
-            if (strato_muonpi->getXOR(XOR_temp))
+            if (strato_muonpi.getXOR(XOR_temp))
             {
                 if (XOR_temp > -1)
                 {
@@ -121,7 +124,7 @@ bool Sensors::execute()
             }
 
             double AND_temp = 0;
-            if (strato_muonpi->getAND(AND_temp))
+            if (strato_muonpi.getAND(AND_temp))
             {
                 if (AND_temp > -1)
                 {

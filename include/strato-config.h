@@ -13,7 +13,7 @@
 #define WATCHDOG_INTERVAL 500 //ms
 #define LOGFILE_INTERVAL 30 //min
 
-// #define MUONPI_USED
+#define MUONPI_USED
 #define ADS1115_ADDR 0x4A
 // #define QMC5883_ADDR 0x0D
 // #define VEML6075_ADDR 0x10

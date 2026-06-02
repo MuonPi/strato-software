@@ -7,16 +7,12 @@
 #include "data/events/gpio_rate_event.h"
 #include "capnp/capnp_codec.h"
 #include <boost/asio.hpp>
-#include <QCoreApplication>
-#include <QMetaType>
-#include <QPointF>
-#include <QThread>
 #include <iostream>
 
 constexpr unsigned timeout_ms = 1000;
 
-MUONPI::MUONPI(const std::string ip, std::uint16_t port, QObject *parent)
-: QObject(parent), io{}, workGuard(boost::asio::make_work_guard(io)), reconnectTimer{io},
+MUONPI::MUONPI(const std::string ip, std::uint16_t port)
+: io{}, workGuard(boost::asio::make_work_guard(io)), reconnectTimer{io},
 ip_{ip}, port_{port},
 thread{[&]() { io.run(); }}
 {
