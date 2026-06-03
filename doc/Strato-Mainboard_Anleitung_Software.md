@@ -2,9 +2,9 @@
 
 ## SD-Karte vorbereiten
 
-- Raspberry Pi Imager herunterladen
+- "Raspberry Pi Imager" herunterladen
 - Leere SD-Karte einstecken mit mindestens 8GB
-- Raspberry Pi OS (other) > “Raspberry Pi OS (Legacy, 32-bit) Lite” auswählen
+- Raspberry Pi OS (other) > “Raspberry Pi OS Lite (32-bit)” auswählen
 - SD-Karte auswählen
 - Einstellungen > SSH aktivieren > Benutzername und Passwort setzen
 - Einstellungen > Wifi einrichten > SSID und Passwort eines Hotspot (nur 2,4GHz) setzen
@@ -17,19 +17,15 @@
 - Raspberry Pi kann auf Strato-Mainboard gesteckt werden
 - Spannungsversorgung einstecken
 - Warten bis der Raspberry Pi sich im Hotspot einloggt
-- Konsole öffnen (Windows Powershell oder Linux Terminal) und SSH-Verbundung aufbauen:
-
+- Konsole öffnen (Windows Powershell oder Linux Terminal) und SSH-Verbindung aufbauen:
   ```bash
   ssh Benutzername@Hostname.local
   ```
-
 - Falls die Fingerprint-Abfrage erscheint, mit yes beantworten
 - Einstellungen ändern:
-
   ```bash
   sudo raspi-config
   ```
-
 - Interface Options > SPI, I2C, Remote GPIO aktivieren
 - Interface Options > Serial Port > login shell über serial port deaktivieren > serial port hardware aktivieren
 
@@ -51,7 +47,9 @@
   ```bash
   sudo nmcli connection add type wifi ifname wlan0 con-name "Name" ssid "ssid"
   ```
+  ```bash
   sudo nmcli connection modify "Name" wifi-sec.key-mgmt wpa-psk
+  ```
   ```bash
   sudo nmcli connection modify "Name" wifi-sec.psk "Passwort"
   ```
@@ -63,7 +61,6 @@
   ```bash
   sudo apt update
   ```
-
 - Werkzeug für den I²C-Bus: i2c-tools
 
   ```bash
@@ -83,7 +80,7 @@
 - Build-System Generator: cmake
 
   ```bash
-  sudo apt install cmake
+  sudo apt install cmake cmake-curses-gui
   ```
 
 - Compiler installieren: gcc
@@ -101,13 +98,21 @@
 - Library installieren: Qt6
 
   ```bash
-  sudo apt install qtbase5-dev qtchooser qt6-qmake qtbase5-dev-tools pyqt6-dev libqt6serialport5-dev libqt6svg5-dev libqwt-qt6-dev qtdeclarative6-dev
+  sudo apt install qt6-base-dev 
+  #qtbase5-dev qtchooser qt6-qmake qtbase5-dev-tools pyqt6-dev libqt6serialport5-dev libqt6svg5-dev libqwt-qt6-dev qtdeclarative6-dev
+  ```
+
+- Capn Proto
+
+  ```bash
+  sudo apt install capnproto libcapnp-dev
   ```
 
   Sonstige Tools installieren:
 
   ```bash
-  sudo apt install libcrypto++-dev libcrypto++-doc libcrypto++-utils lftp libmosquitto-dev libconfig++-dev file  
+  sudo apt install libglib2.0-dev pkg-config libsecret-1-dev libboost-all-dev
+  #libcrypto++-dev libcrypto++-doc libcrypto++-utils lftp libmosquitto-dev libconfig++-dev file  
   ```
 
 - Raspberry Pi neu starten
@@ -132,25 +137,40 @@
 - Build Verzeichnis erstellen
 
   ```bash
-  cd ~/muondetector
+  cd muondetector
   ```
   ```bash
   mkdir build
   ```
 
-- Kompilieren
+- Kompilieren vorbereiten
 
   ```bash
   cd build
   ```
   ```bash
-  cmake ..
+  ccmake ..
   ```
+
+- Auswählen, dass die GUI nicht mit erstellt werden soll
+
   ```bash
-  make package -j2
+  MUONDETECTOR_BUILD_GUI            OFF
+  MUONDETECTOR_BUILD_TCP_DEBUG_C    OFF
+  MUONDETECTOR_BUILD_TCP_DEBUG_S    OFF
+  MUONDETECTOR_BUILD_TESTS          OFF
+  ```
+
+- Bestätigen mit c und dann g
+
+- Kompilieren
+
+  ```bash
+  make
   ```
 
   dies dauert auf dem Pi Zero sehr lange
+
 - Installieren
 
   ```bash
@@ -174,7 +194,7 @@
   cd
   ```
   ```bash
-  git clone https://github.com/MuonPi/strato-software.git
+  git clone -b mp_connection_v2 https://github.com/MuonPi/strato-software.git
   ```
 
 - Build Verzeichnis erstellen
