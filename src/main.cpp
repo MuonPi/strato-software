@@ -10,10 +10,13 @@
 #include <QThread>
 #include <QObject>
 
+#include "config.h"
+
 #include "strato-config.h"
 #include "globals.h"
 #include "strato-lorawan.h"
 #include "strato-sensors.h"
+#include "strato-mqtthandler.h"
 
 
 
@@ -28,9 +31,27 @@ int main(int argc, char** argv)
 
     QCoreApplication StratoApp(argc, argv);
 
+    // ========================== MQTT =============================
 
+    StratoMqttHandler mqtt{"0", "localhost", 1883};
+    QObject::connect(&mqtt, StratoMqttHandler::connection_status, [](auto status) {
+        switch(status){
+            case StratoMqttHandler::Status::Connected:
+                std::cout << "Connected!" << std::endl;
+            break;
+            case StratoMqttHandler::Status::Error:
+                std::cout << "Error!" << std::endl;
+                break;
+            default:
+                std::cout << "Received status " << std::to_string(static_cast<unsigned>(status)) << std::endl;
+            break;
+        }
+    });
+    mqtt.start("", "");
 
+    // ...
 
+    mqtt.publish("strato", "{}");
 
     // ========================== Sensors ==========================
 

@@ -65,20 +65,20 @@ target_link_libraries(muonpi PUBLIC
     ${CAPNP_KJ_LIBRARIES}
 )
 
-add_executable(testclient muonpi.cpp muonpi.h main.cpp)
+# add_executable(testclient muonpi.cpp muonpi.h main.cpp)
 
-# Header sind im gleichen Ordner
-target_include_directories(testclient PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${MUONPI_HEADER_DIR}
-)
-# Link externe Libraries
-target_link_libraries(testclient PUBLIC
-    protocol
-    muondetector
-    Qt6::Core
-    Qt6::Network
-    Threads::Threads
-    ${CAPNP_LIBRARIES}
-    ${CAPNP_KJ_LIBRARIES}
-)
+# # Header sind im gleichen Ordner
+# target_include_directories(testclient PUBLIC
+#     ${CMAKE_CURRENT_SOURCE_DIR}
+#     ${MUONPI_HEADER_DIR}
+# )
+# # Link externe Libraries
+# target_link_libraries(testclient PUBLIC
+#     protocol
+#     muondetector
+#     Qt6::Core
+#     Qt6::Network
+#     Threads::Threads
+#     ${CAPNP_LIBRARIES}
+#     ${CAPNP_KJ_LIBRARIES}
+# )
