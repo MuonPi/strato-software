@@ -39,6 +39,7 @@ set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/strato-lorawan.cpp"
     "${PROJECT_SRC_DIR}/strato-sensors.cpp"
     "${PROJECT_SRC_DIR}/logfile.cpp"
+    "${PROJECT_SRC_DIR}/strato-mqtthandler.cpp"
 )
 
 set(STRATO_HEADER_FILES
@@ -48,6 +49,7 @@ set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/globals.h"
     "${PROJECT_HEADER_DIR}/logfile.h"
     # "${PROJECT_LIB_DIR}/muonpi/muonpi.h"
+    "${PROJECT_HEADER_DIR}/strato-mqtthandler.h"
 )
 
 # ------------------------------
@@ -75,7 +77,13 @@ add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
+find_library(MOSQUITTO
+    names mosquitto
+    REQUIRED
+)
+
 target_link_libraries(strato-software
+    mosquitto
     gpiod
     lmic
     sensors
@@ -84,7 +92,6 @@ target_link_libraries(strato-software
     atomic
     stdc++fs
     Qt6::Core
-
 )
 
 # ------------------------------
