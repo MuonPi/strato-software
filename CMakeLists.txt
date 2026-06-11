@@ -74,6 +74,8 @@ add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(nlohmann_json 3.2.0 REQUIRED)
+
 
 target_link_libraries(strato-software
     gpiod
@@ -84,7 +86,7 @@ target_link_libraries(strato-software
     atomic
     stdc++fs
     Qt6::Core
-
+    nlohmann_json::nlohmann_json
 )
 
 # ------------------------------

@@ -18,6 +18,9 @@
 #include "strato-lorawan.h"
 #include "CayenneLPP.h"
 
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
 
 
 
@@ -88,6 +91,24 @@ bool Lorawan::execute()
         StratoPayload.addTemperature(8, static_cast<float>(StratoGlobals.temperature_mean));
         StratoGlobals.temperature_mean = 0;
         StratoGlobals.temperature_count = 0;
+
+
+
+        auto msg = buildUplinkJson(
+        "eui-70b3d57ed0052abe",
+        "marvin5300-arduino-test-0",
+        "70B3D57ED0052ABE",
+        "2026-06-11T10:56:53.510055778Z",
+        StratoGlobals.position[0], 
+        StratoGlobals.position[1],
+        StratoGlobals.position[2],
+        StratoGlobals.voltage_mean,
+        StratoGlobals.XOR_mean,
+        StratoGlobals.AND_mean,
+        StratoGlobals.pressure_mean / 100,
+        StratoGlobals.temperature_mean);
+
+        std::cout << msg << std::endl;
 
 
         sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());
@@ -258,5 +279,90 @@ bool Lorawan::reset()
     std::cout << "LORAWAN resetted" << std::endl;
     return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+std::string Lorawan::buildUplinkJson(
+    std::string device_id,
+    std::string application_id,
+    std::string dev_eui,
+    std::string time_iso8601,
+    double altitude,
+    double latitude,
+    double longitude,
+    double analog_in_3,
+    double analog_in_4,
+    double analog_in_5,
+    double barometric_pressure_7,
+    double temperature_8)
+{
+    json j;
+
+    j["name"] = "as.up.data.forward";
+    j["time"] = time_iso8601;
+
+    j["identifiers"] = {
+        {
+            {
+                "device_ids", {
+                    {"device_id", device_id},
+                    {"application_ids", {
+                        {"application_id", application_id}
+                    }},
+                    {"dev_eui", dev_eui}
+                }
+            }
+        }
+    };
+
+    j["data"] = {
+        {"@type", "type.googleapis.com/ttn.lorawan.v3.ApplicationUp"},
+        {"end_device_ids", {
+            {"device_id", device_id},
+            {"application_ids", {
+                {"application_id", application_id}
+            }},
+            {"dev_eui", dev_eui}
+        }},
+        {"uplink_message", {
+            {"decoded_payload", {
+                {"analog_in_3", analog_in_3},
+                {"analog_in_4", analog_in_4},
+                {"analog_in_5", analog_in_5},
+                {"barometric_pressure_7", barometric_pressure_7},
+                {"gps_2", {
+                    {"altitude", altitude},
+                    {"latitude", latitude},
+                    {"longitude", longitude}
+                }},
+                {"temperature_8", temperature_8}
+            }}
+        }}
+    };
+
+    return j.dump(2); // pretty print
+}
+
+
+
+
+
+
+
+
 
 

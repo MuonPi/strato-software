@@ -34,6 +34,19 @@ private:
     bool reset();
     bool setup(devaddr_t devaddr, const lmic_pinmap& lmic_pins, unsigned char *appskey, unsigned char *nwkskey);
     bool SeqNoFile(uint32_t& seqno);
+    std::string buildUplinkJson(
+    std::string device_id,
+    std::string application_id,
+    std::string dev_eui,
+    std::string time_iso8601,
+    double altitude,
+    double latitude,
+    double longitude,
+    double analog_in_3,
+    double analog_in_4,
+    double analog_in_5,
+    double barometric_pressure_7,
+    double temperature_8);
 };
 
 
