@@ -12,6 +12,7 @@
 #include <filesystem>
 
 #include "lmic_lorawan.h"
+#include "strato-mqtthandler.h"
 
 #include "strato-config.h"
 #include "globals.h"
@@ -39,8 +40,8 @@ const lmic_pinmap lmic_pins =
 
 
 
-Lorawan::Lorawan(Globals& globals)
-    : StratoGlobals(globals)
+Lorawan::Lorawan(Globals& globals, StratoMqttHandler& mqtt_ref)
+    : StratoGlobals(globals), mqtt{mqtt_ref}
 {}
 
 
@@ -93,12 +94,20 @@ bool Lorawan::execute()
         StratoGlobals.temperature_count = 0;
 
 
+        auto now = std::chrono::system_clock::now();
+        auto sec = std::chrono::time_point_cast<std::chrono::seconds>(now);
+        auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now - sec).count();
+        std::time_t tt = std::chrono::system_clock::to_time_t(now);
+        std::tm tm = *std::gmtime(&tt);
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y-%m-%dT%H:%M:%S") << '.' << std::setw(9) << std::setfill('0') << ns << 'Z';
+
 
         auto msg = buildUplinkJson(
         "eui-70b3d57ed0052abe",
         "marvin5300-arduino-test-0",
         "70B3D57ED0052ABE",
-        "2026-06-11T10:56:53.510055778Z",
+        oss.str(),
         StratoGlobals.position[0], 
         StratoGlobals.position[1],
         StratoGlobals.position[2],
@@ -109,6 +118,11 @@ bool Lorawan::execute()
         StratoGlobals.temperature_mean);
 
         std::cout << msg << std::endl;
+        auto mqtt_status = mqtt.status();
+        std::cout << "mqtt_status: " << static_cast<unsigned>(mqtt_status);
+        if (mqtt_status == StratoMqttHandler::Status::Connected) {
+            mqtt.publish("strato", msg);
+        }
 
 
         sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());

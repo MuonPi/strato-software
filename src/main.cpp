@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     // ========================== MQTT =============================
 
     StratoMqttHandler mqtt{"0", "localhost", 1883};
-    QObject::connect(&mqtt, StratoMqttHandler::connection_status, [](auto status) {
+    QObject::connect(&mqtt, &StratoMqttHandler::connection_status, [](auto status) {
         switch(status){
             case StratoMqttHandler::Status::Connected:
                 std::cout << "Connected!" << std::endl;
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     // ========================== Lorawan ==========================
 
     QThread* StratoLorawanThread = new QThread;
-    Lorawan* StratoLorawan = new Lorawan(StratoGlobals);
+    Lorawan* StratoLorawan = new Lorawan(StratoGlobals, mqtt);
     QTimer* StratoLorawanTimer = new QTimer(StratoLorawan);
 
     StratoLorawan->moveToThread(StratoLorawanThread);

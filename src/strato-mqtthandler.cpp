@@ -1,4 +1,4 @@
-#include "mqtthandler.h"
+#include "strato-mqtthandler.h"
 
 #include <QDebug>
 #include <QTimer>
@@ -7,9 +7,6 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #endif
-#include <cryptopp/sha.h>
-#include <cryptopp/filters.h>
-#include <cryptopp/hex.h>
 #include <string>
 #include <algorithm>
 
@@ -99,6 +96,11 @@ bool StratoMqttHandler::isInhibited()
     return (m_status == Status::Inhibited);
 }
 
+auto StratoMqttHandler::status() -> StratoMqttHandler::Status
+{
+    return m_status;
+}
+
 void StratoMqttHandler::setInhibited(bool inhibited)
 {
     if (inhibited)
@@ -114,7 +116,7 @@ void StratoMqttHandler::setInhibited(bool inhibited)
     }
 }
 
-StratoMqttHandler::StratoMqttHandler(const QString &station_id, const QString &host, unsigned port, const QString&, const int verbosity)
+StratoMqttHandler::StratoMqttHandler(const QString &station_id, const QString &host, unsigned port, const int verbosity)
     : QObject(nullptr), m_station_id{station_id.toStdString()}, m_host{host.toStdString()}, m_port{port}, m_verbose{verbosity}
 {
     qRegisterMetaType<Status>("Status");
@@ -144,12 +146,9 @@ void StratoMqttHandler::start(const QString &username, const QString &password)
     m_username = username.toStdString();
     m_password = password.toStdString();
 
-    CryptoPP::SHA1 sha1;
     std::string source = username.toStdString() + m_station_id; // This will be randomly generated somehow
-    m_client_id = "";
-    CryptoPP::StringSource{source, true, new CryptoPP::HashFilter(sha1, new CryptoPP::HexEncoder(new CryptoPP::StringSink(m_client_id)))};
 
-    initialise(m_client_id);
+    initialise(source);
 
     emit mqttConnect();
 }
@@ -176,7 +175,7 @@ void StratoMqttHandler::onMqttConnect()
         qWarning() << "Error setting username and password:" + QString{strerror(result)};
         return;
     }
-    result = mosquitto_connect_async(m_mqtt, Config::MQTT::host, Config::MQTT::port, Config::MQTT::keepalive_interval.count());
+    result = mosquitto_connect_async(m_mqtt, m_host.c_str(), m_port, m_keepalive_s);
     if (result != MOSQ_ERR_SUCCESS)
     {
         qDebug() << "Error on called mosquitto_connect_async";
@@ -323,7 +322,7 @@ void StratoMqttHandler::unsubscribe(const QString &topic)
     qInfo() << "Unsubscribed from topic '" + topic + "'.";
 }
 
-void StratoMqttHandler::publish(const QString &topic, const QString &content)
+void StratoMqttHandler::publish(const std::string &topic, const std::string &content)
 {
     if (!connected())
     {
@@ -331,7 +330,7 @@ void StratoMqttHandler::publish(const QString &topic, const QString &content)
     }
     // std::string usertopic{topic.toStdString()};
     // usertopic += m_username + "/" + m_station_id;
-    if (!publish(topic, content.toStdString()))
+    if (!publish_(topic, content))
     {
         m_publish_error_count++;
         if (m_publish_error_count < s_max_publish_errors)

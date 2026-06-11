@@ -27,6 +27,8 @@ public:
     ~StratoMqttHandler() override;
 
     bool isInhibited();
+    auto status() -> Status;
+    void publish(const std::string &topic, const std::string &content);
 
 signals:
     void receivedMessage(const QString &topic, const QString &content);
@@ -38,7 +40,6 @@ public slots:
     void start(const QString &username, const QString &password);
     void subscribe(const QString &topic);
     void unsubscribe(const QString &topic);
-    void publish(const QString &topic, const QString &content);
     void requestConnectionStatus();
     void setInhibited(bool inhibited = true);
 
@@ -86,11 +87,12 @@ private:
     std::vector<std::string> m_topics{};
 
     std::string m_host;
-    unsigned port;
+    unsigned m_port;
     std::string m_station_id{"0"};
     std::string m_username{};
     std::string m_password{};
     std::string m_client_id{};
+    unsigned m_keepalive_s{5};
 
     int m_verbose{0};
 

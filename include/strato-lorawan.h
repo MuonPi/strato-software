@@ -8,6 +8,7 @@
 
 #include "lmic_lorawan.h"
 #include "globals.h"
+#include "strato-mqtthandler.h"
 
 
 
@@ -16,7 +17,7 @@ class Lorawan : public QObject
     Q_OBJECT
 
 public:
-    Lorawan(Globals& globals);
+    Lorawan(Globals& globals, StratoMqttHandler& mqtt_ref);
     ~Lorawan();
     std::atomic<bool> active = false;
     std::atomic<bool> activated = false;
@@ -28,6 +29,7 @@ public slots:
 
 private:
     Globals& StratoGlobals;
+    StratoMqttHandler& mqtt;
     bool init();
     bool sendPayload(uint8_t* payload, uint8_t size);
     void runloop();
