@@ -98,8 +98,7 @@
 - Library installieren: Qt6
 
   ```bash
-  sudo apt install qt6-base-dev 
-  #qtbase5-dev qtchooser qt6-qmake qtbase5-dev-tools pyqt6-dev libqt6serialport5-dev libqt6svg5-dev libqwt-qt6-dev qtdeclarative6-dev
+  sudo apt install qt6-base-dev
   ```
 
 - Capn Proto
@@ -108,11 +107,15 @@
   sudo apt install capnproto libcapnp-dev
   ```
 
+- Mosquitto
+  ```bash
+  sudo apt install libmosquitto-dev
+  ```
+
   Sonstige Tools installieren:
 
   ```bash
-  sudo apt install libglib2.0-dev pkg-config libsecret-1-dev libboost-all-dev
-  #libcrypto++-dev libcrypto++-doc libcrypto++-utils lftp libmosquitto-dev libconfig++-dev file  
+  sudo apt install libglib2.0-dev pkg-config libsecret-1-dev libboost-all-dev libconfig++-dev 
   ```
 
 - Raspberry Pi neu starten
