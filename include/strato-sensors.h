@@ -7,8 +7,6 @@
 #include <QObject>
 
 #include "globals.h"
-#include "muonpi.h"
-
 
 
 class Sensors : public QObject

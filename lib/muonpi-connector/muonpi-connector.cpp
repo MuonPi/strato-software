@@ -1,5 +1,5 @@
 
-#include "muonpi.h"
+#include "muonpi-connector.h"
 
 #include "network/tcpconnection.h"
 #include "network/tcpmessage_keys.h"

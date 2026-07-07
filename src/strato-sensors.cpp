@@ -4,7 +4,7 @@
 
 #include "strato-config.h"
 #include "globals.h"
-#include "muonpi.h"
+#include "muonpi-connector.h"
 #include "ads1115.h"
 #include "qmc5883.h"
 #include "veml6075.h"

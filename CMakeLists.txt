@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(strato-software VERSION 0.1 LANGUAGES CXX C)
 
+option(BUILD_TESTCLIENTS "Build test clients for debugging" OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ------------------------------
@@ -47,7 +49,6 @@ set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/strato-config.h"
     "${PROJECT_HEADER_DIR}/globals.h"
     "${PROJECT_HEADER_DIR}/logfile.h"
-    # "${PROJECT_LIB_DIR}/muonpi/muonpi.h"
 )
 
 # ------------------------------
@@ -71,7 +72,15 @@ add_subdirectory(${PROJECT_LIB_DIR}/sensors)
 
 add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
-add_subdirectory(${PROJECT_LIB_DIR}/muonpi)
+set(BUILD_DAEMON OFF CACHE BOOL "" FORCE)
+set(BUILD_GUI OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_TCP_DEBUG_CLIENT OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_TCP_DEBUG_SERVER OFF CACHE BOOL "" FORCE)
+set(BUILD_HARDWARE ON CACHE BOOL "" FORCE)
+add_subdirectory(${PROJECT_LIB_DIR}/muondetector)
+
+add_subdirectory(${PROJECT_LIB_DIR}/muonpi-connector)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
@@ -80,7 +89,7 @@ target_link_libraries(strato-software
     lmic
     sensors
     cayennelpp
-    muonpi
+    muonpi-connector
     atomic
     stdc++fs
     Qt6::Core

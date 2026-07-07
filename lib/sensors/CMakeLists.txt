@@ -13,6 +13,7 @@ add_library(sensors STATIC
 
 target_include_directories(sensors PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../muonpi-connector
 )
 
 # find_library(I2C_LIB i2c REQUIRED)

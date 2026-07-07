@@ -1,4 +1,4 @@
-#include "muonpi.h"
+#include "muonpi-connector.h"
 #include <iostream>
 
 int main() {
