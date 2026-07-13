@@ -29,6 +29,10 @@ struct Globals
     std::atomic<double> uv_mean {0};
     std::atomic<uint16_t> uv_count {0};
 
+    std::atomic<double> ltr390_uv {0};
+    std::atomic<double> ltr390_uv_mean {0};
+    std::atomic<uint16_t> ltr390_uv_count {0};
+
     std::atomic<double> temperature {0};
     std::atomic<double> temperature_mean {0};
     std::atomic<uint16_t> temperature_count {0};

@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "muonpi-connector.h"
 #include "ads1115.h"
+#include "ltr390uv01.h"
 #include "qmc5883.h"
 #include "veml6075.h"
 #include "bme280.h"
@@ -31,6 +32,10 @@ QMC5883 strato_qmc5883(QMC5883_ADDR);
 
 #ifdef VEML6075_ADDR
 VEML6075 strato_veml6075(VEML6075_ADDR);
+#endif
+
+#ifdef LTR390UV01_ADDR
+LTR390UV01 strato_ltr390uv01(LTR390UV01_ADDR);
 #endif
 
 #ifdef BME280_ADDR
@@ -90,6 +95,7 @@ bool Sensors::execute()
             ads1115_inited = false;
             qmc5883_inited = false;
             veml6075_inited = false;
+            ltr390uv01_inited = false;
             bme280_inited = false;
             ozone3click_inited = false;
             inited = true;
@@ -142,9 +148,10 @@ bool Sensors::execute()
         #ifdef ADS1115_ADDR
         if (ads1115_inited)
         {
-            double voltage_temp = 0;
-            if (strato_ads1115.getVoltage(voltage_temp))
+            ADS1115::Sample voltage_sample = strato_ads1115.getSample(ADS1115::CH0);
+            if (voltage_sample != ADS1115::InvalidSample)
             {
+                double voltage_temp = voltage_sample.voltage;
                 voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
                 StratoGlobals.voltage = voltage_temp;
                 StratoGlobals.voltage_mean = ((StratoGlobals.voltage_mean * StratoGlobals.voltage_count) + voltage_temp) / (StratoGlobals.voltage_count + 1);
@@ -153,10 +160,10 @@ bool Sensors::execute()
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
-                ads1115_inited = strato_ads1115.init();
+                ads1115_inited = strato_ads1115.devicePresent();
         }
         else
-            ads1115_inited = strato_ads1115.init();
+            ads1115_inited = strato_ads1115.devicePresent();
         #endif
 
 
@@ -215,6 +222,29 @@ bool Sensors::execute()
         }
         else
             veml6075_inited = strato_veml6075.init();
+        #endif
+
+
+
+        #ifdef LTR390UV01_ADDR
+        if (ltr390uv01_inited)
+        {
+            LTR390UV01::Status status = strato_ltr390uv01.mainStatus();
+            if (status.dataStatus)
+            {
+                double uv_temp = strato_ltr390uv01.read();
+                StratoGlobals.ltr390_uv = uv_temp;
+                StratoGlobals.ltr390_uv_mean = ((StratoGlobals.ltr390_uv_mean * StratoGlobals.ltr390_uv_count) + uv_temp) / (StratoGlobals.ltr390_uv_count + 1);
+                StratoGlobals.ltr390_uv_count++;
+                writeLogfile("ltr390_uv", timestamp_filename, timestamp_value, &uv_temp, 1);
+                // std::cout << "getLTR390UV: " << uv_temp << std::endl;
+            }
+        }
+        else
+        {
+            strato_ltr390uv01.init();
+            ltr390uv01_inited = strato_ltr390uv01.devicePresent();
+        }
         #endif
 
 
@@ -297,5 +327,3 @@ bool Sensors::execute()
         return false;
     }
 }
-
-

@@ -88,6 +88,7 @@ target_link_libraries(strato-software
     gpiod
     lmic
     sensors
+    muondetector-hardware
     cayennelpp
     muonpi-connector
     atomic
@@ -123,4 +124,3 @@ install(TARGETS strato-software
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${SERVICE_NAME}.service
         DESTINATION ${SERVICE_INSTALL_DIR})
-

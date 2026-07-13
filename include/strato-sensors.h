@@ -30,6 +30,7 @@ private:
     bool ads1115_inited = false;
     bool qmc5883_inited = false;
     bool veml6075_inited = false;
+    bool ltr390uv01_inited = false;
     bool bme280_inited = false;
     bool ozone3click_inited = false;
 };
