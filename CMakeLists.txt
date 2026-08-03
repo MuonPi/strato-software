@@ -68,16 +68,14 @@ target_include_directories(strato-software PUBLIC
 # ------------------------------
 add_subdirectory(${PROJECT_LIB_DIR}/lmic)
 
-add_subdirectory(${PROJECT_LIB_DIR}/sensors)
-
 add_subdirectory(${PROJECT_LIB_DIR}/cayennelpp)
 
-set(BUILD_DAEMON OFF CACHE BOOL "" FORCE)
-set(BUILD_GUI OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_DAEMON OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_GUI OFF CACHE BOOL "" FORCE)
+set(MUONDETECTOR_BUILD_HARDWARE_LIB ON CACHE BOOL "" FORCE)
 set(MUONDETECTOR_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(MUONDETECTOR_BUILD_TCP_DEBUG_CLIENT OFF CACHE BOOL "" FORCE)
 set(MUONDETECTOR_BUILD_TCP_DEBUG_SERVER OFF CACHE BOOL "" FORCE)
-set(BUILD_HARDWARE ON CACHE BOOL "" FORCE)
 add_subdirectory(${PROJECT_LIB_DIR}/muondetector)
 
 add_subdirectory(${PROJECT_LIB_DIR}/muonpi-connector)
@@ -87,7 +85,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 target_link_libraries(strato-software
     gpiod
     lmic
-    sensors
     muondetector-hardware
     cayennelpp
     muonpi-connector

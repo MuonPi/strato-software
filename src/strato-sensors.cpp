@@ -1,18 +1,57 @@
 #include <iostream>
 #include <cmath>
 #include <chrono>
+#include <thread>
 
 #include "strato-config.h"
 #include "globals.h"
 #include "muonpi-connector.h"
-#include "ads1115.h"
-#include "ltr390uv01.h"
-#include "qmc5883.h"
+#include "i2c/ads1115.h"
+#include "i2c/as7331.h"
+#include "i2c/as7343.h"
+#include "i2c/bme280.h"
+#include "i2c/ltr390uv01.h"
+#include "i2c/mpu6050.h"
+#include "i2c/qmc5883.h"
+#include "i2c/sht31.h"
+#include "i2c/ozone3click.h"
+
+#ifdef VEML6075_ADDR
 #include "veml6075.h"
-#include "bme280.h"
-#include "ozone3click.h"
+#endif
+
 #include "strato-sensors.h"
 #include "logfile.h"
+
+
+
+namespace
+{
+#ifdef AS7331_ADDR
+constexpr uint8_t AS7331_UV_CHANNELS{3};
+#endif
+#ifdef AS7343_ADDR
+constexpr uint8_t AS7343_SPECTRUM_CHANNELS{18};
+#endif
+#ifdef MPU6050_ADDR
+constexpr uint8_t MPU6050_VECTOR_CHANNELS{3};
+#endif
+
+#ifdef AS7343_ADDR
+AS7343::Config makeAs7343Config()
+{
+    AS7343::Config config{};
+    config.autoSmuxMode = AS7343::AUTO_SMUX_MODE::_18Ch;
+    config.fifoMap = 0x7e;
+    config.gain = AS7343::GAIN::_16x;
+    config.atime = 0x09;
+    config.astep = 3596;
+    config.ledAct = true;
+    config.ledDrive = 0b0100;
+    return config;
+}
+#endif
+}
 
 
 
@@ -38,8 +77,24 @@ VEML6075 strato_veml6075(VEML6075_ADDR);
 LTR390UV01 strato_ltr390uv01(LTR390UV01_ADDR);
 #endif
 
+#ifdef AS7331_ADDR
+AS7331 strato_as7331(AS7331_ADDR);
+#endif
+
+#ifdef AS7343_ADDR
+AS7343 strato_as7343(AS7343_ADDR);
+#endif
+
 #ifdef BME280_ADDR
 BME280 strato_bme280(BME280_ADDR);
+#endif
+
+#ifdef SHT31_ADDR
+SHT31 strato_sht31(SHT31_ADDR);
+#endif
+
+#ifdef MPU6050_ADDR
+MPU6050 strato_mpu6050(MPU6050_ADDR);
 #endif
 
 #ifdef OZONE3CLICK_LMP_ADDR
@@ -96,7 +151,11 @@ bool Sensors::execute()
             qmc5883_inited = false;
             veml6075_inited = false;
             ltr390uv01_inited = false;
+            as7331_inited = false;
+            as7343_inited = false;
             bme280_inited = false;
+            sht31_inited = false;
+            mpu6050_inited = false;
             ozone3click_inited = false;
             inited = true;
         }
@@ -249,6 +308,86 @@ bool Sensors::execute()
 
 
 
+        #ifdef AS7331_ADDR
+        if (as7331_inited)
+        {
+            strato_as7331.startMeasurement();
+
+            AS7331::Status status = strato_as7331.opStatus();
+            for (uint8_t i{0}; i < 100 && !status.nData; i++)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                status = strato_as7331.opStatus();
+            }
+
+            auto uva = strato_as7331.readUVA();
+            auto uvb = strato_as7331.readUVB();
+            auto uvc = strato_as7331.readUVC();
+
+            if (status.nData && uva.has_value() && uvb.has_value() && uvc.has_value())
+            {
+                double as7331_uv_temp[AS7331_UV_CHANNELS] {uva.value(), uvb.value(), uvc.value()};
+
+                for(uint8_t i{0}; i < AS7331_UV_CHANNELS; i++)
+                {
+                    StratoGlobals.as7331_uv[i] = as7331_uv_temp[i];
+                    StratoGlobals.as7331_uv_mean[i] = ((StratoGlobals.as7331_uv_mean[i] * StratoGlobals.as7331_uv_count) + as7331_uv_temp[i]) / (StratoGlobals.as7331_uv_count + 1);
+                }
+                StratoGlobals.as7331_uv_count++;
+                writeLogfile("as7331_uv", timestamp_filename, timestamp_value, as7331_uv_temp, AS7331_UV_CHANNELS);
+                // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
+            }
+            else
+                as7331_inited = strato_as7331.identify();
+        }
+        else
+        {
+            strato_as7331.reset();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            strato_as7331.setGain(AS7331::GAIN::_2048x);
+            as7331_inited = strato_as7331.identify();
+        }
+        #endif
+
+
+
+        #ifdef AS7343_ADDR
+        if (as7343_inited)
+        {
+            auto spectrum_values = strato_as7343.readSpectrum();
+            if (spectrum_values.size() >= AS7343_SPECTRUM_CHANNELS)
+            {
+                double spectrum_temp[AS7343_SPECTRUM_CHANNELS] {0};
+                for(uint8_t i{0}; i < AS7343_SPECTRUM_CHANNELS; i++)
+                {
+                    spectrum_temp[i] = spectrum_values.at(i).value;
+                    StratoGlobals.as7343_spectrum[i] = spectrum_temp[i];
+                    StratoGlobals.as7343_spectrum_mean[i] = ((StratoGlobals.as7343_spectrum_mean[i] * StratoGlobals.as7343_spectrum_count) + spectrum_temp[i]) / (StratoGlobals.as7343_spectrum_count + 1);
+                }
+
+                StratoGlobals.as7343_spectrum_count++;
+                writeLogfile("as7343_spectrum", timestamp_filename, timestamp_value, spectrum_temp, AS7343_SPECTRUM_CHANNELS);
+                // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
+            }
+            else
+                as7343_inited = false;
+        }
+        else
+        {
+            if (strato_as7343.identify())
+            {
+                strato_as7343.reset();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                strato_as7343.init(makeAs7343Config());
+                as7343_inited = true;
+            }
+            else
+                as7343_inited = false;
+        }
+        #endif
+
+
+
         #ifdef BME280_ADDR
         if (bme280_inited)
         {
@@ -291,6 +430,79 @@ bool Sensors::execute()
         }
         else
             bme280_inited = strato_bme280.init();
+        #endif
+
+
+
+        #ifdef SHT31_ADDR
+        if (sht31_inited)
+        {
+            float temperature_temp_float = 0.0F;
+            float humidity_temp_float = 0.0F;
+
+            if (strato_sht31.getValues(temperature_temp_float, humidity_temp_float))
+            {
+                double temperature_temp = temperature_temp_float;
+                double humidity_temp = humidity_temp_float;
+
+                StratoGlobals.temperature = temperature_temp;
+                StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
+                StratoGlobals.temperature_count++;
+                writeLogfile("temperature", timestamp_filename, timestamp_value, &temperature_temp, 1);
+                // std::cout << "getSHT31Temperature: " << temperature_temp << std::endl;
+
+                StratoGlobals.humidity = humidity_temp;
+                StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + humidity_temp) / (StratoGlobals.humidity_count + 1);
+                StratoGlobals.humidity_count++;
+                writeLogfile("humidity", timestamp_filename, timestamp_value, &humidity_temp, 1);
+                // std::cout << "getSHT31Humidity: " << humidity_temp << std::endl;
+            }
+            else
+                sht31_inited = strato_sht31.devicePresent();
+        }
+        else
+            sht31_inited = strato_sht31.devicePresent();
+        #endif
+
+
+
+        #ifdef MPU6050_ADDR
+        if (mpu6050_inited)
+        {
+            MPU6050::Measurement measurement{};
+            if (strato_mpu6050.getMeasurement(measurement) && measurement.valid)
+            {
+                double motion_temp[7] {
+                    measurement.accelerationG.x,
+                    measurement.accelerationG.y,
+                    measurement.accelerationG.z,
+                    measurement.gyroscopeDps.x,
+                    measurement.gyroscopeDps.y,
+                    measurement.gyroscopeDps.z,
+                    measurement.temperatureC
+                };
+
+                for(uint8_t i{0}; i < MPU6050_VECTOR_CHANNELS; i++)
+                {
+                    StratoGlobals.acceleration[i] = motion_temp[i];
+                    StratoGlobals.acceleration_mean[i] = ((StratoGlobals.acceleration_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[i]) / (StratoGlobals.mpu6050_count + 1);
+
+                    const uint8_t gyro_index = i + MPU6050_VECTOR_CHANNELS;
+                    StratoGlobals.gyroscope[i] = motion_temp[gyro_index];
+                    StratoGlobals.gyroscope_mean[i] = ((StratoGlobals.gyroscope_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[gyro_index]) / (StratoGlobals.mpu6050_count + 1);
+                }
+
+                StratoGlobals.mpu6050_temperature = measurement.temperatureC;
+                StratoGlobals.mpu6050_temperature_mean = ((StratoGlobals.mpu6050_temperature_mean * StratoGlobals.mpu6050_count) + measurement.temperatureC) / (StratoGlobals.mpu6050_count + 1);
+                StratoGlobals.mpu6050_count++;
+                writeLogfile("mpu6050_motion", timestamp_filename, timestamp_value, motion_temp, 7);
+                // std::cout << "getMPU6050Motion: " << motion_temp[0] << " " << motion_temp[1] << " " << motion_temp[2] << std::endl;
+            }
+            else
+                mpu6050_inited = strato_mpu6050.init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
+        }
+        else
+            mpu6050_inited = strato_mpu6050.init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
         #endif
 
 

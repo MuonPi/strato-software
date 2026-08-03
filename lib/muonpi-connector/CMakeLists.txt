@@ -19,6 +19,7 @@ add_library(muonpi-connector STATIC
 )
 
 target_include_directories(muonpi-connector PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../muondetector/library/src
 )
 
