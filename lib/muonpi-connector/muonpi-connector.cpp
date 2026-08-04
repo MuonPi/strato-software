@@ -138,7 +138,7 @@ void MUONPI::decode(const TcpPacket& packet) {
     else if (msgID == TCP_MSG_KEY::MSG_GPIO_RATE)
     {
         auto event = CapnpCodec<GpioRateEvent>::decode(packet.payload);
-        // gpio_rate[event.whichRate] = event.rate.at(0); // Fix
+        gpio_rate[event.whichRate] = event.rate.at(0).second;
         // std::cout << "Rate " << (whichRate == 0 ? "XOR" : "AND") << " " << averageValue << std::endl;
         return;
     }
