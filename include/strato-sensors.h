@@ -36,6 +36,7 @@ private:
     bool bme280_inited = false;
     bool sht31_inited = false;
     bool mpu6050_inited = false;
+    bool sen0321_inited = false;
     bool ozone3click_inited = false;
 };
 

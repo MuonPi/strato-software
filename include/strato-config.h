@@ -23,6 +23,7 @@
 #define BME280_ADDR 0x76
 // #define SHT31_ADDR 0x44
 // #define MPU6050_ADDR 0x68
+// #define SEN0321_ADDR 0x73
 // #define OZONE3CLICK_LMP_ADDR 0x48
 // #define OZONE3CLICK_ADC_ADDR 0x4D
 

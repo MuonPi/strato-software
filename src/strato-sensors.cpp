@@ -13,12 +13,10 @@
 #include "i2c/ltr390uv01.h"
 #include "i2c/mpu6050.h"
 #include "i2c/qmc5883.h"
+#include "i2c/sen0321.h"
 #include "i2c/sht31.h"
+#include "i2c/veml6075.h"
 #include "i2c/ozone3click.h"
-
-#ifdef VEML6075_ADDR
-#include "veml6075.h"
-#endif
 
 #include "strato-sensors.h"
 #include "logfile.h"
@@ -97,6 +95,10 @@ SHT31 strato_sht31(SHT31_ADDR);
 MPU6050 strato_mpu6050(MPU6050_ADDR);
 #endif
 
+#ifdef SEN0321_ADDR
+SEN0321 strato_sen0321(SEN0321_ADDR);
+#endif
+
 #ifdef OZONE3CLICK_LMP_ADDR
 #ifdef OZONE3CLICK_ADC_ADDR
 OZONE3CLICK strato_ozone3click(OZONE3CLICK_LMP_ADDR, OZONE3CLICK_ADC_ADDR);
@@ -156,6 +158,7 @@ bool Sensors::execute()
             bme280_inited = false;
             sht31_inited = false;
             mpu6050_inited = false;
+            sen0321_inited = false;
             ozone3click_inited = false;
             inited = true;
         }
@@ -266,12 +269,18 @@ bool Sensors::execute()
         #ifdef VEML6075_ADDR
         if (veml6075_inited)
         {
-            double uv_temp[4] {0};
-            if (strato_veml6075.getUV(uv_temp))
+            VEML6075::UVReading uv_reading{};
+            if (strato_veml6075.readUV(uv_reading) && uv_reading.valid)
             {
+                double uv_temp[4] {
+                    uv_reading.uvaIndex,
+                    uv_reading.uvbIndex,
+                    static_cast<double>(uv_reading.raw.uva),
+                    static_cast<double>(uv_reading.raw.uvb)
+                };
                 for(uint8_t i{0}; i < 4; i++)
                     StratoGlobals.uv[i] = uv_temp[i];
-                StratoGlobals.uv_mean = (StratoGlobals.uv_mean * StratoGlobals.uv_count) + ((uv_temp[0] + uv_temp[1]) / 2) / (StratoGlobals.uv_count + 1);
+                StratoGlobals.uv_mean = ((StratoGlobals.uv_mean * StratoGlobals.uv_count) + uv_reading.uvIndex) / (StratoGlobals.uv_count + 1);
                 StratoGlobals.uv_count++;
                 writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 4);
                 // std::cout << "getUV: " << uv_temp[0] << " " << uv_temp[1] << " " <<  uv_temp[2] << " " << uv_temp[3] << std::endl;
@@ -503,6 +512,27 @@ bool Sensors::execute()
         }
         else
             mpu6050_inited = strato_mpu6050.init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
+        #endif
+
+
+
+        #ifdef SEN0321_ADDR
+        if (sen0321_inited)
+        {
+            double ozone_temp = 0;
+            if (strato_sen0321.getOzone(ozone_temp))
+            {
+                StratoGlobals.ozone = ozone_temp;
+                StratoGlobals.ozone_mean = ((StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp) / (StratoGlobals.ozone_count + 1);
+                StratoGlobals.ozone_count++;
+                writeLogfile("sen0321_ozone", timestamp_filename, timestamp_value, &ozone_temp, 1);
+                // std::cout << "getSEN0321Ozone: " << ozone_temp << std::endl;
+            }
+            else
+                sen0321_inited = strato_sen0321.init();
+        }
+        else
+            sen0321_inited = strato_sen0321.init();
         #endif
 
 
