@@ -161,6 +161,7 @@ int main(int argc, char** argv)
                 {
                     std::cerr << "StratoSensorsThread recovered" << std::endl;
                     StratoSensors->activated = true;
+                    QTimer::singleShot(0, StratoSensors, &Sensors::execute);
                     return;
                 }
                 else
@@ -212,6 +213,7 @@ int main(int argc, char** argv)
                 {
                     std::cerr << "StratoLorawanThread recovered" << std::endl;
                     StratoLorawan->activated = true;
+                    QTimer::singleShot(0, StratoLorawan, &Lorawan::execute);
                     return;
                 }
                 else

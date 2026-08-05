@@ -61,6 +61,10 @@ struct Globals
     std::atomic<double> mpu6050_temperature_mean {0};
     std::atomic<uint16_t> mpu6050_count {0};
 
+    std::atomic<double> uv_guvas12sd {0};
+    std::atomic<double> uv_guvas12sd_mean {0};
+    std::atomic<uint16_t> uv_guvas12sd_count {0};
+
     std::atomic<double> ozone {0};
     std::atomic<double> ozone_mean {0};
     std::atomic<uint16_t> ozone_count {0};

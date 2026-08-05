@@ -274,6 +274,19 @@ bool Sensors::execute()
             }
             else
                 ads1115_inited = stratoAds1115().devicePresent();
+
+            ADS1115::Sample uv_guvas12sd_sample = stratoAds1115().getSample(ADS1115::CH2);
+            if (uv_guvas12sd_sample != ADS1115::InvalidSample)
+            {
+                double uv_guvas12sd_temp = uv_guvas12sd_sample.voltage;
+                StratoGlobals.uv_guvas12sd = uv_guvas12sd_temp;
+                StratoGlobals.uv_guvas12sd_mean = ((StratoGlobals.uv_guvas12sd_mean * StratoGlobals.uv_guvas12sd_count) + uv_guvas12sd_temp) / (StratoGlobals.uv_guvas12sd_count + 1);
+                StratoGlobals.uv_guvas12sd_count++;
+                writeLogfile("uv_guvas12sd", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
+                // std::cout << "getVoltage: " << voltage_temp << std::endl;
+            }
+            else
+                ads1115_inited = stratoAds1115().devicePresent();
         }
         else
             ads1115_inited = stratoAds1115().devicePresent();

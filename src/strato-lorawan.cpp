@@ -88,9 +88,6 @@ bool Lorawan::execute()
         StratoPayload.addTemperature(8, static_cast<float>(StratoGlobals.temperature_mean));
         StratoGlobals.temperature_mean = 0;
         StratoGlobals.temperature_count = 0;
-        StratoPayload.addAnalogInput(9, static_cast<float>(StratoGlobals.ltr390_uv_mean));
-        StratoGlobals.ltr390_uv_mean = 0;
-        StratoGlobals.ltr390_uv_count = 0;
 
 
         sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize());

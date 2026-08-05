@@ -16,7 +16,7 @@
 #define WATCHDOG_INTERVAL 500 //ms
 #define LOGFILE_INTERVAL 30 //min
 
-#define OOK_USED
+// #define OOK_USED
 #define OOK_GPIO_PIN 7
 #define OOK_HALF_BIT_US 500
 #define OOK_REPEAT_GAP_MS 20
@@ -27,17 +27,17 @@
 
 #define MUONPI_USED
 #define ADS1115_ADDR 0x4A
-// #define QMC5883_ADDR 0x0D
+#define QMC5883_ADDR 0x0D
 // #define VEML6075_ADDR 0x10
 #define LTR390UV01_ADDR 0x53
-// #define AS7331_ADDR 0x74
-// #define AS7343_ADDR 0x39
+#define AS7331_ADDR 0x74
+#define AS7343_ADDR 0x39
 #define BME280_ADDR 0x76
-// #define SHT31_ADDR 0x44
-// #define MPU6050_ADDR 0x68
+#define SHT31_ADDR 0x44
+#define MPU6050_ADDR 0x68
 // #define SEN0321_ADDR 0x73
-// #define OZONE3CLICK_LMP_ADDR 0x48
-// #define OZONE3CLICK_ADC_ADDR 0x4D
+#define OZONE3CLICK_LMP_ADDR 0x48
+#define OZONE3CLICK_ADC_ADDR 0x4D
 
 #define VOLTAGE_DIVIDER_A0_R1 20
 #define VOLTAGE_DIVIDER_A0_R2 51
@@ -65,32 +65,17 @@
 
 
 
-#define DEVICEID "eui-70b3d57ed0052abe"     // Arduino-Test-0
-#define ABP_DEVICEID "eui-70b3d57ed0052abe"
+#define DEVICEID "70B3D57ED0078A25"     // skymi strato
+#define ABP_DEVICEID "70B3D57ED0078A25"
 
 // The Network Session Key / DO NOT SHARE
-inline constexpr uint8_t NWKSKEY[16] = {0xCC, 0xB8, 0xF3, 0xD3, 0xFD, 0x39, 0x75, 0xAE, 0xE4, 0x84, 0x35, 0x90, 0xFE, 0x37, 0x1C, 0x88};
+inline constexpr uint8_t NWKSKEY[16] = {0x70, 0x22, 0xB6, 0x4D, 0xD2, 0xA9, 0x9F, 0xC4, 0xAE, 0x34, 0xA0, 0x1D, 0xAD, 0xAD, 0x6F, 0xE1};
 
 // LoRaWAN AppSKey, application session key / DO NOT SHARE
-inline constexpr uint8_t APPSKEY[16] = {0xA8, 0xDF, 0x3A, 0xC7, 0x51, 0xB2, 0xD1, 0x73, 0xAC, 0x58, 0x81, 0x91, 0xD2, 0x58, 0xCB, 0x4E};
+inline constexpr uint8_t APPSKEY[16] = {0x3A, 0xCC, 0xA3, 0xC0, 0xE4, 0x0A, 0x46, 0x4A, 0xBF, 0x12, 0x16, 0x6A, 0x44, 0xF4, 0xCF, 0x0A};
 
 // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-inline constexpr uint32_t DEVADDR = 0x260BC37E;
-
-
-
-
-// #define DEVICEID "eui-70B3D57ED006549C"      // strato-abp
-// #define ABP_DEVICEID "eui-70B3D57ED006549C"
-
-// // The Network Session Key / DO NOT SHARE
-// static const u1_t NWKSKEY[16] = {0x3B, 0x78, 0xFB, 0x1B, 0x52, 0xFF, 0xDD, 0xC0, 0xA1, 0x4B, 0xB3, 0x50, 0x12, 0x05, 0x6A, 0x5B};
-
-// // LoRaWAN AppSKey, application session key / DO NOT SHARE
-// static const u1_t APPSKEY[16] = {0x3F, 0x39, 0xB5, 0xFF, 0x34, 0x23, 0x44, 0xC4, 0x2C, 0x61, 0x25, 0x52, 0xFF, 0x4F, 0x3F, 0xD1};
-
-// // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-// static const u4_t DEVADDR = 0x260B51D0;
+inline constexpr uint32_t DEVADDR = 0x260B88EF;
 
 
 
