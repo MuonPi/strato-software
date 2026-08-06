@@ -72,10 +72,14 @@ bool Lorawan::execute()
         CayenneLPP StratoPayload(255);
 
         StratoPayload.reset();
-        StratoPayload.addGPS(2, static_cast<float>(StratoGlobals.position[0]), static_cast<float>(StratoGlobals.position[1]), static_cast<float>(StratoGlobals.position[2]));
-        StratoPayload.addAnalogInput(3, static_cast<float>(StratoGlobals.voltage_mean));
-        StratoGlobals.voltage_mean = 0;
-        StratoGlobals.voltage_count = 0;
+        if(StratoGlobals.position[0] != 0 && StratoGlobals.position[1] != 0)
+            StratoPayload.addGPS(2, static_cast<float>(StratoGlobals.position[0]), static_cast<float>(StratoGlobals.position[1]), static_cast<float>(StratoGlobals.position[2]));
+        StratoGlobals.position[0] = 0;
+        StratoGlobals.position[1] = 0;
+        StratoGlobals.position[2] = 0;
+        StratoPayload.addAnalogInput(3, static_cast<float>(StratoGlobals.battery_voltage_mean));
+        StratoGlobals.battery_voltage_mean = 0;
+        StratoGlobals.battery_voltage_count = 0;
         StratoPayload.addAnalogInput(4, static_cast<float>(StratoGlobals.XOR_mean));
         StratoGlobals.XOR_mean = 0;
         StratoGlobals.XOR_count = 0;

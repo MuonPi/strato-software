@@ -273,16 +273,29 @@ bool Sensors::execute()
         #ifdef ADS1115_ADDR
         if (ads1115_inited)
         {
-            ADS1115::Sample voltage_sample = stratoAds1115().getSample(ADS1115::CH0);
-            if (voltage_sample != ADS1115::InvalidSample)
+            ADS1115::Sample battery_voltage_sample = stratoAds1115().getSample(ADS1115::CH0);
+            if (battery_voltage_sample != ADS1115::InvalidSample)
             {
-                double voltage_temp = voltage_sample.voltage;
-                voltage_temp = voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
-                StratoGlobals.voltage = voltage_temp;
-                StratoGlobals.voltage_mean = ((StratoGlobals.voltage_mean * StratoGlobals.voltage_count) + voltage_temp) / (StratoGlobals.voltage_count + 1);
-                StratoGlobals.voltage_count++;
-                writeLogfile("battery_voltage_ads1115_ch0", timestamp_filename, timestamp_value, &voltage_temp, 1);
+                double battery_voltage_temp = battery_voltage_sample.voltage;
+                battery_voltage_temp = battery_voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
+                StratoGlobals.battery_voltage = battery_voltage_temp;
+                StratoGlobals.battery_voltage_mean = ((StratoGlobals.battery_voltage_mean * StratoGlobals.battery_voltage_count) + battery_voltage_temp) / (StratoGlobals.battery_voltage_count + 1);
+                StratoGlobals.battery_voltage_count++;
+                writeLogfile("battery_voltage_ads1115_ch0", timestamp_filename, timestamp_value, &battery_voltage_temp, 1);
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
+            }
+            else
+                ads1115_inited = stratoAds1115().identify();
+            
+            ADS1115::Sample solar_voltage_sample = stratoAds1115().getSample(ADS1115::CH0);
+            if (solar_voltage_sample != ADS1115::InvalidSample)
+            {
+                double solar_voltage_temp = solar_voltage_sample.voltage;
+                solar_voltage_temp = solar_voltage_temp * (VOLTAGE_DIVIDER_A0_R1 + VOLTAGE_DIVIDER_A0_R2) / VOLTAGE_DIVIDER_A0_R2;
+                StratoGlobals.solar_voltage = solar_voltage_temp;
+                StratoGlobals.solar_voltage_mean = ((StratoGlobals.solar_voltage_mean * StratoGlobals.solar_voltage_count) + solar_voltage_temp) / (StratoGlobals.solar_voltage_count + 1);
+                StratoGlobals.solar_voltage_count++;
+                writeLogfile("solar_voltage_ads1115_ch1", timestamp_filename, timestamp_value, &solar_voltage_temp, 1);
             }
             else
                 ads1115_inited = stratoAds1115().identify();
@@ -295,7 +308,6 @@ bool Sensors::execute()
                 StratoGlobals.uv_guvas12sd_mean = ((StratoGlobals.uv_guvas12sd_mean * StratoGlobals.uv_guvas12sd_count) + uv_guvas12sd_temp) / (StratoGlobals.uv_guvas12sd_count + 1);
                 StratoGlobals.uv_guvas12sd_count++;
                 writeLogfile("uv_guvas12sd_ads1115_ch2", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
-                // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
                 ads1115_inited = stratoAds1115().identify();
@@ -605,7 +617,7 @@ bool Sensors::execute()
                 StratoGlobals.ozone = ozone_temp;
                 StratoGlobals.ozone_mean = ((StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp) / (StratoGlobals.ozone_count + 1);
                 StratoGlobals.ozone_count++;
-                writeLogfile("sen0321_ozone", timestamp_filename, timestamp_value, &ozone_temp, 1);
+                writeLogfile("ozone_sen0321", timestamp_filename, timestamp_value, &ozone_temp, 1);
                 // std::cout << "getSEN0321Ozone: " << ozone_temp << std::endl;
             }
             else
@@ -627,7 +639,7 @@ bool Sensors::execute()
                 StratoGlobals.ozone = ozone_temp;
                 StratoGlobals.ozone_mean = (StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp / (StratoGlobals.ozone_count + 1);
                 StratoGlobals.ozone_count++;
-                writeLogfile("ozone", timestamp_filename, timestamp_value, &ozone_temp, 1);
+                writeLogfile("ozone_ozone3click", timestamp_filename, timestamp_value, &ozone_temp, 1);
                 // std::cout << "getOzone: " << ozone_temp << std::endl;
             }
             else
