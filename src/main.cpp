@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     StratoOokTimer->setTimerType(Qt::PreciseTimer);
     StratoOokTimer->setInterval(OOK_INTERVAL * 1000);
 
-    StratoOok->activated = true;
+    StratoOok->activated = false;
     StratoOok->inited = false;
 
     QObject::connect(StratoOokTimer, &QTimer::timeout, StratoOok, &Ook::execute);
@@ -310,4 +310,3 @@ int main(int argc, char** argv)
     return StratoApp.exec();
 
 }
-

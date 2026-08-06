@@ -2,6 +2,7 @@
 #define _GLOBALS_H_
 
 #include <atomic>
+#include <cstdint>
 
 
 struct Globals
@@ -15,6 +16,8 @@ struct Globals
     std::atomic<uint16_t> AND_count {0};
 
     std::atomic<double> position[3] {0};
+    std::atomic<uint64_t> position_update_count {0};
+    std::atomic<uint8_t> gps_fix {0};
 
     std::atomic<double> voltage {0};
     std::atomic<double> voltage_mean {0};

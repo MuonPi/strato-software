@@ -219,6 +219,10 @@ bool Sensors::execute()
         // Should automatically reset if connection drops
         if (stratoMuonpi().isConnected())
         {
+            uint8_t gps_fix_temp = 0;
+            if (stratoMuonpi().getGpsFix(gps_fix_temp))
+                StratoGlobals.gps_fix = gps_fix_temp;
+
             double position_temp[3] {0};
             if (stratoMuonpi().getPosition(position_temp))
             {
@@ -226,6 +230,7 @@ bool Sensors::execute()
                 {
                     for(uint8_t i{0}; i < 3; i++)
                         StratoGlobals.position[i] = position_temp[i];
+                    StratoGlobals.position_update_count++;
                     // std::cout << "getPosition: " << position_temp[0] << " " << position_temp[1] <<  " " << position_temp[2] << std::endl;
                 }
             }

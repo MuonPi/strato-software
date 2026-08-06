@@ -13,6 +13,11 @@
 #define OOK_INTERVAL 5 //s
 #define OOK_TIMEOUT 5 //s
 #define OOK_RESTART 2 //s
+#define OOK_GPS_FAILSAFE_AFTER 14400 //s, activate if GPS is unavailable/stale this long
+#define OOK_GPS_FIX_3D 3
+#define OOK_FLIGHT_ARM_ALTITUDE_GAIN_M 3000.0
+#define OOK_DESCENT_ACTIVATION_DELAY 3600 //s
+#define OOK_STATE_FILE "/var/strato-software/ook_state.txt"
 #define WATCHDOG_INTERVAL 500 //ms
 #define LOGFILE_INTERVAL 30 //min
 

@@ -104,6 +104,7 @@ void MUONPI::makeConnection()
 void MUONPI::scheduleReconnect()
 {
     connectionHealthy = false;
+    gps_fix = 0;
     reconnectTimer.expires_after(reconnectDelay);
 
     reconnectTimer.async_wait(
@@ -131,6 +132,7 @@ void MUONPI::decode(const TcpPacket& packet) {
     else if (msgID == TCP_MSG_KEY::MSG_UBX_NAVSTATUS)
     {
         auto event = CapnpCodec<NavStatus>::decode(packet.payload);
+        gps_fix = event.gpsFix;
         // emit ubxUptimeReceived(event.msss / 1000);
         // emit gpsFixReceived(event.gpsFix);
         return;
@@ -151,6 +153,12 @@ bool MUONPI::getPosition(double* position)
         position[i] = geo_pos[i];
         geo_pos[i] = -999;
     }
+    return true;
+}
+
+bool MUONPI::getGpsFix(std::uint8_t& gpsFix)
+{
+    gpsFix = gps_fix;
     return true;
 }
 

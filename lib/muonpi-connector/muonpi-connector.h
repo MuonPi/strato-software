@@ -1,6 +1,8 @@
 #ifndef MUONPI_H
 #define MUONPI_H
 
+#include <atomic>
+#include <cstdint>
 #include <memory>
 #include <thread>
 #include "network/tcpconnection.h"
@@ -13,6 +15,7 @@ public:
     ~MUONPI();
     void start();
     bool getPosition(double* position);
+    bool getGpsFix(std::uint8_t& gpsFix);
     bool getXOR(double& rate);
     bool getAND(double& rate);
     bool isConnected();
@@ -33,6 +36,7 @@ private:
     std::chrono::seconds reconnectDelay{5};
 
     std::atomic<double> geo_pos[3] = {-999, -999, -999};
+    std::atomic<std::uint8_t> gps_fix{0};
     std::atomic<double> gpio_rate[2] = {-999, -999};
 };
 
