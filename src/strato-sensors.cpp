@@ -304,9 +304,9 @@ bool Sensors::execute()
             if (uv_guvas12sd_sample != ADS1115::InvalidSample)
             {
                 double uv_guvas12sd_temp = uv_guvas12sd_sample.voltage;
-                StratoGlobals.uv_guvas12sd = uv_guvas12sd_temp;
-                StratoGlobals.uv_guvas12sd_mean = ((StratoGlobals.uv_guvas12sd_mean * StratoGlobals.uv_guvas12sd_count) + uv_guvas12sd_temp) / (StratoGlobals.uv_guvas12sd_count + 1);
-                StratoGlobals.uv_guvas12sd_count++;
+                // StratoGlobals.uv_guvas12sd = uv_guvas12sd_temp;
+                // StratoGlobals.uv_guvas12sd_mean = ((StratoGlobals.uv_guvas12sd_mean * StratoGlobals.uv_guvas12sd_count) + uv_guvas12sd_temp) / (StratoGlobals.uv_guvas12sd_count + 1);
+                // StratoGlobals.uv_guvas12sd_count++;
                 writeLogfile("uv_guvas12sd_ads1115_ch2", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
             }
             else
@@ -328,11 +328,11 @@ bool Sensors::execute()
             double magnetXYZ_temp[3] {0};
             if (stratoQmc5883().getMagneticFieldXYZ(magnetXYZ_temp))
             {
-                for(uint8_t i{0}; i < 3; i++)
-                    StratoGlobals.magnetXYZ[i] = magnetXYZ_temp[i];
-                StratoGlobals.magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
-                StratoGlobals.magnet_mean = ((StratoGlobals.magnet_mean * StratoGlobals.magnet_count) + StratoGlobals.magnet) / (StratoGlobals.magnet_count + 1);
-                StratoGlobals.magnet_count++;
+                // for(uint8_t i{0}; i < 3; i++)
+                //     StratoGlobals.magnetXYZ[i] = magnetXYZ_temp[i];
+                // StratoGlobals.magnet = std::sqrt(magnetXYZ_temp[0] * magnetXYZ_temp[0] + magnetXYZ_temp[1] * magnetXYZ_temp[1] + magnetXYZ_temp[2] * magnetXYZ_temp[2]);
+                // StratoGlobals.magnet_mean = ((StratoGlobals.magnet_mean * StratoGlobals.magnet_count) + StratoGlobals.magnet) / (StratoGlobals.magnet_count + 1);
+                // StratoGlobals.magnet_count++;
 
                 double temperature_temp = 0;
                 if (stratoQmc5883().getTemperature(temperature_temp))
@@ -370,10 +370,10 @@ bool Sensors::execute()
                     static_cast<double>(uv_reading.raw.uva),
                     static_cast<double>(uv_reading.raw.uvb)
                 };
-                for(uint8_t i{0}; i < 4; i++)
-                    StratoGlobals.uv[i] = uv_temp[i];
-                StratoGlobals.uv_mean = ((StratoGlobals.uv_mean * StratoGlobals.uv_count) + uv_reading.uvIndex) / (StratoGlobals.uv_count + 1);
-                StratoGlobals.uv_count++;
+                // for(uint8_t i{0}; i < 4; i++)
+                //     StratoGlobals.uv[i] = uv_temp[i];
+                // StratoGlobals.uv_mean = ((StratoGlobals.uv_mean * StratoGlobals.uv_count) + uv_reading.uvIndex) / (StratoGlobals.uv_count + 1);
+                // StratoGlobals.uv_count++;
                 writeLogfile("uv_veml6075", timestamp_filename, timestamp_value, uv_temp, 4);
                 // std::cout << "getUV: " << uv_temp[0] << " " << uv_temp[1] << " " <<  uv_temp[2] << " " << uv_temp[3] << std::endl;
             }
@@ -393,9 +393,9 @@ bool Sensors::execute()
             if (status.dataStatus)
             {
                 double uv_temp = stratoLtr390uv01().read();
-                StratoGlobals.ltr390_uv = uv_temp;
-                StratoGlobals.ltr390_uv_mean = ((StratoGlobals.ltr390_uv_mean * StratoGlobals.ltr390_uv_count) + uv_temp) / (StratoGlobals.ltr390_uv_count + 1);
-                StratoGlobals.ltr390_uv_count++;
+                // StratoGlobals.ltr390_uv = uv_temp;
+                // StratoGlobals.ltr390_uv_mean = ((StratoGlobals.ltr390_uv_mean * StratoGlobals.ltr390_uv_count) + uv_temp) / (StratoGlobals.ltr390_uv_count + 1);
+                // StratoGlobals.ltr390_uv_count++;
                 writeLogfile("uv_ltr390", timestamp_filename, timestamp_value, &uv_temp, 1);
                 // std::cout << "getLTR390UV: " << uv_temp << std::endl;
             }
@@ -429,12 +429,12 @@ bool Sensors::execute()
             {
                 double as7331_uv_temp[AS7331_UV_CHANNELS] {uva.value(), uvb.value(), uvc.value()};
 
-                for(uint8_t i{0}; i < AS7331_UV_CHANNELS; i++)
-                {
-                    StratoGlobals.as7331_uv[i] = as7331_uv_temp[i];
-                    StratoGlobals.as7331_uv_mean[i] = ((StratoGlobals.as7331_uv_mean[i] * StratoGlobals.as7331_uv_count) + as7331_uv_temp[i]) / (StratoGlobals.as7331_uv_count + 1);
-                }
-                StratoGlobals.as7331_uv_count++;
+                // for(uint8_t i{0}; i < AS7331_UV_CHANNELS; i++)
+                // {
+                //     StratoGlobals.as7331_uv[i] = as7331_uv_temp[i];
+                //     StratoGlobals.as7331_uv_mean[i] = ((StratoGlobals.as7331_uv_mean[i] * StratoGlobals.as7331_uv_count) + as7331_uv_temp[i]) / (StratoGlobals.as7331_uv_count + 1);
+                // }
+                // StratoGlobals.as7331_uv_count++;
                 writeLogfile("uv_as7331", timestamp_filename, timestamp_value, as7331_uv_temp, AS7331_UV_CHANNELS);
                 // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
             }
@@ -462,11 +462,11 @@ bool Sensors::execute()
                 for(uint8_t i{0}; i < AS7343_SPECTRUM_CHANNELS; i++)
                 {
                     spectrum_temp[i] = spectrum_values.at(i).value;
-                    StratoGlobals.as7343_spectrum[i] = spectrum_temp[i];
-                    StratoGlobals.as7343_spectrum_mean[i] = ((StratoGlobals.as7343_spectrum_mean[i] * StratoGlobals.as7343_spectrum_count) + spectrum_temp[i]) / (StratoGlobals.as7343_spectrum_count + 1);
+                //     StratoGlobals.as7343_spectrum[i] = spectrum_temp[i];
+                //     StratoGlobals.as7343_spectrum_mean[i] = ((StratoGlobals.as7343_spectrum_mean[i] * StratoGlobals.as7343_spectrum_count) + spectrum_temp[i]) / (StratoGlobals.as7343_spectrum_count + 1);
                 }
 
-                StratoGlobals.as7343_spectrum_count++;
+                // StratoGlobals.as7343_spectrum_count++;
                 writeLogfile("spectrum_as7343", timestamp_filename, timestamp_value, spectrum_temp, AS7343_SPECTRUM_CHANNELS);
                 // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
             }
@@ -520,9 +520,9 @@ bool Sensors::execute()
 
             if (tph_temp.H > -999.0)
             {
-                StratoGlobals.humidity = tph_temp.H;
-                StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + tph_temp.H) / (StratoGlobals.humidity_count + 1);
-                StratoGlobals.humidity_count++;
+                // StratoGlobals.humidity = tph_temp.H;
+                // StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + tph_temp.H) / (StratoGlobals.humidity_count + 1);
+                // StratoGlobals.humidity_count++;
                 writeLogfile("humidity_bme280", timestamp_filename, timestamp_value, &tph_temp.H, 1);
                 // std::cout << "getHumidity: " << tph_temp.H << std::endl;
             }
@@ -546,15 +546,15 @@ bool Sensors::execute()
                 double temperature_temp = temperature_temp_float;
                 double humidity_temp = humidity_temp_float;
 
-                StratoGlobals.temperature = temperature_temp;
-                StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
-                StratoGlobals.temperature_count++;
+                // StratoGlobals.temperature = temperature_temp;
+                // StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
+                // StratoGlobals.temperature_count++;
                 writeLogfile("temperature_sht31", timestamp_filename, timestamp_value, &temperature_temp, 1);
                 // std::cout << "getSHT31Temperature: " << temperature_temp << std::endl;
 
-                StratoGlobals.humidity = humidity_temp;
-                StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + humidity_temp) / (StratoGlobals.humidity_count + 1);
-                StratoGlobals.humidity_count++;
+                // StratoGlobals.humidity = humidity_temp;
+                // StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + humidity_temp) / (StratoGlobals.humidity_count + 1);
+                // StratoGlobals.humidity_count++;
                 writeLogfile("humidity_sht31", timestamp_filename, timestamp_value, &humidity_temp, 1);
                 // std::cout << "getSHT31Humidity: " << humidity_temp << std::endl;
             }
@@ -583,19 +583,19 @@ bool Sensors::execute()
                     measurement.temperatureC
                 };
 
-                for(uint8_t i{0}; i < MPU6050_VECTOR_CHANNELS; i++)
-                {
-                    StratoGlobals.acceleration[i] = motion_temp[i];
-                    StratoGlobals.acceleration_mean[i] = ((StratoGlobals.acceleration_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[i]) / (StratoGlobals.mpu6050_count + 1);
+                // for(uint8_t i{0}; i < MPU6050_VECTOR_CHANNELS; i++)
+                // {
+                    // StratoGlobals.acceleration[i] = motion_temp[i];
+                    // StratoGlobals.acceleration_mean[i] = ((StratoGlobals.acceleration_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[i]) / (StratoGlobals.mpu6050_count + 1);
 
-                    const uint8_t gyro_index = i + MPU6050_VECTOR_CHANNELS;
-                    StratoGlobals.gyroscope[i] = motion_temp[gyro_index];
-                    StratoGlobals.gyroscope_mean[i] = ((StratoGlobals.gyroscope_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[gyro_index]) / (StratoGlobals.mpu6050_count + 1);
-                }
+                //     const uint8_t gyro_index = i + MPU6050_VECTOR_CHANNELS;
+                //     StratoGlobals.gyroscope[i] = motion_temp[gyro_index];
+                //     StratoGlobals.gyroscope_mean[i] = ((StratoGlobals.gyroscope_mean[i] * StratoGlobals.mpu6050_count) + motion_temp[gyro_index]) / (StratoGlobals.mpu6050_count + 1);
+                // }
 
-                StratoGlobals.mpu6050_temperature = measurement.temperatureC;
-                StratoGlobals.mpu6050_temperature_mean = ((StratoGlobals.mpu6050_temperature_mean * StratoGlobals.mpu6050_count) + measurement.temperatureC) / (StratoGlobals.mpu6050_count + 1);
-                StratoGlobals.mpu6050_count++;
+                // StratoGlobals.mpu6050_temperature = measurement.temperatureC;
+                // StratoGlobals.mpu6050_temperature_mean = ((StratoGlobals.mpu6050_temperature_mean * StratoGlobals.mpu6050_count) + measurement.temperatureC) / (StratoGlobals.mpu6050_count + 1);
+                // StratoGlobals.mpu6050_count++;
                 writeLogfile("motion_mpu6050", timestamp_filename, timestamp_value, motion_temp, 7);
                 // std::cout << "getMPU6050Motion: " << motion_temp[0] << " " << motion_temp[1] << " " << motion_temp[2] << std::endl;
             }
@@ -614,9 +614,9 @@ bool Sensors::execute()
             double ozone_temp = 0;
             if (stratoSen0321().getOzone(ozone_temp))
             {
-                StratoGlobals.ozone = ozone_temp;
-                StratoGlobals.ozone_mean = ((StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp) / (StratoGlobals.ozone_count + 1);
-                StratoGlobals.ozone_count++;
+                // StratoGlobals.ozone = ozone_temp;
+                // StratoGlobals.ozone_mean = ((StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp) / (StratoGlobals.ozone_count + 1);
+                // StratoGlobals.ozone_count++;
                 writeLogfile("ozone_sen0321", timestamp_filename, timestamp_value, &ozone_temp, 1);
                 // std::cout << "getSEN0321Ozone: " << ozone_temp << std::endl;
             }
@@ -636,9 +636,9 @@ bool Sensors::execute()
             double ozone_temp = 0;
             if (stratoOzone3Click().getOzone(ozone_temp))
             {
-                StratoGlobals.ozone = ozone_temp;
-                StratoGlobals.ozone_mean = (StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp / (StratoGlobals.ozone_count + 1);
-                StratoGlobals.ozone_count++;
+                // StratoGlobals.ozone = ozone_temp;
+                // StratoGlobals.ozone_mean = (StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp / (StratoGlobals.ozone_count + 1);
+                // StratoGlobals.ozone_count++;
                 writeLogfile("ozone_ozone3click", timestamp_filename, timestamp_value, &ozone_temp, 1);
                 // std::cout << "getOzone: " << ozone_temp << std::endl;
             }

@@ -111,11 +111,6 @@ bool Ook::execute()
         StratoPayload.reset();
         StratoPayload.addGPS(2, static_cast<float>(StratoGlobals.position[0]), static_cast<float>(StratoGlobals.position[1]), static_cast<float>(StratoGlobals.position[2]));
         StratoPayload.addAnalogInput(3, static_cast<float>(StratoGlobals.battery_voltage_mean));
-        StratoPayload.addAnalogInput(4, static_cast<float>(StratoGlobals.XOR_mean));
-        StratoPayload.addAnalogInput(5, static_cast<float>(StratoGlobals.AND_mean));
-        StratoPayload.addBarometricPressure(7, static_cast<float>(StratoGlobals.pressure_mean / 100));
-        StratoPayload.addTemperature(8, static_cast<float>(StratoGlobals.temperature_mean));
-        StratoPayload.addAnalogInput(9, static_cast<float>(StratoGlobals.ltr390_uv_mean));
 
         if(!sendPayload(StratoPayload.getBuffer(), StratoPayload.getSize()))
 #else
@@ -584,11 +579,6 @@ std::string Ook::buildTextPayload() const
     payload << "lat=" << static_cast<double>(StratoGlobals.position[0])
             << ";lon=" << static_cast<double>(StratoGlobals.position[1])
             << ";alt=" << static_cast<double>(StratoGlobals.position[2])
-            << ";v=" << static_cast<double>(StratoGlobals.battery_voltage_mean)
-            << ";xor=" << static_cast<double>(StratoGlobals.XOR_mean)
-            << ";and=" << static_cast<double>(StratoGlobals.AND_mean)
-            << ";p=" << static_cast<double>(StratoGlobals.pressure_mean) / 100
-            << ";t=" << static_cast<double>(StratoGlobals.temperature_mean)
-            << ";uv=" << static_cast<double>(StratoGlobals.ltr390_uv_mean);
+            << ";v=" << static_cast<double>(StratoGlobals.battery_voltage_mean);
     return payload.str();
 }
