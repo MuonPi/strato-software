@@ -21,6 +21,20 @@
 
 Globals StratoGlobals;
 
+namespace
+{
+bool hasCommandLineArgument(int argc, char** argv, const std::string& expected_argument)
+{
+    for(int i = 1; i < argc; i++)
+    {
+        if(argv[i] != nullptr && expected_argument == argv[i])
+            return true;
+    }
+
+    return false;
+}
+}
+
 
 
 
@@ -28,6 +42,9 @@ int main(int argc, char** argv)
 {
 
     QCoreApplication StratoApp(argc, argv);
+    const bool ook_debug_activate =
+        hasCommandLineArgument(argc, argv, "--ook-debug-activate")
+        || hasCommandLineArgument(argc, argv, "--ook-debug");
 
 
 
@@ -105,8 +122,11 @@ int main(int argc, char** argv)
     StratoOokTimer->setTimerType(Qt::PreciseTimer);
     StratoOokTimer->setInterval(OOK_INTERVAL * 1000);
 
-    StratoOok->activated = false;
+    StratoOok->activated = ook_debug_activate;
     StratoOok->inited = false;
+
+    if(ook_debug_activate)
+        std::cout << "OOK debug activation requested; bypassing landing gate" << std::endl;
 
     QObject::connect(StratoOokTimer, &QTimer::timeout, StratoOok, &Ook::execute);
 
@@ -119,6 +139,9 @@ int main(int argc, char** argv)
     QObject::connect(StratoOokThread, &QThread::finished, StratoOokTimer, &QObject::deleteLater);
     QObject::connect(StratoOokThread, &QThread::finished, StratoOok, &QObject::deleteLater);
     QObject::connect(StratoOokThread, &QThread::finished, StratoOokThread, &QObject::deleteLater);
+    #else
+    if(ook_debug_activate)
+        std::cerr << "OOK debug activation requested, but OOK_USED is not defined" << std::endl;
     #endif
 
 
