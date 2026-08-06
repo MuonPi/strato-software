@@ -44,7 +44,7 @@ AS7343::Config makeAs7343Config()
     config.gain = AS7343::GAIN::_16x;
     config.atime = 0x09;
     config.astep = 3596;
-    config.ledAct = true;
+    config.ledAct = false;
     config.ledDrive = 0b0100;
     return config;
 }
