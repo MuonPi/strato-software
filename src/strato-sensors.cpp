@@ -281,7 +281,7 @@ bool Sensors::execute()
                 StratoGlobals.voltage = voltage_temp;
                 StratoGlobals.voltage_mean = ((StratoGlobals.voltage_mean * StratoGlobals.voltage_count) + voltage_temp) / (StratoGlobals.voltage_count + 1);
                 StratoGlobals.voltage_count++;
-                writeLogfile("voltage", timestamp_filename, timestamp_value, &voltage_temp, 1);
+                writeLogfile("battery_voltage_ads1115_ch0", timestamp_filename, timestamp_value, &voltage_temp, 1);
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
@@ -294,7 +294,7 @@ bool Sensors::execute()
                 StratoGlobals.uv_guvas12sd = uv_guvas12sd_temp;
                 StratoGlobals.uv_guvas12sd_mean = ((StratoGlobals.uv_guvas12sd_mean * StratoGlobals.uv_guvas12sd_count) + uv_guvas12sd_temp) / (StratoGlobals.uv_guvas12sd_count + 1);
                 StratoGlobals.uv_guvas12sd_count++;
-                writeLogfile("uv_guvas12sd", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
+                writeLogfile("uv_guvas12sd_ads1115_ch2", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
@@ -329,12 +329,12 @@ bool Sensors::execute()
                     for(uint8_t i{0}; i < 3; i++)
                         magnet_temperature_temp[i] = magnetXYZ_temp[i];
                     magnet_temperature_temp[3] = temperature_temp;
-                    writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnet_temperature_temp, 4);
+                    writeLogfile("magnetic_field_qmc5883", timestamp_filename, timestamp_value, magnet_temperature_temp, 4);
                     // std::cout << "getMagnet: " << magnet_temperature_temp[0] << " " << magnet_temperature_temp[1] <<  " " << magnet_temperature_temp[2] << " " << magnet_temperature_temp[3] << std::endl;
                 }
                 else
                 {
-                    writeLogfile("magnetic_field", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
+                    writeLogfile("magnetic_field_qmc5883", timestamp_filename, timestamp_value, magnetXYZ_temp, 3);
                 }
             }
             else
@@ -362,7 +362,7 @@ bool Sensors::execute()
                     StratoGlobals.uv[i] = uv_temp[i];
                 StratoGlobals.uv_mean = ((StratoGlobals.uv_mean * StratoGlobals.uv_count) + uv_reading.uvIndex) / (StratoGlobals.uv_count + 1);
                 StratoGlobals.uv_count++;
-                writeLogfile("uv_index", timestamp_filename, timestamp_value, uv_temp, 4);
+                writeLogfile("uv_veml6075", timestamp_filename, timestamp_value, uv_temp, 4);
                 // std::cout << "getUV: " << uv_temp[0] << " " << uv_temp[1] << " " <<  uv_temp[2] << " " << uv_temp[3] << std::endl;
             }
             else
@@ -384,7 +384,7 @@ bool Sensors::execute()
                 StratoGlobals.ltr390_uv = uv_temp;
                 StratoGlobals.ltr390_uv_mean = ((StratoGlobals.ltr390_uv_mean * StratoGlobals.ltr390_uv_count) + uv_temp) / (StratoGlobals.ltr390_uv_count + 1);
                 StratoGlobals.ltr390_uv_count++;
-                writeLogfile("ltr390_uv", timestamp_filename, timestamp_value, &uv_temp, 1);
+                writeLogfile("uv_ltr390", timestamp_filename, timestamp_value, &uv_temp, 1);
                 // std::cout << "getLTR390UV: " << uv_temp << std::endl;
             }
         }
@@ -423,7 +423,7 @@ bool Sensors::execute()
                     StratoGlobals.as7331_uv_mean[i] = ((StratoGlobals.as7331_uv_mean[i] * StratoGlobals.as7331_uv_count) + as7331_uv_temp[i]) / (StratoGlobals.as7331_uv_count + 1);
                 }
                 StratoGlobals.as7331_uv_count++;
-                writeLogfile("as7331_uv", timestamp_filename, timestamp_value, as7331_uv_temp, AS7331_UV_CHANNELS);
+                writeLogfile("uv_as7331", timestamp_filename, timestamp_value, as7331_uv_temp, AS7331_UV_CHANNELS);
                 // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
             }
             else
@@ -455,7 +455,7 @@ bool Sensors::execute()
                 }
 
                 StratoGlobals.as7343_spectrum_count++;
-                writeLogfile("as7343_spectrum", timestamp_filename, timestamp_value, spectrum_temp, AS7343_SPECTRUM_CHANNELS);
+                writeLogfile("spectrum_as7343", timestamp_filename, timestamp_value, spectrum_temp, AS7343_SPECTRUM_CHANNELS);
                 // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
             }
             else
@@ -489,7 +489,7 @@ bool Sensors::execute()
                 StratoGlobals.temperature = tph_temp.T;
                 StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + tph_temp.T) / (StratoGlobals.temperature_count + 1);
                 StratoGlobals.temperature_count++;
-                writeLogfile("temperature", timestamp_filename, timestamp_value, &tph_temp.T, 1);
+                writeLogfile("temperature_bme280", timestamp_filename, timestamp_value, &tph_temp.T, 1);
                 // std::cout << "getTemperature: " << tph_temp.T << std::endl;
             }
             else
@@ -500,7 +500,7 @@ bool Sensors::execute()
                 StratoGlobals.pressure = tph_temp.P;
                 StratoGlobals.pressure_mean = ((StratoGlobals.pressure_mean * StratoGlobals.pressure_count) + tph_temp.P) / (StratoGlobals.pressure_count + 1);
                 StratoGlobals.pressure_count++;
-                writeLogfile("pressure", timestamp_filename, timestamp_value, &tph_temp.P, 1);
+                writeLogfile("pressure_bme280", timestamp_filename, timestamp_value, &tph_temp.P, 1);
                 // std::cout << "getPressure: " << tph_temp.P << std::endl;
             }
             else
@@ -511,7 +511,7 @@ bool Sensors::execute()
                 StratoGlobals.humidity = tph_temp.H;
                 StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + tph_temp.H) / (StratoGlobals.humidity_count + 1);
                 StratoGlobals.humidity_count++;
-                writeLogfile("humidity", timestamp_filename, timestamp_value, &tph_temp.H, 1);
+                writeLogfile("humidity_bme280", timestamp_filename, timestamp_value, &tph_temp.H, 1);
                 // std::cout << "getHumidity: " << tph_temp.H << std::endl;
             }
             else
@@ -537,13 +537,13 @@ bool Sensors::execute()
                 StratoGlobals.temperature = temperature_temp;
                 StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + temperature_temp) / (StratoGlobals.temperature_count + 1);
                 StratoGlobals.temperature_count++;
-                writeLogfile("temperature", timestamp_filename, timestamp_value, &temperature_temp, 1);
+                writeLogfile("temperature_sht31", timestamp_filename, timestamp_value, &temperature_temp, 1);
                 // std::cout << "getSHT31Temperature: " << temperature_temp << std::endl;
 
                 StratoGlobals.humidity = humidity_temp;
                 StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + humidity_temp) / (StratoGlobals.humidity_count + 1);
                 StratoGlobals.humidity_count++;
-                writeLogfile("humidity", timestamp_filename, timestamp_value, &humidity_temp, 1);
+                writeLogfile("humidity_sht31", timestamp_filename, timestamp_value, &humidity_temp, 1);
                 // std::cout << "getSHT31Humidity: " << humidity_temp << std::endl;
             }
             else
@@ -584,7 +584,7 @@ bool Sensors::execute()
                 StratoGlobals.mpu6050_temperature = measurement.temperatureC;
                 StratoGlobals.mpu6050_temperature_mean = ((StratoGlobals.mpu6050_temperature_mean * StratoGlobals.mpu6050_count) + measurement.temperatureC) / (StratoGlobals.mpu6050_count + 1);
                 StratoGlobals.mpu6050_count++;
-                writeLogfile("mpu6050_motion", timestamp_filename, timestamp_value, motion_temp, 7);
+                writeLogfile("motion_mpu6050", timestamp_filename, timestamp_value, motion_temp, 7);
                 // std::cout << "getMPU6050Motion: " << motion_temp[0] << " " << motion_temp[1] << " " << motion_temp[2] << std::endl;
             }
             else
