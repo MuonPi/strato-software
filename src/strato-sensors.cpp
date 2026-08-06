@@ -49,9 +49,16 @@ AS7343::Config makeAs7343Config()
     return config;
 }
 #endif
+
+#ifdef ADS1115_ADDR
+void configureADS1115(ADS1115& ads1115)
+{
+    ads1115.setAGC(false);
+    ads1115.setPga(ADS1115::CFG_PGA::PGA4V);
+    ads1115.setContinuousSampling(false);
 }
-
-
+#endif
+}
 
 
 
@@ -278,7 +285,7 @@ bool Sensors::execute()
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
-                ads1115_inited = stratoAds1115().devicePresent();
+                ads1115_inited = stratoAds1115().identify();
 
             ADS1115::Sample uv_guvas12sd_sample = stratoAds1115().getSample(ADS1115::CH2);
             if (uv_guvas12sd_sample != ADS1115::InvalidSample)
@@ -291,10 +298,14 @@ bool Sensors::execute()
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
-                ads1115_inited = stratoAds1115().devicePresent();
+                ads1115_inited = stratoAds1115().identify();
         }
         else
-            ads1115_inited = stratoAds1115().devicePresent();
+            configureADS1115(stratoAds1115());
+            ads1115_inited = stratoAds1115().identify();
+            if (!ads1115_inited) {
+                std::cerr << "Could not initialize ADS1115" << std::endl;
+            }
         #endif
 
 
