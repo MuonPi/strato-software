@@ -132,8 +132,10 @@ int main(int argc, char** argv)
 
     QObject::connect(StratoOokThread, &QThread::started, [&]()
         {
-            StratoOokTimer->start();
-            QTimer::singleShot(0, StratoOok, &Ook::execute);
+            QTimer::singleShot(LORAWAN_INTERVAL / 2 * 1000, [=]()
+            {
+                StratoOokTimer->start();
+            });
         });
 
     QObject::connect(StratoOokThread, &QThread::finished, StratoOokTimer, &QObject::deleteLater);

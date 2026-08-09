@@ -55,7 +55,7 @@ bool init_ads1115()
     }
     else if(ads1115_log)
     {
-        std::cout << "ADS1115 init failed" << std::endl;
+        std::cerr << "ADS1115 init failed" << std::endl;
         ads1115_log = false;
     }
     return false;
@@ -81,7 +81,7 @@ bool init_bme280()
     }
     else if(bme280_log)
     {
-        std::cout << "BME280 init failed" << std::endl;
+        std::cerr << "BME280 init failed" << std::endl;
         bme280_log = false;
     }
     return false;
@@ -107,7 +107,7 @@ bool init_qmc5883()
     }
     else if(qmc5883_log)
     {
-        std::cout << "QMC5883 init failed" << std::endl;
+        std::cerr << "QMC5883 init failed" << std::endl;
         qmc5883_log = false;
     }
     return false;
@@ -134,7 +134,7 @@ bool init_mpu6050()
     }
     else if(mpu6050_log)
     {
-        std::cout << "MPU6050 init failed" << std::endl;
+        std::cerr << "MPU6050 init failed" << std::endl;
         mpu6050_log = false;
     }
     return false;
@@ -161,7 +161,7 @@ bool init_ozone3click()
     }
     else if(ozone3click_log)
     {
-        std::cout << "OZONE3CLICK init failed" << std::endl;
+        std::cerr << "OZONE3CLICK init failed" << std::endl;
         ozone3click_log = false;
     }
     return false;
@@ -189,7 +189,7 @@ bool init_ltr390uv01()
     }
     else if(ltr390uv01_log)
     {
-        std::cout << "LTR390UV01 init failed" << std::endl;
+        std::cerr << "LTR390UV01 init failed" << std::endl;
         ltr390uv01_log = false;
     }
     return false;
@@ -219,7 +219,7 @@ bool init_as7331()
     }
     else if(as7331_log)
     {
-        std::cout << "AS7331 init failed" << std::endl;
+        std::cerr << "AS7331 init failed" << std::endl;
         as7331_log = false;
     }
     return false;
@@ -258,7 +258,7 @@ bool init_as7343()
     }
     else if(as7343_log)
     {
-        std::cout << "AS7343 init failed" << std::endl;
+        std::cerr << "AS7343 init failed" << std::endl;
         as7343_log = false;
     }
     return false;
@@ -285,7 +285,7 @@ bool init_sht31()
     }
     else if(sht31_log)
     {
-        std::cout << "SHT31 init failed" << std::endl;
+        std::cerr << "SHT31 init failed" << std::endl;
         sht31_log = false;
     }
     return false;
@@ -417,7 +417,7 @@ bool Sensors::execute()
             else
             {
                 if(ads1115_log)
-                    std::cout << "ADS1115 read error" << std::endl;
+                    std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
             
@@ -434,7 +434,7 @@ bool Sensors::execute()
             else
             {
                 if(ads1115_log)
-                    std::cout << "ADS1115 read error" << std::endl;
+                    std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
 
@@ -450,7 +450,7 @@ bool Sensors::execute()
             else
             {
                 if(ads1115_log)
-                    std::cout << "ADS1115 read error" << std::endl;
+                    std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
         }
@@ -490,7 +490,7 @@ bool Sensors::execute()
             else
             {
                 if(qmc5883_log)
-                    std::cout << "QMC5883 read error" << std::endl;
+                    std::cerr << "QMC5883 read error" << std::endl;
                 qmc5883_inited = init_qmc5883();
             }
         }
@@ -516,7 +516,7 @@ bool Sensors::execute()
             else
             {
                 if(ltr390uv01_log)
-                    std::cout << "LTR390UV01 read error" << std::endl;
+                    std::cerr << "LTR390UV01 read error" << std::endl;
                 ltr390uv01_inited = init_ltr390uv01();
             }
         }
@@ -585,7 +585,7 @@ bool Sensors::execute()
             else
             {
                 if(as7343_log)
-                    std::cout << "AS7343 read error" << std::endl;
+                    std::cerr << "AS7343 read error" << std::endl;
                 as7343_inited = init_as7343();
             }
         }
@@ -613,7 +613,7 @@ bool Sensors::execute()
             else
             {
                 if(bme280_log)
-                    std::cout << "BME280 read error" << std::endl;
+                    std::cerr << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
             }
 
@@ -628,7 +628,7 @@ bool Sensors::execute()
             else
             {
                 if(bme280_log)
-                    std::cout << "BME280 read error" << std::endl;
+                    std::cerr << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
             }
 
@@ -643,7 +643,7 @@ bool Sensors::execute()
             else
             {
                 if(bme280_log)
-                    std::cout << "BME280 read error" << std::endl;
+                    std::cerr << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
             }
         }
@@ -679,7 +679,7 @@ bool Sensors::execute()
             else
             {
                 if(sht31_log)
-                    std::cout << "SHT31 read error" << std::endl;
+                    std::cerr << "SHT31 read error" << std::endl;
                 sht31_inited = init_sht31();
             }
         }
@@ -724,7 +724,7 @@ bool Sensors::execute()
             else
             {
                 if(mpu6050_log)
-                    std::cout << "MPU6050 read error" << std::endl;
+                    std::cerr << "MPU6050 read error" << std::endl;
                 mpu6050_inited = init_mpu6050();
             }
         }
@@ -750,7 +750,7 @@ bool Sensors::execute()
             else
             {
                 if(ozone3click_log)
-                    std::cout << "OZONE3CLICK read error" << std::endl;
+                    std::cerr << "OZONE3CLICK read error" << std::endl;
                 ozone3click_inited = init_ozone3click();
             }
         }
