@@ -41,13 +41,24 @@ ADS1115& StratoADS1115()
     return device;
 }
 bool ads1115_inited = false;
+bool ads1115_log = true;
 bool init_ads1115()
 {
     StratoADS1115().setAGC(false);
     StratoADS1115().setPga(ADS1115::CFG_PGA::PGA4V);
     StratoADS1115().setContinuousSampling(true);
-    std::cout << "ADS1115 inited" << std::endl;
-    return StratoADS1115().identify();
+    if(StratoADS1115().identify())
+    {
+        std::cout << "ADS1115 inited" << std::endl;
+        ads1115_log = true;
+        return true;
+    }
+    else if(ads1115_log)
+    {
+        std::cout << "ADS1115 init failed" << std::endl;
+        ads1115_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -59,9 +70,21 @@ BME280& StratoBME280()
     return device;
 }
 bool bme280_inited = false;
+bool bme280_log = true;
 bool init_bme280()
 {
-    return StratoBME280().init();
+    if(StratoBME280().init())
+    {
+        std::cout << "BME280 inited" << std::endl;
+        bme280_log = true;
+        return true;
+    }
+    else if(bme280_log)
+    {
+        std::cout << "BME280 init failed" << std::endl;
+        bme280_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -73,9 +96,21 @@ QMC5883& StratoQMC5883()
     return device;
 }
 bool qmc5883_inited = false;
+bool qmc5883_log = true;
 bool init_qmc5883()
 {
-    return StratoQMC5883().init();
+    if(StratoQMC5883().init())
+    {
+        std::cout << "QMC5883 inited" << std::endl;
+        qmc5883_log = true;
+        return true;
+    }
+    else if(qmc5883_log)
+    {
+        std::cout << "QMC5883 init failed" << std::endl;
+        qmc5883_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -88,9 +123,21 @@ MPU6050& StratoMPU6050()
 }
 constexpr uint8_t MPU6050_VECTOR_CHANNELS{3};
 bool mpu6050_inited = false;
+bool mpu6050_log = true;
 bool init_mpu6050()
 {
-    return StratoMPU6050().init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
+    if(StratoMPU6050().init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199))
+    {
+        std::cout << "MPU6050 inited" << std::endl;
+        mpu6050_log = true;
+        return true;
+    }
+    else if(mpu6050_log)
+    {
+        std::cout << "MPU6050 init failed" << std::endl;
+        mpu6050_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -103,9 +150,21 @@ OZONE3CLICK& StratoOZONE3CLICK()
     return device;
 }
 bool ozone3click_inited = false;
+bool ozone3click_log =true;
 bool init_ozone3click()
 {
-    return StratoOZONE3CLICK().init();
+    if(StratoOZONE3CLICK().init())
+    {
+        std::cout << "OZONE3CLICK inited" << std::endl;
+        ozone3click_log = true;
+        return true;
+    }
+    else if(ozone3click_log)
+    {
+        std::cout << "OZONE3CLICK init failed" << std::endl;
+        ozone3click_log = false;
+    }
+    return false;
 }
 #endif
 #endif
@@ -118,10 +177,22 @@ LTR390UV01& StratoLTR390UV01()
     return device;
 }
 bool ltr390uv01_inited = false;
+bool ltr390uv01_log = true;
 bool init_ltr390uv01()
 {
     StratoLTR390UV01().init();
-    return StratoLTR390UV01().devicePresent();
+    if(StratoLTR390UV01().devicePresent())
+    {
+        std::cout << "LTR390UV01 inited" << std::endl;
+        ltr390uv01_log = true;
+        return true;
+    }
+    else if(ltr390uv01_log)
+    {
+        std::cout << "LTR390UV01 init failed" << std::endl;
+        ltr390uv01_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -134,12 +205,24 @@ AS7331& StratoAS7331()
 }
 constexpr uint8_t AS7331_UV_CHANNELS{3};
 bool as7331_inited = false;
+bool as7331_log = true;
 bool init_as7331()
 {
     StratoAS7331().reset();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     StratoAS7331().setGain(AS7331::GAIN::_2048x);
-    return StratoAS7331().identify();
+    if(StratoAS7331().identify())
+    {
+        std::cout << "AS7331 inited" << std::endl;
+        as7331_log = true;
+        return true;
+    }
+    else if(as7331_log)
+    {
+        std::cout << "AS7331 init failed" << std::endl;
+        as7331_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -153,6 +236,7 @@ AS7343& StratoAS7343()
 }
 constexpr uint8_t AS7343_SPECTRUM_CHANNELS{18};
 bool as7343_inited = false;
+bool as7343_log = true;
 bool init_as7343()
 {
     AS7343::Config config_as7343{};
@@ -163,15 +247,21 @@ bool init_as7343()
     config_as7343.astep = 3596;
     config_as7343.ledAct = false;
     config_as7343.ledDrive = 0b0100;
-    if (StratoAS7343().identify())
+    StratoAS7343().reset();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    StratoAS7343().init(config_as7343);
+    if(StratoAS7343().identify())
     {
-        StratoAS7343().reset();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        StratoAS7343().init(config_as7343);
+        std::cout << "AS7343 inited" << std::endl;
+        as7343_log = true;
         return true;
     }
-    else
-        return false;
+    else if(as7343_log)
+    {
+        std::cout << "AS7343 init failed" << std::endl;
+        as7343_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -184,9 +274,21 @@ SHT31& StratoSHT31()
     return device;
 }
 bool sht31_inited = false;
+bool sht31_log = true;
 bool init_sht31()
 {
-    return StratoSHT31().devicePresent();
+    if(StratoSHT31().devicePresent())
+    {
+        std::cout << "SHT31 inited" << std::endl;
+        sht31_log = true;
+        return true;
+    }
+    else if(sht31_log)
+    {
+        std::cout << "SHT31 init failed" << std::endl;
+        sht31_log = false;
+    }
+    return false;
 }
 #endif
 
@@ -313,7 +415,11 @@ bool Sensors::execute()
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
+            {
+                if(ads1115_log)
+                    std::cout << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
+            }
             
             ADS1115::Sample solar_voltage_sample = StratoADS1115().getSample(ADS1115::CH0);
             if (solar_voltage_sample != ADS1115::InvalidSample)
@@ -326,7 +432,11 @@ bool Sensors::execute()
                 writeLogfile("solar_voltage_ads1115_ch1", timestamp_filename, timestamp_value, &solar_voltage_temp, 1);
             }
             else
+            {
+                if(ads1115_log)
+                    std::cout << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
+            }
 
             ADS1115::Sample uv_guvas12sd_sample = StratoADS1115().getSample(ADS1115::CH2);
             if (uv_guvas12sd_sample != ADS1115::InvalidSample)
@@ -338,7 +448,11 @@ bool Sensors::execute()
                 writeLogfile("uv_guvas12sd_ads1115_ch2", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
             }
             else
+            {
+                if(ads1115_log)
+                    std::cout << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
+            }
         }
         else
             ads1115_inited = init_ads1115();
@@ -374,7 +488,11 @@ bool Sensors::execute()
                 }
             }
             else
+            {
+                if(qmc5883_log)
+                    std::cout << "QMC5883 read error" << std::endl;
                 qmc5883_inited = init_qmc5883();
+            }
         }
         else
             qmc5883_inited = init_qmc5883();
@@ -396,7 +514,11 @@ bool Sensors::execute()
                 // std::cout << "getLTR390UV: " << uv_temp << std::endl;
             }
             else
-                ltr390uv01_inited = init_ltr390uv01;
+            {
+                if(ltr390uv01_log)
+                    std::cout << "LTR390UV01 read error" << std::endl;
+                ltr390uv01_inited = init_ltr390uv01();
+            }
         }
         else
                 ltr390uv01_inited = init_ltr390uv01;
@@ -461,7 +583,11 @@ bool Sensors::execute()
                 // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
             }
             else
+            {
+                if(as7343_log)
+                    std::cout << "AS7343 read error" << std::endl;
                 as7343_inited = init_as7343();
+            }
         }
         else
             as7343_inited = init_as7343();
@@ -485,7 +611,11 @@ bool Sensors::execute()
                 // std::cout << "getTemperature: " << tph_temp.T << std::endl;
             }
             else
+            {
+                if(bme280_log)
+                    std::cout << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
+            }
 
             if (tph_temp.P > -999.0)
             {
@@ -496,7 +626,11 @@ bool Sensors::execute()
                 // std::cout << "getPressure: " << tph_temp.P << std::endl;
             }
             else
+            {
+                if(bme280_log)
+                    std::cout << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
+            }
 
             if (tph_temp.H > -999.0)
             {
@@ -507,7 +641,11 @@ bool Sensors::execute()
                 // std::cout << "getHumidity: " << tph_temp.H << std::endl;
             }
             else
+            {
+                if(bme280_log)
+                    std::cout << "BME280 read error" << std::endl;
                 bme280_inited = init_bme280();
+            }
         }
         else
             bme280_inited = init_bme280();
@@ -539,7 +677,11 @@ bool Sensors::execute()
                 // std::cout << "getSHT31Humidity: " << humidity_temp << std::endl;
             }
             else
+            {
+                if(sht31_log)
+                    std::cout << "SHT31 read error" << std::endl;
                 sht31_inited = init_sht31();
+            }
         }
         else
             sht31_inited = init_sht31();
@@ -580,7 +722,11 @@ bool Sensors::execute()
                 // std::cout << "getMPU6050Motion: " << motion_temp[0] << " " << motion_temp[1] << " " << motion_temp[2] << std::endl;
             }
             else
+            {
+                if(mpu6050_log)
+                    std::cout << "MPU6050 read error" << std::endl;
                 mpu6050_inited = init_mpu6050();
+            }
         }
         else
             mpu6050_inited = init_mpu6050();
@@ -602,7 +748,11 @@ bool Sensors::execute()
                 // std::cout << "getOzone: " << ozone_temp << std::endl;
             }
             else
+            {
+                if(ozone3click_log)
+                    std::cout << "OZONE3CLICK read error" << std::endl;
                 ozone3click_inited = init_ozone3click();
+            }
         }
         else
             ozone3click_inited = init_ozone3click();
