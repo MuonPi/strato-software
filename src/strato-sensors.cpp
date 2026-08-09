@@ -13,9 +13,7 @@
 #include "i2c/ltr390uv01.h"
 #include "i2c/mpu6050.h"
 #include "i2c/qmc5883.h"
-#include "i2c/sen0321.h"
 #include "i2c/sht31.h"
-#include "i2c/veml6075.h"
 #include "i2c/ozone3click.h"
 
 #include "strato-sensors.h"
@@ -23,145 +21,176 @@
 
 
 
-namespace
-{
-#ifdef AS7331_ADDR
-constexpr uint8_t AS7331_UV_CHANNELS{3};
-#endif
-#ifdef AS7343_ADDR
-constexpr uint8_t AS7343_SPECTRUM_CHANNELS{18};
-#endif
-#ifdef MPU6050_ADDR
-constexpr uint8_t MPU6050_VECTOR_CHANNELS{3};
-#endif
 
-#ifdef AS7343_ADDR
-AS7343::Config makeAs7343Config()
-{
-    AS7343::Config config{};
-    config.autoSmuxMode = AS7343::AUTO_SMUX_MODE::_18Ch;
-    config.fifoMap = 0x7e;
-    config.gain = AS7343::GAIN::_16x;
-    config.atime = 0x09;
-    config.astep = 3596;
-    config.ledAct = false;
-    config.ledDrive = 0b0100;
-    return config;
-}
-#endif
-
-#ifdef ADS1115_ADDR
-void configureADS1115(ADS1115& ads1115)
-{
-    ads1115.setAGC(false);
-    ads1115.setPga(ADS1115::CFG_PGA::PGA4V);
-    ads1115.setContinuousSampling(false);
-}
-#endif
-}
+// ========================== Initialization ==========================
 
 
-
-namespace
-{
 #ifdef MUONPI_USED
-auto stratoMuonpi() -> MUONPI&
+MUONPI& StratoMUONPI()
 {
     static MUONPI device{};
     return device;
 }
 #endif
 
+
 #ifdef ADS1115_ADDR
-auto stratoAds1115() -> ADS1115&
+ADS1115& StratoADS1115()
 {
     static ADS1115 device(ADS1115_ADDR);
     return device;
 }
-#endif
-
-#ifdef QMC5883_ADDR
-auto stratoQmc5883() -> QMC5883&
+bool ads1115_inited = false;
+bool init_ads1115()
 {
-    static QMC5883 device(QMC5883_ADDR);
-    return device;
+    StratoADS1115().setAGC(false);
+    StratoADS1115().setPga(ADS1115::CFG_PGA::PGA4V);
+    StratoADS1115().setContinuousSampling(true);
+    std::cout << "ADS1115 inited" << std::endl;
+    return StratoADS1115().identify();
 }
 #endif
 
-#ifdef VEML6075_ADDR
-auto stratoVeml6075() -> VEML6075&
-{
-    static VEML6075 device(VEML6075_ADDR);
-    return device;
-}
-#endif
-
-#ifdef LTR390UV01_ADDR
-auto stratoLtr390uv01() -> LTR390UV01&
-{
-    static LTR390UV01 device(LTR390UV01_ADDR);
-    return device;
-}
-#endif
-
-#ifdef AS7331_ADDR
-auto stratoAs7331() -> AS7331&
-{
-    static AS7331 device(AS7331_ADDR);
-    return device;
-}
-#endif
-
-#ifdef AS7343_ADDR
-auto stratoAs7343() -> AS7343&
-{
-    static AS7343 device(AS7343_ADDR);
-    return device;
-}
-#endif
 
 #ifdef BME280_ADDR
-auto stratoBme280() -> BME280&
+BME280& StratoBME280()
 {
     static BME280 device(BME280_ADDR);
     return device;
 }
-#endif
-
-#ifdef SHT31_ADDR
-auto stratoSht31() -> SHT31&
+bool bme280_inited = false;
+bool init_bme280()
 {
-    static SHT31 device(SHT31_ADDR);
-    return device;
+    return StratoBME280().init();
 }
 #endif
 
+
+#ifdef QMC5883_ADDR
+QMC5883& StratoQMC5883()
+{
+    static QMC5883 device(QMC5883_ADDR);
+    return device;
+}
+bool qmc5883_inited = false;
+bool init_qmc5883()
+{
+    return StratoQMC5883().init();
+}
+#endif
+
+
 #ifdef MPU6050_ADDR
-auto stratoMpu6050() -> MPU6050&
+MPU6050& StratoMPU6050()
 {
     static MPU6050 device(MPU6050_ADDR);
     return device;
 }
-#endif
-
-#ifdef SEN0321_ADDR
-auto stratoSen0321() -> SEN0321&
+constexpr uint8_t MPU6050_VECTOR_CHANNELS{3};
+bool mpu6050_inited = false;
+bool init_mpu6050()
 {
-    static SEN0321 device(SEN0321_ADDR);
-    return device;
+    return StratoMPU6050().init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
 }
 #endif
 
+
 #ifdef OZONE3CLICK_LMP_ADDR
 #ifdef OZONE3CLICK_ADC_ADDR
-auto stratoOzone3Click() -> OZONE3CLICK&
+OZONE3CLICK& StratoOZONE3CLICK()
 {
     static OZONE3CLICK device(OZONE3CLICK_LMP_ADDR, OZONE3CLICK_ADC_ADDR);
     return device;
 }
-#endif
-#endif
+bool ozone3click_inited = false;
+bool init_ozone3click()
+{
+    return StratoOZONE3CLICK().init();
 }
+#endif
+#endif
+
+
+#ifdef LTR390UV01_ADDR
+LTR390UV01& StratoLTR390UV01()
+{
+    static LTR390UV01 device(LTR390UV01_ADDR);
+    return device;
+}
+bool ltr390uv01_inited = false;
+bool init_ltr390uv01()
+{
+    StratoLTR390UV01().init();
+    return StratoLTR390UV01().devicePresent();
+}
+#endif
+
+
+#ifdef AS7331_ADDR
+AS7331& StratoAS7331()
+{
+    static AS7331 device(AS7331_ADDR);
+    return device;
+}
+constexpr uint8_t AS7331_UV_CHANNELS{3};
+bool as7331_inited = false;
+bool init_as7331()
+{
+    StratoAS7331().reset();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    StratoAS7331().setGain(AS7331::GAIN::_2048x);
+    return StratoAS7331().identify();
+}
+#endif
+
+
+
+#ifdef AS7343_ADDR
+AS7343& StratoAS7343()
+{
+    static AS7343 device(AS7343_ADDR);
+    return device;
+}
+constexpr uint8_t AS7343_SPECTRUM_CHANNELS{18};
+bool as7343_inited = false;
+bool init_as7343()
+{
+    AS7343::Config config_as7343{};
+    config_as7343.autoSmuxMode = AS7343::AUTO_SMUX_MODE::_18Ch;
+    config_as7343.fifoMap = 0x7e;
+    config_as7343.gain = AS7343::GAIN::_16x;
+    config_as7343.atime = 0x09;
+    config_as7343.astep = 3596;
+    config_as7343.ledAct = false;
+    config_as7343.ledDrive = 0b0100;
+    if (StratoAS7343().identify())
+    {
+        StratoAS7343().reset();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        StratoAS7343().init(config_as7343);
+        return true;
+    }
+    else
+        return false;
+}
+#endif
+
+
+
+#ifdef SHT31_ADDR
+SHT31& StratoSHT31()
+{
+    static SHT31 device(SHT31_ADDR);
+    return device;
+}
+bool sht31_inited = false;
+bool init_sht31()
+{
+    return StratoSHT31().devicePresent();
+}
+#endif
+
+
 
 
 
@@ -178,6 +207,7 @@ Sensors::~Sensors()
 {}
 
 
+// ========================== Readout ==========================
 
 
 bool Sensors::execute()
@@ -209,14 +239,12 @@ bool Sensors::execute()
         {
             ads1115_inited = false;
             qmc5883_inited = false;
-            veml6075_inited = false;
             ltr390uv01_inited = false;
             as7331_inited = false;
             as7343_inited = false;
             bme280_inited = false;
             sht31_inited = false;
             mpu6050_inited = false;
-            sen0321_inited = false;
             ozone3click_inited = false;
             inited = true;
         }
@@ -224,14 +252,14 @@ bool Sensors::execute()
 
         #ifdef MUONPI_USED
         // Should automatically reset if connection drops
-        if (stratoMuonpi().isConnected())
+        if (StratoMUONPI().isConnected())
         {
             uint8_t gps_fix_temp = 0;
-            if (stratoMuonpi().getGpsFix(gps_fix_temp))
+            if (StratoMUONPI().getGpsFix(gps_fix_temp))
                 StratoGlobals.gps_fix = gps_fix_temp;
 
             double position_temp[3] {0};
-            if (stratoMuonpi().getPosition(position_temp))
+            if (StratoMUONPI().getPosition(position_temp))
             {
                 if (position_temp[0] > -999)
                 {
@@ -243,7 +271,7 @@ bool Sensors::execute()
             }
 
             double XOR_temp = 0;
-            if (stratoMuonpi().getXOR(XOR_temp))
+            if (StratoMUONPI().getXOR(XOR_temp))
             {
                 if (XOR_temp > -1)
                 {
@@ -255,7 +283,7 @@ bool Sensors::execute()
             }
 
             double AND_temp = 0;
-            if (stratoMuonpi().getAND(AND_temp))
+            if (StratoMUONPI().getAND(AND_temp))
             {
                 if (AND_temp > -1)
                 {
@@ -273,7 +301,7 @@ bool Sensors::execute()
         #ifdef ADS1115_ADDR
         if (ads1115_inited)
         {
-            ADS1115::Sample battery_voltage_sample = stratoAds1115().getSample(ADS1115::CH0);
+            ADS1115::Sample battery_voltage_sample = (StratoADS1115()).getSample(ADS1115::CH0);
             if (battery_voltage_sample != ADS1115::InvalidSample)
             {
                 double battery_voltage_temp = battery_voltage_sample.voltage;
@@ -285,9 +313,9 @@ bool Sensors::execute()
                 // std::cout << "getVoltage: " << voltage_temp << std::endl;
             }
             else
-                ads1115_inited = stratoAds1115().identify();
+                ads1115_inited = init_ads1115();
             
-            ADS1115::Sample solar_voltage_sample = stratoAds1115().getSample(ADS1115::CH0);
+            ADS1115::Sample solar_voltage_sample = StratoADS1115().getSample(ADS1115::CH0);
             if (solar_voltage_sample != ADS1115::InvalidSample)
             {
                 double solar_voltage_temp = solar_voltage_sample.voltage;
@@ -298,9 +326,9 @@ bool Sensors::execute()
                 writeLogfile("solar_voltage_ads1115_ch1", timestamp_filename, timestamp_value, &solar_voltage_temp, 1);
             }
             else
-                ads1115_inited = stratoAds1115().identify();
+                ads1115_inited = init_ads1115();
 
-            ADS1115::Sample uv_guvas12sd_sample = stratoAds1115().getSample(ADS1115::CH2);
+            ADS1115::Sample uv_guvas12sd_sample = StratoADS1115().getSample(ADS1115::CH2);
             if (uv_guvas12sd_sample != ADS1115::InvalidSample)
             {
                 double uv_guvas12sd_temp = uv_guvas12sd_sample.voltage;
@@ -310,14 +338,10 @@ bool Sensors::execute()
                 writeLogfile("uv_guvas12sd_ads1115_ch2", timestamp_filename, timestamp_value, &uv_guvas12sd_temp, 1);
             }
             else
-                ads1115_inited = stratoAds1115().identify();
+                ads1115_inited = init_ads1115();
         }
         else
-            configureADS1115(stratoAds1115());
-            ads1115_inited = stratoAds1115().identify();
-            if (!ads1115_inited) {
-                std::cerr << "Could not initialize ADS1115" << std::endl;
-            }
+            ads1115_inited = init_ads1115();
         #endif
 
 
@@ -326,7 +350,7 @@ bool Sensors::execute()
         if (qmc5883_inited)
         {
             double magnetXYZ_temp[3] {0};
-            if (stratoQmc5883().getMagneticFieldXYZ(magnetXYZ_temp))
+            if (StratoQMC5883().getMagneticFieldXYZ(magnetXYZ_temp))
             {
                 // for(uint8_t i{0}; i < 3; i++)
                 //     StratoGlobals.magnetXYZ[i] = magnetXYZ_temp[i];
@@ -335,7 +359,7 @@ bool Sensors::execute()
                 // StratoGlobals.magnet_count++;
 
                 double temperature_temp = 0;
-                if (stratoQmc5883().getTemperature(temperature_temp))
+                if (StratoQMC5883().getTemperature(temperature_temp))
                 {
                     double magnet_temperature_temp[4] {0};
                     for(uint8_t i{0}; i < 3; i++)
@@ -350,38 +374,10 @@ bool Sensors::execute()
                 }
             }
             else
-                qmc5883_inited = stratoQmc5883().init();
+                qmc5883_inited = init_qmc5883();
         }
         else
-            qmc5883_inited = stratoQmc5883().init();
-        #endif
-
-
-
-        #ifdef VEML6075_ADDR
-        if (veml6075_inited)
-        {
-            VEML6075::UVReading uv_reading{};
-            if (stratoVeml6075().readUV(uv_reading) && uv_reading.valid)
-            {
-                double uv_temp[4] {
-                    uv_reading.uvaIndex,
-                    uv_reading.uvbIndex,
-                    static_cast<double>(uv_reading.raw.uva),
-                    static_cast<double>(uv_reading.raw.uvb)
-                };
-                // for(uint8_t i{0}; i < 4; i++)
-                //     StratoGlobals.uv[i] = uv_temp[i];
-                // StratoGlobals.uv_mean = ((StratoGlobals.uv_mean * StratoGlobals.uv_count) + uv_reading.uvIndex) / (StratoGlobals.uv_count + 1);
-                // StratoGlobals.uv_count++;
-                writeLogfile("uv_veml6075", timestamp_filename, timestamp_value, uv_temp, 4);
-                // std::cout << "getUV: " << uv_temp[0] << " " << uv_temp[1] << " " <<  uv_temp[2] << " " << uv_temp[3] << std::endl;
-            }
-            else
-                veml6075_inited = stratoVeml6075().init();
-        }
-        else
-            veml6075_inited = stratoVeml6075().init();
+            qmc5883_inited = init_qmc5883();
         #endif
 
 
@@ -389,22 +385,21 @@ bool Sensors::execute()
         #ifdef LTR390UV01_ADDR
         if (ltr390uv01_inited)
         {
-            LTR390UV01::Status status = stratoLtr390uv01().mainStatus();
+            LTR390UV01::Status status = StratoLTR390UV01().mainStatus();
             if (status.dataStatus)
             {
-                double uv_temp = stratoLtr390uv01().read();
+                double uv_temp = StratoLTR390UV01().read();
                 // StratoGlobals.ltr390_uv = uv_temp;
                 // StratoGlobals.ltr390_uv_mean = ((StratoGlobals.ltr390_uv_mean * StratoGlobals.ltr390_uv_count) + uv_temp) / (StratoGlobals.ltr390_uv_count + 1);
                 // StratoGlobals.ltr390_uv_count++;
                 writeLogfile("uv_ltr390", timestamp_filename, timestamp_value, &uv_temp, 1);
                 // std::cout << "getLTR390UV: " << uv_temp << std::endl;
             }
+            else
+                ltr390uv01_inited = init_ltr390uv01;
         }
         else
-        {
-            stratoLtr390uv01().init();
-            ltr390uv01_inited = stratoLtr390uv01().devicePresent();
-        }
+                ltr390uv01_inited = init_ltr390uv01;
         #endif
 
 
@@ -412,18 +407,18 @@ bool Sensors::execute()
         #ifdef AS7331_ADDR
         if (as7331_inited)
         {
-            stratoAs7331().startMeasurement();
+            StratoAS7331().startMeasurement();
 
-            AS7331::Status status = stratoAs7331().opStatus();
+            AS7331::Status status = StratoAS7331().opStatus();
             for (uint8_t i{0}; i < 100 && !status.nData; i++)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                status = stratoAs7331().opStatus();
+                status = StratoAS7331().opStatus();
             }
 
-            auto uva = stratoAs7331().readUVA();
-            auto uvb = stratoAs7331().readUVB();
-            auto uvc = stratoAs7331().readUVC();
+            auto uva = StratoAS7331().readUVA();
+            auto uvb = StratoAS7331().readUVB();
+            auto uvc = StratoAS7331().readUVC();
 
             if (status.nData && uva.has_value() && uvb.has_value() && uvc.has_value())
             {
@@ -439,15 +434,10 @@ bool Sensors::execute()
                 // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
             }
             else
-                as7331_inited = stratoAs7331().identify();
+                as7331_inited = init_as7331();
         }
         else
-        {
-            stratoAs7331().reset();
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            stratoAs7331().setGain(AS7331::GAIN::_2048x);
-            as7331_inited = stratoAs7331().identify();
-        }
+            as7331_inited = init_as7331();
         #endif
 
 
@@ -455,7 +445,7 @@ bool Sensors::execute()
         #ifdef AS7343_ADDR
         if (as7343_inited)
         {
-            auto spectrum_values = stratoAs7343().readSpectrum();
+            auto spectrum_values = StratoAS7343().readSpectrum();
             if (spectrum_values.size() >= AS7343_SPECTRUM_CHANNELS)
             {
                 double spectrum_temp[AS7343_SPECTRUM_CHANNELS] {0};
@@ -471,20 +461,10 @@ bool Sensors::execute()
                 // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
             }
             else
-                as7343_inited = false;
+                as7343_inited = init_as7343();
         }
         else
-        {
-            if (stratoAs7343().identify())
-            {
-                stratoAs7343().reset();
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                stratoAs7343().init(makeAs7343Config());
-                as7343_inited = true;
-            }
-            else
-                as7343_inited = false;
-        }
+            as7343_inited = init_as7343();
         #endif
 
 
@@ -493,7 +473,7 @@ bool Sensors::execute()
         if (bme280_inited)
         {
             TPH tph_temp {0};
-            tph_temp = stratoBme280().getTPHValues();
+            tph_temp = StratoBME280().getTPHValues();
 
 
             if (tph_temp.T > -141.0)
@@ -505,7 +485,7 @@ bool Sensors::execute()
                 // std::cout << "getTemperature: " << tph_temp.T << std::endl;
             }
             else
-                bme280_inited = stratoBme280().init();
+                bme280_inited = init_bme280();
 
             if (tph_temp.P > -999.0)
             {
@@ -516,7 +496,7 @@ bool Sensors::execute()
                 // std::cout << "getPressure: " << tph_temp.P << std::endl;
             }
             else
-                bme280_inited = stratoBme280().init();
+                bme280_inited = init_bme280();
 
             if (tph_temp.H > -999.0)
             {
@@ -527,10 +507,10 @@ bool Sensors::execute()
                 // std::cout << "getHumidity: " << tph_temp.H << std::endl;
             }
             else
-                bme280_inited = stratoBme280().init();
+                bme280_inited = init_bme280();
         }
         else
-            bme280_inited = stratoBme280().init();
+            bme280_inited = init_bme280();
         #endif
 
 
@@ -541,7 +521,7 @@ bool Sensors::execute()
             float temperature_temp_float = 0.0F;
             float humidity_temp_float = 0.0F;
 
-            if (stratoSht31().getValues(temperature_temp_float, humidity_temp_float))
+            if (StratoSHT31().getValues(temperature_temp_float, humidity_temp_float))
             {
                 double temperature_temp = temperature_temp_float;
                 double humidity_temp = humidity_temp_float;
@@ -559,10 +539,10 @@ bool Sensors::execute()
                 // std::cout << "getSHT31Humidity: " << humidity_temp << std::endl;
             }
             else
-                sht31_inited = stratoSht31().devicePresent();
+                sht31_inited = init_sht31();
         }
         else
-            sht31_inited = stratoSht31().devicePresent();
+            sht31_inited = init_sht31();
         #endif
 
 
@@ -571,7 +551,7 @@ bool Sensors::execute()
         if (mpu6050_inited)
         {
             MPU6050::Measurement measurement{};
-            if (stratoMpu6050().getMeasurement(measurement) && measurement.valid)
+            if (StratoMPU6050().getMeasurement(measurement) && measurement.valid)
             {
                 double motion_temp[7] {
                     measurement.accelerationG.x,
@@ -600,31 +580,10 @@ bool Sensors::execute()
                 // std::cout << "getMPU6050Motion: " << motion_temp[0] << " " << motion_temp[1] << " " << motion_temp[2] << std::endl;
             }
             else
-                mpu6050_inited = stratoMpu6050().init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
+                mpu6050_inited = init_mpu6050();
         }
         else
-            mpu6050_inited = stratoMpu6050().init(MPU6050::GYRO_RANGE::DPS_250, MPU6050::ACCEL_RANGE::G_2, MPU6050::DLPF::ACCEL_5HZ_GYRO_5HZ, 199);
-        #endif
-
-
-
-        #ifdef SEN0321_ADDR
-        if (sen0321_inited)
-        {
-            double ozone_temp = 0;
-            if (stratoSen0321().getOzone(ozone_temp))
-            {
-                // StratoGlobals.ozone = ozone_temp;
-                // StratoGlobals.ozone_mean = ((StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp) / (StratoGlobals.ozone_count + 1);
-                // StratoGlobals.ozone_count++;
-                writeLogfile("ozone_sen0321", timestamp_filename, timestamp_value, &ozone_temp, 1);
-                // std::cout << "getSEN0321Ozone: " << ozone_temp << std::endl;
-            }
-            else
-                sen0321_inited = stratoSen0321().init();
-        }
-        else
-            sen0321_inited = stratoSen0321().init();
+            mpu6050_inited = init_mpu6050();
         #endif
 
 
@@ -634,7 +593,7 @@ bool Sensors::execute()
         if (ozone3click_inited)
         {
             double ozone_temp = 0;
-            if (stratoOzone3Click().getOzone(ozone_temp))
+            if (StratoOZONE3CLICK().getOzone(ozone_temp))
             {
                 // StratoGlobals.ozone = ozone_temp;
                 // StratoGlobals.ozone_mean = (StratoGlobals.ozone_mean * StratoGlobals.ozone_count) + ozone_temp / (StratoGlobals.ozone_count + 1);
@@ -643,12 +602,14 @@ bool Sensors::execute()
                 // std::cout << "getOzone: " << ozone_temp << std::endl;
             }
             else
-                ozone3click_inited = stratoOzone3Click().init();
+                ozone3click_inited = init_ozone3click();
         }
         else
-            ozone3click_inited = stratoOzone3Click().init();
+            ozone3click_inited = init_ozone3click();
         #endif
         #endif
+
+
 
         active = false;
         return true;
