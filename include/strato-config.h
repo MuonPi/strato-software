@@ -21,7 +21,7 @@
 #define OOK_PAYLOAD_FORMAT_CAYENNE_LPP 0
 #define OOK_PAYLOAD_FORMAT_TEXT 1
 #define OOK_PAYLOAD_FORMAT OOK_PAYLOAD_FORMAT_TEXT
-#define OOK_INTERVAL 5 //s
+#define OOK_INTERVAL 60 //s
 #define OOK_TIMEOUT 5 //s
 #define OOK_RESTART 2 //s
 #define OOK_GPS_FAILSAFE_AFTER 14400 //s, activate if GPS is unavailable/stale this long

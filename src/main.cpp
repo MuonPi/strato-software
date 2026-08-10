@@ -322,15 +322,15 @@ int main(int argc, char** argv)
 
 
     StratoSensorsThread->start();
+    StratoLorawanThread->start();
     #ifdef OOK_USED
     StratoOokThread->start();
     #endif
-    StratoLorawanThread->start();
     StratoSensorsWatchdog->start(WATCHDOG_INTERVAL);
+    StratoLorawanWatchdog->start(WATCHDOG_INTERVAL);
     #ifdef OOK_USED
     StratoOokWatchdog->start(WATCHDOG_INTERVAL);
     #endif
-    StratoLorawanWatchdog->start(WATCHDOG_INTERVAL);
 
     return StratoApp.exec();
 
