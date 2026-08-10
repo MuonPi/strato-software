@@ -421,7 +421,7 @@ bool Sensors::execute()
                 ads1115_inited = init_ads1115();
             }
             
-            ADS1115::Sample solar_voltage_sample = StratoADS1115().getSample(ADS1115::CH0);
+            ADS1115::Sample solar_voltage_sample = StratoADS1115().getSample(ADS1115::CH1);
             if (solar_voltage_sample != ADS1115::InvalidSample)
             {
                 double solar_voltage_temp = solar_voltage_sample.voltage;
