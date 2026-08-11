@@ -208,6 +208,9 @@ bool as7331_inited = false;
 bool as7331_log = true;
 bool init_as7331()
 {
+    if (!StratoAS7331().init()) {
+        return false;
+    }
     StratoAS7331().reset();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     StratoAS7331().setGain(AS7331::GAIN::_2048x);
@@ -247,9 +250,9 @@ bool init_as7343()
     config_as7343.astep = 3596;
     config_as7343.ledAct = false;
     config_as7343.ledDrive = 0b0100;
-    StratoAS7343().reset();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    StratoAS7343().init(config_as7343);
+    if (!StratoAS7343().init(config_as7343)) {
+        return false;
+    }
     if(StratoAS7343().identify())
     {
         std::cout << "AS7343 inited" << std::endl;
