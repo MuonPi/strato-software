@@ -339,15 +339,33 @@ bool Sensors::execute()
 
         if(inited == false)
         {
+            #ifdef ADS1115_ADDR
             ads1115_inited = false;
+            #endif
+            #ifdef QMC5883_ADDR
             qmc5883_inited = false;
+            #endif
+            #ifdef LTR390UV01_ADDR
             ltr390uv01_inited = false;
+            #endif
+            #ifdef AS7331_ADDR
             as7331_inited = false;
+            #endif
+            #ifdef AS7342_ADDR
             as7343_inited = false;
+            #endif
+            #ifdef BME280_ADDR
             bme280_inited = false;
+            #endif
+            #ifdef SHT31_ADDR
             sht31_inited = false;
+            #endif
+            #ifdef MPU6050_ADDR
             mpu6050_inited = false;
+            #endif
+            #ifdef OZONE3CLICK_ADDR
             ozone3click_inited = false;
+            #endif
             inited = true;
         }
         
@@ -403,6 +421,7 @@ bool Sensors::execute()
         #ifdef ADS1115_ADDR
         if (ads1115_inited)
         {
+            #ifdef BATTERY_VOLTAGE_USED
             ADS1115::Sample battery_voltage_sample = (StratoADS1115()).getSample(ADS1115::CH0);
             if (battery_voltage_sample != ADS1115::InvalidSample)
             {
@@ -420,7 +439,9 @@ bool Sensors::execute()
                     std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
+            #endif
             
+            #ifdef SOLAR_VOLTAGE_USED
             ADS1115::Sample solar_voltage_sample = StratoADS1115().getSample(ADS1115::CH1);
             if (solar_voltage_sample != ADS1115::InvalidSample)
             {
@@ -437,7 +458,9 @@ bool Sensors::execute()
                     std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
+            #endif
 
+            #ifdef GUVAS12SD_USED
             ADS1115::Sample uv_guvas12sd_sample = StratoADS1115().getSample(ADS1115::CH2);
             if (uv_guvas12sd_sample != ADS1115::InvalidSample)
             {
@@ -453,6 +476,7 @@ bool Sensors::execute()
                     std::cerr << "ADS1115 read error" << std::endl;
                 ads1115_inited = init_ads1115();
             }
+            #endif
         }
         else
             ads1115_inited = init_ads1115();

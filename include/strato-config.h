@@ -32,14 +32,17 @@
 
 #define MUONPI_USED
 #define ADS1115_ADDR 0x4A
-#define QMC5883_ADDR 0x0D
+#define BATTERY_VOLTAGE_USED
+#define SOLAR_VOLTAGE_USED
+// #define GUVAS12SD_USED
+// #define QMC5883_ADDR 0x0D
 // #define VEML6075_ADDR 0x10
 #define LTR390UV01_ADDR 0x53
 #define AS7331_ADDR 0x74
 #define AS7343_ADDR 0x39
 #define BME280_ADDR 0x76
 #define SHT31_ADDR 0x44
-#define MPU6050_ADDR 0x68
+// #define MPU6050_ADDR 0x68
 // #define SEN0321_ADDR 0x73
 #define OZONE3CLICK_LMP_ADDR 0x48
 #define OZONE3CLICK_ADC_ADDR 0x4D
@@ -70,7 +73,7 @@
 
 
 
-#define DEVICEID "70B3D57ED0078A25"     // skymi strato
+#define DEVICEID "70B3D57ED0078A25"     // skymi strato-jlu
 #define ABP_DEVICEID "70B3D57ED0078A25"
 
 // The Network Session Key / DO NOT SHARE
