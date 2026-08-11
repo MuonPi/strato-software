@@ -548,7 +548,7 @@ bool Sensors::execute()
             }
         }
         else
-                ltr390uv01_inited = init_ltr390uv01;
+                ltr390uv01_inited = init_ltr390uv01();
         #endif
 
 
