@@ -209,6 +209,7 @@ bool as7331_log = true;
 bool init_as7331()
 {
     if (!StratoAS7331().init()) {
+        std::cerr << "AS7331 init failed" << std::endl;
         return false;
     }
     StratoAS7331().reset();
