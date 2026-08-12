@@ -232,22 +232,30 @@ bool init_as7331()
 
 
 #ifdef AS7343_ADDR
+
+constexpr std::array<AS7343::AS7343ExposurePreset, 3> AS7343_EXPOSURE_PRESETS{{
+    {"sun", AS7343::GAIN::_0dot5x, 0x00, 999},    // 2.78 ms
+    {"partial", AS7343::GAIN::_4x, 0x00, 3596},   // ~10 ms
+    {"totality", AS7343::GAIN::_16x, 0x09, 3596}, // ~100 ms
+}};
+
 AS7343& StratoAS7343()
 {
     static AS7343 device(AS7343_ADDR);
     return device;
 }
-constexpr uint8_t AS7343_SPECTRUM_CHANNELS{18};
 bool as7343_inited = false;
 bool as7343_log = true;
+
 bool init_as7343()
 {
     AS7343::Config config_as7343{};
     config_as7343.autoSmuxMode = AS7343::AUTO_SMUX_MODE::_18Ch;
     config_as7343.fifoMap = 0x7e;
-    config_as7343.gain = AS7343::GAIN::_16x;
-    config_as7343.atime = 0x09;
-    config_as7343.astep = 3596;
+    config_as7343.autoExposure = false;
+    config_as7343.gain = AS7343_EXPOSURE_PRESETS.front().gain;
+    config_as7343.atime = AS7343_EXPOSURE_PRESETS.front().atime;
+    config_as7343.astep = AS7343_EXPOSURE_PRESETS.front().astep;
     config_as7343.ledAct = false;
     config_as7343.ledDrive = 0b0100;
     if (!StratoAS7343().init(config_as7343)) {
@@ -354,7 +362,7 @@ bool Sensors::execute()
             #ifdef AS7331_ADDR
             as7331_inited = false;
             #endif
-            #ifdef AS7342_ADDR
+            #ifdef AS7343_ADDR
             as7343_inited = false;
             #endif
             #ifdef BME280_ADDR
@@ -598,19 +606,20 @@ bool Sensors::execute()
         #ifdef AS7343_ADDR
         if (as7343_inited)
         {
-            auto spectrum_values = StratoAS7343().readSpectrum();
-            if (spectrum_values.size() >= AS7343_SPECTRUM_CHANNELS)
+            auto measurement = StratoAS7343().read_as7343_auto_exposure_measurement(AS7343_EXPOSURE_PRESETS);
+            if (measurement.has_value() &&
+                measurement->spectrum.size() >= AS7343::AS7343_SPECTRUM_CHANNELS)
             {
-                double spectrum_temp[AS7343_SPECTRUM_CHANNELS] {0};
-                for(uint8_t i{0}; i < AS7343_SPECTRUM_CHANNELS; i++)
-                {
-                    spectrum_temp[i] = spectrum_values.at(i).value;
+                double spectrum_temp[AS7343::AS7343_LOG_VALUES] {0};
+                StratoAS7343().fill_as7343_log_values(measurement.value(), spectrum_temp);
+                // for(uint8_t i{0}; i < AS7343_SPECTRUM_CHANNELS; i++)
+                // {
                 //     StratoGlobals.as7343_spectrum[i] = spectrum_temp[i];
                 //     StratoGlobals.as7343_spectrum_mean[i] = ((StratoGlobals.as7343_spectrum_mean[i] * StratoGlobals.as7343_spectrum_count) + spectrum_temp[i]) / (StratoGlobals.as7343_spectrum_count + 1);
-                }
+                // }
 
                 // StratoGlobals.as7343_spectrum_count++;
-                writeLogfile("spectrum_as7343", timestamp_filename, timestamp_value, spectrum_temp, AS7343_SPECTRUM_CHANNELS);
+                writeLogfile("spectrum_as7343", timestamp_filename, timestamp_value, spectrum_temp, AS7343::AS7343_LOG_VALUES);
                 // std::cout << "getAS7343Spectrum: " << spectrum_temp[0] << " ..." << std::endl;
             }
             else
