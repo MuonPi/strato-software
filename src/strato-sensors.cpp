@@ -307,7 +307,7 @@ bool sht31_inited = false;
 bool sht31_log = true;
 bool init_sht31()
 {
-    if(StratoSHT31().devicePresent())
+    if(true)    // StratoSHT31().devicePresent())
     {
         std::cout << "SHT31 inited" << std::endl;
         sht31_log = true;
