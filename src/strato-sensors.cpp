@@ -580,7 +580,11 @@ bool Sensors::execute()
                 // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
             }
             else
+            {
+                if(as7331_log)
+                    std::cerr << "AS7331 read error" << std::endl;
                 as7331_inited = init_as7331();
+            }
         }
         else
             as7331_inited = init_as7331();
