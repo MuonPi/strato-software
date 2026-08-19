@@ -13,23 +13,6 @@
 #define WATCHDOG_INTERVAL 500 //ms
 #define LOGFILE_INTERVAL 30 //min
 
-#define OOK_USED
-#define OOK_GPIO_PIN 7
-#define OOK_HALF_BIT_US 500
-#define OOK_REPEAT_GAP_MS 20
-#define OOK_REPEATS 3
-#define OOK_PAYLOAD_FORMAT_CAYENNE_LPP 0
-#define OOK_PAYLOAD_FORMAT_TEXT 1
-#define OOK_PAYLOAD_FORMAT OOK_PAYLOAD_FORMAT_TEXT
-#define OOK_INTERVAL 60 //s
-#define OOK_TIMEOUT 5 //s
-#define OOK_RESTART 2 //s
-#define OOK_GPS_FAILSAFE_AFTER 14400 //s, activate if GPS is unavailable/stale this long
-#define OOK_GPS_FIX_3D 3
-#define OOK_FLIGHT_ARM_ALTITUDE_GAIN_M 3000.0
-#define OOK_DESCENT_ACTIVATION_DELAY 3600 //s
-#define OOK_STATE_FILE "/var/strato-software/ook_state.txt"
-
 #define MUONPI_USED
 #define ADS1115_ADDR 0x4A
 #define BATTERY_VOLTAGE_USED
@@ -41,6 +24,7 @@
 #define AS7331_ADDR 0x74
 #define AS7343_ADDR 0x39
 #define BME280_ADDR 0x76
+// #define BME280_ADDR_2 0x77
 #define SHT31_ADDR 0x44
 // #define MPU6050_ADDR 0x68
 // #define SEN0321_ADDR 0x73
@@ -73,17 +57,17 @@
 
 
 
-#define DEVICEID "70B3D57ED0078A25"     // skymi strato-jlu
-#define ABP_DEVICEID "70B3D57ED0078A25"
+#define DEVICEID "XXXXXXXXXXXXXXXX"     // skymi
+#define ABP_DEVICEID "XXXXXXXXXXXXXXXX"
 
 // The Network Session Key / DO NOT SHARE
-inline constexpr uint8_t NWKSKEY[16] = {0x70, 0x22, 0xB6, 0x4D, 0xD2, 0xA9, 0x9F, 0xC4, 0xAE, 0x34, 0xA0, 0x1D, 0xAD, 0xAD, 0x6F, 0xE1};
+inline constexpr uint8_t NWKSKEY[16] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX};
 
 // LoRaWAN AppSKey, application session key / DO NOT SHARE
-inline constexpr uint8_t APPSKEY[16] = {0x3A, 0xCC, 0xA3, 0xC0, 0xE4, 0x0A, 0x46, 0x4A, 0xBF, 0x12, 0x16, 0x6A, 0x44, 0xF4, 0xCF, 0x0A};
+inline constexpr uint8_t APPSKEY[16] = {0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX};
 
 // LoRaWAN end-device address (DevAddr) / DO NOT SHARE
-inline constexpr uint32_t DEVADDR = 0x260B88EF;
+inline constexpr uint32_t DEVADDR = 0xXXXXXXXX;
 
 
 

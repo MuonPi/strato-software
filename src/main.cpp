@@ -13,7 +13,6 @@
 #include "strato-config.h"
 #include "globals.h"
 #include "strato-lorawan.h"
-#include "strato-ook.h"
 #include "strato-sensors.h"
 
 
@@ -42,9 +41,6 @@ int main(int argc, char** argv)
 {
 
     QCoreApplication StratoApp(argc, argv);
-    const bool ook_debug_activate =
-        hasCommandLineArgument(argc, argv, "--ook-debug-activate")
-        || hasCommandLineArgument(argc, argv, "--ook-debug");
 
 
 
@@ -110,45 +106,6 @@ int main(int argc, char** argv)
 
 
     
-    // ========================== OOK ==========================
-
-    #ifdef OOK_USED
-    QThread* StratoOokThread = new QThread;
-    Ook* StratoOok = new Ook(StratoGlobals);
-    QTimer* StratoOokTimer = new QTimer(StratoOok);
-
-    StratoOok->moveToThread(StratoOokThread);
-    StratoOokTimer->moveToThread(StratoOokThread);
-    StratoOokTimer->setTimerType(Qt::PreciseTimer);
-    StratoOokTimer->setInterval(OOK_INTERVAL * 1000);
-
-    StratoOok->activated = ook_debug_activate;
-    StratoOok->inited = false;
-
-    if(ook_debug_activate)
-        std::cout << "OOK debug activation requested; bypassing landing gate" << std::endl;
-
-    QObject::connect(StratoOokTimer, &QTimer::timeout, StratoOok, &Ook::execute);
-
-    QObject::connect(StratoOokThread, &QThread::started, [&]()
-        {
-            QTimer::singleShot(LORAWAN_INTERVAL / 2 * 1000, [=]()
-            {
-                StratoOokTimer->start();
-            });
-        });
-
-    QObject::connect(StratoOokThread, &QThread::finished, StratoOokTimer, &QObject::deleteLater);
-    QObject::connect(StratoOokThread, &QThread::finished, StratoOok, &QObject::deleteLater);
-    QObject::connect(StratoOokThread, &QThread::finished, StratoOokThread, &QObject::deleteLater);
-    #else
-    if(ook_debug_activate)
-        std::cerr << "OOK debug activation requested, but OOK_USED is not defined" << std::endl;
-    #endif
-
-
-
-
 
     // ========================== Watchdog Sensors ==========================
 
@@ -254,67 +211,11 @@ int main(int argc, char** argv)
 
 
 
-    // ========================== Watchdog OOK ==========================
-
-    #ifdef OOK_USED
-    QTimer* StratoOokWatchdog = new QTimer();
-
-    bool ook_cycle_missed = false;
-
-    QObject::connect(StratoOokWatchdog, &QTimer::timeout, [&]()
-    {
-        if(!StratoOok->active)
-            return;
-
-        auto now = std::chrono::steady_clock::now();
-
-        if(now - StratoOok->starttime > std::chrono::seconds(OOK_INTERVAL))
-        {
-            if(ook_cycle_missed == false)
-                std::cerr << "StratoOokThread cycle missed" << std::endl;
-            ook_cycle_missed = true;
-            StratoOok->inited = false;
-        }
-        else
-            ook_cycle_missed = false;
-
-        if(now - StratoOok->starttime > std::chrono::seconds(OOK_TIMEOUT))
-        {
-            if(StratoOok->activated)
-                std::cerr << "StratoOokThread timeout" << std::endl;
-            StratoOok->activated = false;
-            StratoOok->inited = false;
-
-            QTimer::singleShot(OOK_RESTART * 1000, [&]()
-            {
-                if(!StratoOok->active)
-                {
-                    std::cerr << "StratoOokThread recovered" << std::endl;
-                    StratoOok->activated = true;
-                    return;
-                }
-                else
-                {
-                    std::cerr << "StratoOokThread not responding\nKilling ..." << std::endl;
-                    std::exit(1);
-                }
-            });
-        }
-    });
-    #endif
-
-
-
-
 
     QObject::connect(&StratoApp, &QCoreApplication::aboutToQuit, [&]()
     {
         StratoSensorsThread->quit();
         StratoSensorsThread->wait();
-        #ifdef OOK_USED
-        StratoOokThread->quit();
-        StratoOokThread->wait();
-        #endif
         StratoLorawanThread->quit();
         StratoLorawanThread->wait();
     });
@@ -323,14 +224,8 @@ int main(int argc, char** argv)
 
     StratoSensorsThread->start();
     StratoLorawanThread->start();
-    #ifdef OOK_USED
-    StratoOokThread->start();
-    #endif
     StratoSensorsWatchdog->start(WATCHDOG_INTERVAL);
     StratoLorawanWatchdog->start(WATCHDOG_INTERVAL);
-    #ifdef OOK_USED
-    StratoOokWatchdog->start(WATCHDOG_INTERVAL);
-    #endif
 
     return StratoApp.exec();
 

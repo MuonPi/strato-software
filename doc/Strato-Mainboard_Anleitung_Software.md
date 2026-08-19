@@ -177,7 +177,10 @@
 - Installieren
 
   ```bash
-  sudo apt install ./output/packages/muondetector-daemon_2.1.0libgpiod_armhf.deb
+  make package
+  ```
+  ```bash
+  sudo apt install ./output/packages/muondetector-daemon_2.1.0_armhf.deb
   ```
 
 - Service starten

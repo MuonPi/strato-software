@@ -39,14 +39,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 set(STRATO_SOURCE_FILES
     "${PROJECT_SRC_DIR}/main.cpp"
     "${PROJECT_SRC_DIR}/strato-lorawan.cpp"
-    "${PROJECT_SRC_DIR}/strato-ook.cpp"
     "${PROJECT_SRC_DIR}/strato-sensors.cpp"
     "${PROJECT_SRC_DIR}/logfile.cpp"
 )
 
 set(STRATO_HEADER_FILES
     "${PROJECT_HEADER_DIR}/strato-lorawan.h"
-    "${PROJECT_HEADER_DIR}/strato-ook.h"
     "${PROJECT_HEADER_DIR}/strato-sensors.h"
     "${PROJECT_HEADER_DIR}/strato-config.h"
     "${PROJECT_HEADER_DIR}/globals.h"

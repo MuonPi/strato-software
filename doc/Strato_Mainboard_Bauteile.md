@@ -4,9 +4,11 @@ Bestückung für ein Strato-Mainboard
 
 Die Links sind beispielhaft, Bauteile können aber auch auf anderen Plattformen bestellt werden
 
-- 1x Raspberry Pi Zero 2  
-  <https://www.ebay.de/itm/116873478576?_skw=raspberry+pi+zero+2&itmmeta=01KMG4C0WZR8A4AYDDS5GMXDF7&hash=item1b3633c1b0:g:OLoAAeSwUEtpwp-q&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xA6ABWwZgaPbBOgJYFRjFUHqHeX7paeccn8UZwbmW2SnvkTmSGiYuVRaS5nZdiJ2WRZ6hRjbY893WtAGHM%2FvYp%2BEWENx0R36sqxQK6tdMIktQjHoiK9%2FIEJEg3vDZikA760ZCsuq4kJEgnQr0IN4VKCkAfYvs4FOYIcdrHX%2FIItgIghJtbY0JCZtuJhyVeFmcU4x5YCE39IGnUC3QLb8VIzh9OpqAsA9cC9gRxL%2F6neAMV1jlv49bf%2FyCnolPgTWwM%3D%7Ctkp%3ABk9SR-aOsISkZw>
-- 1x Pinheader 2.54mm; 2x20  
+- 1x Raspberry Pi Zero 2
+  ```bash
+  https://www.ebay.de/itm/116873478576?_skw=raspberry+pi+zero+2&itmmeta=01KMG4C0WZR8A4AYDDS5GMXDF7&hash=item1b3633c1b0:g:OLoAAeSwUEtpwp-q&itmprp=enc%3AAQALAAAA0GfYFPkwiKCW4ZNSs2u11xA6ABWwZgaPbBOgJYFRjFUHqHeX7paeccn8UZwbmW2SnvkTmSGiYuVRaS5nZdiJ2WRZ6hRjbY893WtAGHM%2FvYp%2BEWENx0R36sqxQK6tdMIktQjHoiK9%2FIEJEg3vDZikA760ZCsuq4kJEgnQr0IN4VKCkAfYvs4FOYIcdrHX%2FIItgIghJtbY0JCZtuJhyVeFmcU4x5YCE39IGnUC3QLb8VIzh9OpqAsA9cC9gRxL%2F6neAMV1jlv49bf%2FyCnolPgTWwM%3D%7Ctkp%3ABk9SR-aOsISkZw>
+  ```
+- 1x Pinheader 2.54mm; 2x20
   <https://www.ebay.de/itm/317001298089?_skw=pinheader+2x20&itmmeta=01KMG4FB1XD745K5MXH8S888EV&hash=item49cebff0a9:g:rocAAeSwgwVoUSgF&itmprp=enc%3AAQALAAAA8GfYFPkwiKCW4ZNSs2u11xAcma2cv0GJ6qRZLg3qHiOd0qvEcInTai%2FU6GDreKZKOdZHQihquz%2F%2B8E4JvcwnDv7%2FWCihyxqH%2F%2B9cGkUlFO7eAY6s8jwr9geNr4mvVfQCFN2SaW7FIrRxAEPLzvuaQqmQM9YgHkX9wfrNXdtwbNeie%2FqltzHTtBTBqt8bCn9h2JL0Kl0iAAyIVmj%2BHiCy1mjHjIkofGAUHUjomy7XIOPbUes2Q3Amkg0bJyq5XKWdVqVCIlL8O0t0iwljzjmda6RKWeMUQyLBlIc4LWfdZIjJ4zyChkeUY9%2BogsN7qM4uuw%3D%3D%7Ctkp%3ABFBMurG9hKRn>
 - 1x LoRa Chip RFM95  
   <https://www.ebay.de/itm/406791083521?_skw=rfm95&itmmeta=01KMG5B4XQP0PM8K39NJ8MQYNF&hash=item5eb6a35601:g:vR8AAeSwLlxpv98E&itmprp=enc%3AAQALAAAAwGfYFPkwiKCW4ZNSs2u11xDvxQH0yD%2FNYwg1EsfEjc7C1odaslzWyjf11n6bYbMOuQMux1X66wW%2BgmHIVVHHoqIMSyH5%2BIrSfYpF7hTahfkN6l%2FkOAsK21qGHS6JTlqAIF6i%2FJTu7TlBem9xDigfMiwkLbJj57HlhtCLvkn7V0olHBAfDIUMLr%2BGcGeiEZWxVbRqTNXHbn9kEqDBm0Xj3YJx77gpoxuoRDiz3V7l8Hb4Cx%2BRoh1T6h7sRP8yhxs0Rw%3D%3D%7Ctkp%3ABlBMUJjPrIWkZw>
