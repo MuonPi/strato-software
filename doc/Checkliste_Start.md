@@ -33,11 +33,11 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 ### draußen
 
 - [ ] Heliumflaschen zum Startplatz bringen
-- [ ] Flaschen befestigen, dass sie nicht umfallen können
+- [ ] Flaschen befestigen, sodass sie nicht umfallen können
 - [ ] Druckminderer, 30er Maulschlüssel, Klebeband, Kabelbinder, Zange, Schere, Messer am Startplatz bereit legen
 - [ ] Druckminderer auf die 20 Liter Flasche (die größere) montieren
 - [ ] Eventuell Bereich absperren, in den nur befugte Personen dürfen
-- [ ] Alles Informationen für die Befüllung bereit halten
+- [ ] Alle Informationen für die Befüllung bereit halten
 
 ## 9:00
 
@@ -50,7 +50,7 @@ Puffer und Problemlösung
 # drinnen
 
 - [ ] Strato-Mainboard, falls noch nicht geschehen, einschalten und der JLU bescheid geben
-- [ ] Kamera Videoaufnahme starten, erst dann dessen Ladekabel einstecken
+- [ ] Kameraaufnahme starten, erst danach Ladekabel einstecken
 - [ ] Payload-Box verschließen
 - [ ] Flügel anbringen
 - [ ] Kameralinse säubern
