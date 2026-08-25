@@ -34,7 +34,7 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 
 - [ ] Heliumflaschen zum Startplatz bringen
 - [ ] Flaschen befestigen, sodass sie nicht umfallen können
-- [ ] Druckminderer, 30er Maulschlüssel, Klebeband, Kabelbinder, Zange, Schere, Messer am Startplatz bereit legen
+- [ ] Druckminderer, 30er, 32er Maulschlüssel, Klebeband, Kabelbinder, Zange, Schere, Messer am Startplatz bereit legen
 - [ ] Druckminderer auf die 20 Liter Flasche (die größere) montieren
 - [ ] Eventuell Bereich absperren, in den nur befugte Personen dürfen
 - [ ] Alle Informationen für die Befüllung bereit halten
@@ -47,7 +47,7 @@ Puffer und Problemlösung
 
 # Point of no Return
 
-# drinnen
+### drinnen
 
 - [ ] Strato-Mainboard, falls noch nicht geschehen, einschalten und der JLU bescheid geben
 - [ ] Kameraaufnahme starten, erst danach Ladekabel einstecken
@@ -65,7 +65,7 @@ Puffer und Problemlösung
 - [ ] Entleeren bis noch 10 bar Restdruck übrig sind
 - [ ] Druckminderer schließen und auf die 10 Liter Flasche (die kleinere) montieren, dabei aufpassen, dass kein Helium aus dem Ballon entweichen kann
 - [ ] Druckminderer aufdrehen und bis zum berechneten Druck entleeren
-- [ ] Etwa 3 bar mehr Helium einfüllen
+- [ ] Mindestens 5 bar mehr Helium einfüllen
 - [ ] Schlauch vorsichtig aus dem Ballon entfernen und Ballon gut zudrücken
 - [ ] Ballon wie vorgesehen mit Kabelbindern zuziehen und verkleben
 - [ ] Den Ballonhals zu einer Öse formen und erneut zuziehen und verkleben

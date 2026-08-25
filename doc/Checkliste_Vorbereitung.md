@@ -11,11 +11,11 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Verantwortlichen für Druckminderer festlegen
 - [ ] 4 Helfer zum Stützen des Ballons festlegen
 - [ ] Mitgelieferte Handschuhe bereit legen
-- [ ] Heliummenge berechnen und notieren
+- [ ] Heliummenge berechnen und notieren, dabei sollen Flaschen nur bis 10 bar Restdruck entleert werden
 - [ ] Befestigung für Heliumflaschen überlegen, sodass sie nicht umfallen können
 - [ ] Druckminderer verstehen
 - [ ] Schlauch an den Druckminderer anschließen mit ca 1,5m Länge
-- [ ] 30er Maulschlüssel bereit legen
+- [ ] 30er und 32er Maulschlüssel bereit legen
 
 ## Starterlaubnis
 
@@ -49,6 +49,7 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 
 - [ ] Verantwortlichen für Strato-Finder festlegen
 - [ ] Informieren, wie der Strato-Finder funktioniert
+- [ ] Abo für die SIM Karte abschließen
 - [ ] SIM Karte in den Strato-Finder stecken
 - [ ] Strato-Finder in der Strato-Flights-App registrieren durch Eingabe der IMEI
 - [ ] Funktionstest unter freiem Himmel
@@ -85,5 +86,5 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Alle Punkte, die schon am Tag vor dem Flug vorbereitet werden können, erleichtern den Flugtag
 - [ ] Generalprobentag durchlaufen und alle gelernten Fehler aufschreiben
 - [ ] Alle Tutorials von Strato-Flights auf Youtube ansehen https://www.youtube.com/@stratoflights4589
-- In Stresssituationen keine Panik bekommen, sondern funktionieren und nicht hektisch werden ;)
+- [ ] In Stresssituationen keine Panik bekommen, sondern funktionieren und nicht hektisch werden ;)
 - [ ] Aufmerksam die Checkliste für den Start durchlesen
