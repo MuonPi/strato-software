@@ -154,21 +154,21 @@ void MUONPI::decode(const TcpPacket& packet) {
 
 bool MUONPI::getSds011Pm2Dot5(std::int32_t& _pm2dot5)
 {
+    _pm2dot5 = pm2dot5;
     if (pm2dot5 < 0) {
         return false;
     }
-    _pm2dot5 = pm2dot5;
-    pm2dot5 = -1;
+    pm2dot5 = -999;
     return true;
 }
 
 bool MUONPI::getSds011Pm10Dot0(std::int32_t& _pm10dot0)
 {
+    _pm10dot0 = pm10dot0;
     if (pm10dot0 < 0) {
         return false;
     }
-    _pm10dot0 = pm10dot0;
-    pm10dot0 = -1;
+    pm10dot0 = -999;
     return true;
 }
 
