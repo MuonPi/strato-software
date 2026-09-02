@@ -40,8 +40,8 @@ private:
     std::atomic<double> geo_pos[3] = {-999, -999, -999};
     std::atomic<std::uint8_t> gps_fix{0};
     std::atomic<double> gpio_rate[2] = {-999, -999};
-    std::atomic<uint16_t> pm2dot5 = 0;
-    std::atomic<uint16_t> pm10dot0 = 0;
+    std::atomic<int32_t> pm2dot5 = 0;
+    std::atomic<int32_t> pm10dot0 = 0;
 };
 
 #endif
