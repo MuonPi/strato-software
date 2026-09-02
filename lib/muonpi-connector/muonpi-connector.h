@@ -19,6 +19,8 @@ public:
     bool getXOR(double& rate);
     bool getAND(double& rate);
     bool isConnected();
+    bool getSds011Pm2Dot5(std::int32_t& _pm2dot5);
+    bool getSds011Pm10Dot0(std::int32_t& _pm10dot0);
 
 private:
     void makeConnection();
@@ -38,6 +40,8 @@ private:
     std::atomic<double> geo_pos[3] = {-999, -999, -999};
     std::atomic<std::uint8_t> gps_fix{0};
     std::atomic<double> gpio_rate[2] = {-999, -999};
+    std::atomic<uint16_t> pm2dot5 = 0;
+    std::atomic<uint16_t> pm10dot0 = 0;
 };
 
 #endif

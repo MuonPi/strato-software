@@ -19,6 +19,14 @@ struct Globals
     std::atomic<uint64_t> position_update_count {0};
     std::atomic<uint8_t> gps_fix {0};
 
+    std::atomic<double> pm2dot5 {0};
+    std::atomic<double> pm2dot5_mean {0};
+    std::atomic<uint16_t> pm2dot5_count {0};
+
+    std::atomic<double> pm10dot0 {0};
+    std::atomic<double> pm10dot0_mean {0};
+    std::atomic<uint16_t> pm10dot0_count {0};
+
     std::atomic<double> battery_voltage {0};
     std::atomic<double> battery_voltage_mean {0};
     std::atomic<uint16_t> battery_voltage_count {0};

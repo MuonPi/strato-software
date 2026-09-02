@@ -443,6 +443,32 @@ bool Sensors::execute()
                     // std::cout << "getAND: " <<  AND_temp << std::endl;
                 }
             }
+
+            int32_t pm2dot5 = 0;
+            if (StratoMUONPI().getSds011Pm2Dot5(pm2dot5))
+            {
+                if (pm2dot5 > -1)
+                {
+                    StratoGlobals.pm2dot5 = pm2dot5;
+                    StratoGlobals.pm2dot5 = ((StratoGlobals.pm2dot5_mean * StratoGlobals.pm2dot5_count) + pm2dot5) / (StratoGlobals.pm2dot5_count + 1);
+                    StratoGlobals.pm2dot5_count++;
+                }
+            }
+
+            int32_t pm10dot0 = 0;
+            if (StratoMUONPI().getSds011Pm10Dot0(pm10dot0))
+            {
+                if (pm10dot0 > -1)
+                {
+                    StratoGlobals.pm10dot0 = pm10dot0;
+                    StratoGlobals.pm10dot0 = ((StratoGlobals.pm10dot0_mean * StratoGlobals.pm10dot0_count) + pm10dot0) / (StratoGlobals.pm10dot0_count + 1);
+                    StratoGlobals.pm10dot0_count++;
+                }
+            }
+            if (pm2dot5 > -1 || pm10dot0 > -1) {
+                double sds011_tmp[2] = {static_cast<double>(pm2dot5), static_cast<double>(pm10dot0)};
+                writeLogfile("particles_sds011", timestamp_filename, timestamp_value, sds011_tmp, 2);
+            }
         }
         #endif
 

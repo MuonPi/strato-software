@@ -5,6 +5,7 @@
 #include "network/tcpmessage_keys.h"
 #include "data/events/ubx_event.h"
 #include "data/events/gpio_rate_event.h"
+#include "data/events/sds011_event.h"
 #include "capnp/capnp_codec.h"
 #include <boost/asio.hpp>
 #include <iostream>
@@ -144,6 +145,31 @@ void MUONPI::decode(const TcpPacket& packet) {
         // std::cout << "Rate " << (whichRate == 0 ? "XOR" : "AND") << " " << averageValue << std::endl;
         return;
     }
+    else if (msgID == TCP_MSG_KEY::MSG_SDS011_SAMPLE) {
+        auto event = CapnpCodec<Sds011Event>::decode(packet.payload);
+        pm2dot5 = static_cast<std::int32_t>(event.pm2dot5);
+        pm10dot0 = static_cast<std::int32_t>(event.pm10dot0);
+    }
+}
+
+bool MUONPI::getSds011Pm2Dot5(std::int32_t& _pm2dot5)
+{
+    if (pm2dot5 < 0) {
+        return false;
+    }
+    _pm2dot5 = pm2dot5;
+    pm2dot5 = -1;
+    return true;
+}
+
+bool MUONPI::getSds011Pm10Dot0(std::int32_t& _pm10dot0)
+{
+    if (pm10dot0 < 0) {
+        return false;
+    }
+    _pm10dot0 = pm10dot0;
+    pm10dot0 = -1;
+    return true;
 }
 
 bool MUONPI::getPosition(double* position)
