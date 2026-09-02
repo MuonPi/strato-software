@@ -212,20 +212,38 @@ bool init_as7331()
         std::cerr << "AS7331 init failed" << std::endl;
         return false;
     }
+
+    // Reset sensor
     StratoAS7331().reset();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    // Enter configuration mode
+    StratoAS7331().setOpState(AS7331::OP_STATE::CONFIGURATION);
+
+    // Maximum sensitivity
     StratoAS7331().setGain(AS7331::GAIN::_2048x);
-    if(StratoAS7331().identify())
+
+    // 1024 ms integration time
+    StratoAS7331().setIntegrationTime(10);
+
+    // Now switch to measurement mode
+    StratoAS7331().setOpState(AS7331::OP_STATE::MEASUREMENT);
+
+    if (StratoAS7331().identify())
     {
         std::cout << "AS7331 inited" << std::endl;
+        std::cout << StratoAS7331().getConfig();
+
         as7331_log = true;
         return true;
     }
-    else if(as7331_log)
+
+    if (as7331_log)
     {
         std::cerr << "AS7331 init failed" << std::endl;
         as7331_log = false;
     }
+
     return false;
 }
 #endif
@@ -561,45 +579,63 @@ bool Sensors::execute()
         #endif
 
 
-
         #ifdef AS7331_ADDR
         if (as7331_inited)
         {
             StratoAS7331().startMeasurement();
 
             AS7331::Status status = StratoAS7331().opStatus();
-            for (uint8_t i{0}; i < 100 && !status.nData; i++)
+
+            // TIME = 10 -> 1024 ms integration time.
+            // Give the sensor some additional margin.
+            for (uint16_t i{0}; i < 1500 && !status.nData; ++i)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 status = StratoAS7331().opStatus();
             }
 
-            auto uva = StratoAS7331().readUVA();
-            auto uvb = StratoAS7331().readUVB();
-            auto uvc = StratoAS7331().readUVC();
-
-            if (status.nData && uva.has_value() && uvb.has_value() && uvc.has_value())
+            if (status.nData)
             {
-                double as7331_uv_temp[AS7331_UV_CHANNELS] {uva.value(), uvb.value(), uvc.value()};
+                auto uva = StratoAS7331().readUVA();
+                auto uvb = StratoAS7331().readUVB();
+                auto uvc = StratoAS7331().readUVC();
 
-                // for(uint8_t i{0}; i < AS7331_UV_CHANNELS; i++)
-                // {
-                //     StratoGlobals.as7331_uv[i] = as7331_uv_temp[i];
-                //     StratoGlobals.as7331_uv_mean[i] = ((StratoGlobals.as7331_uv_mean[i] * StratoGlobals.as7331_uv_count) + as7331_uv_temp[i]) / (StratoGlobals.as7331_uv_count + 1);
-                // }
-                // StratoGlobals.as7331_uv_count++;
-                writeLogfile("uv_as7331", timestamp_filename, timestamp_value, as7331_uv_temp, AS7331_UV_CHANNELS);
-                // std::cout << "getAS7331UV: " << as7331_uv_temp[0] << " " << as7331_uv_temp[1] << " " << as7331_uv_temp[2] << std::endl;
+                if (uva.has_value() && uvb.has_value() && uvc.has_value())
+                {
+                    double as7331_uv_temp[AS7331_UV_CHANNELS]{
+                        uva.value(),
+                        uvb.value(),
+                        uvc.value()
+                    };
+
+                    writeLogfile(
+                        "uv_as7331",
+                        timestamp_filename,
+                        timestamp_value,
+                        as7331_uv_temp,
+                        AS7331_UV_CHANNELS
+                    );
+                }
+                else
+                {
+                    if (as7331_log)
+                        std::cerr << "AS7331 read error" << std::endl;
+
+                    as7331_inited = init_as7331();
+                }
             }
             else
             {
-                if(as7331_log)
-                    std::cerr << "AS7331 read error" << std::endl;
+                if (as7331_log)
+                    std::cerr << "AS7331 measurement timeout" << std::endl;
+
                 as7331_inited = init_as7331();
             }
         }
         else
+        {
             as7331_inited = init_as7331();
+        }
         #endif
 
 
