@@ -89,6 +89,32 @@ bool init_bme280()
 #endif
 
 
+#ifdef BME280_2_ADDR
+BME280& StratoBME280_2()
+{
+    static BME280 device(BME280_2_ADDR);
+    return device;
+}
+bool bme280_2_inited = false;
+bool bme280_2_log = true;
+bool init_bme280_2()
+{
+    if(StratoBME280_2().init())
+    {
+        std::cout << "BME280_2 inited" << std::endl;
+        bme280_2_log = true;
+        return true;
+    }
+    else if(bme280_2_log)
+    {
+        std::cerr << "BME280_2 init failed" << std::endl;
+        bme280_2_log = false;
+    }
+    return false;
+}
+#endif
+
+
 #ifdef QMC5883_ADDR
 QMC5883& StratoQMC5883()
 {
@@ -386,6 +412,9 @@ bool Sensors::execute()
             #endif
             #ifdef BME280_ADDR
             bme280_inited = false;
+            #endif
+            #ifdef BME280_2_ADDR
+            bme280_2_inited = false;
             #endif
             #ifdef SHT31_ADDR
             sht31_inited = false;
@@ -752,6 +781,64 @@ bool Sensors::execute()
         }
         else
             bme280_inited = init_bme280();
+        #endif
+
+
+
+        #ifdef BME280_2_ADDR
+        if (bme280_2_inited)
+        {
+            TPH tph_temp {0};
+            tph_temp = StratoBME280_2().getTPHValues();
+
+
+            if (tph_temp.T > -141.0)
+            {
+                // StratoGlobals.temperature = tph_temp.T;
+                // StratoGlobals.temperature_mean = ((StratoGlobals.temperature_mean * StratoGlobals.temperature_count) + tph_temp.T) / (StratoGlobals.temperature_count + 1);
+                // StratoGlobals.temperature_count++;
+                writeLogfile("temperature_bme280_2", timestamp_filename, timestamp_value, &tph_temp.T, 1);
+                // std::cout << "getTemperature: " << tph_temp.T << std::endl;
+            }
+            else
+            {
+                if(bme280_2_log)
+                    std::cerr << "BME280_2 read error" << std::endl;
+                bme280_2_inited = init_bme280_2();
+            }
+
+            if (tph_temp.P > -999.0)
+            {
+                // StratoGlobals.pressure = tph_temp.P;
+                // StratoGlobals.pressure_mean = ((StratoGlobals.pressure_mean * StratoGlobals.pressure_count) + tph_temp.P) / (StratoGlobals.pressure_count + 1);
+                // StratoGlobals.pressure_count++;
+                writeLogfile("pressure_bme280_2", timestamp_filename, timestamp_value, &tph_temp.P, 1);
+                // std::cout << "getPressure: " << tph_temp.P << std::endl;
+            }
+            else
+            {
+                if(bme280_2_log)
+                    std::cerr << "BME280_2 read error" << std::endl;
+                bme280_2_inited = init_bme280_2();
+            }
+
+            if (tph_temp.H > -999.0)
+            {
+                // StratoGlobals.humidity = tph_temp.H;
+                // StratoGlobals.humidity_mean = ((StratoGlobals.humidity_mean * StratoGlobals.humidity_count) + tph_temp.H) / (StratoGlobals.humidity_count + 1);
+                // StratoGlobals.humidity_count++;
+                writeLogfile("humidity_bme280_2", timestamp_filename, timestamp_value, &tph_temp.H, 1);
+                // std::cout << "getHumidity: " << tph_temp.H << std::endl;
+            }
+            else
+            {
+                if(bme280_2_log)
+                    std::cerr << "BME280_2 read error" << std::endl;
+                bme280_2_inited = init_bme280_2();
+            }
+        }
+        else
+            bme280_2_inited = init_bme280_2();
         #endif
 
 
