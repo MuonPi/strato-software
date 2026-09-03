@@ -9,7 +9,7 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 ## Heliumbefüllung
 
 - [ ] Verantwortlichen für Druckminderer festlegen
-- [ ] 4 Helfer zum Stützen des Ballons festlegen
+- [ ] 4 Helfer zum Stützen des Ballons festlegen, die keine spitzen Gegenstände tragen (zB Armbänder)
 - [ ] Mitgelieferte Handschuhe bereit legen
 - [ ] Heliummenge berechnen und notieren, dabei sollen Flaschen nur bis 10 bar Restdruck entleert werden
 - [ ] Befestigung für Heliumflaschen überlegen, sodass sie nicht umfallen können
@@ -60,7 +60,8 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 
 - [ ] Verantwortlichen für Knoten und Montage der Bayload Box festlegen
 - [ ] Payload-Box vorbereiten, Loch für Kamera, Flügelbefestigung
-- [ ] Anordnung der Komponenten in der Payload-Box überlegen und welche Komponenten schon am Tag vor dem Start montiert werden können
+- [ ] Anordnung der Komponenten in der Payload-Box überlegen, sodass nichts bei Vibrationen verrutschen kann
+- [ ] Überlegen, welche Komponenten schon am Tag vor dem Start montiert werden können
 - [ ] Payload-Box und Flügel neon (fluoreszierend) ansprühen
 - [ ] Kontaktzettel an die Außenseite kleben und in den Innenraum legen
 - [ ] Sensoren außerhalb der Payload-Box montieren
@@ -73,8 +74,8 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 
 ## Individuelle Komponenten
 
-- [ ] vollständiger Funktionstest
-- [ ] aufladen
+- [ ] Vollständiger Funktionstest
+- [ ] Aufladen
 
 ## Sonstiges
 
@@ -82,6 +83,7 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Verantwortlichen festlegen für den Informationsaustausch zwischen beiden Gruppen
 - [ ] Raum festlegen und Technik testen, damit das Meeting am Flugtag reibungslos läuft
 - [ ] Alle Komponenten vollständig aufladen
+- [ ] Alle metallischen Kontakte, die sich berühren könnten, isolieren
 - [ ] Alles soweit es geht in die Payload-Box vormontieren, bedenken, dass manche Komponenten noch geladen werden oder eingeschaltet werden müssen
 - [ ] Alle Punkte, die schon am Tag vor dem Flug vorbereitet werden können, erleichtern den Flugtag
 - [ ] Generalprobentag durchlaufen und alle gelernten Fehler aufschreiben

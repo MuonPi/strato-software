@@ -37,6 +37,7 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Druckminderer, 30er, 32er Maulschlüssel, Klebeband, Kabelbinder, Zange, Schere, Messer am Startplatz bereit legen
 - [ ] Druckminderer auf die 20 Liter Flasche (die größere) montieren
 - [ ] Eventuell Bereich absperren, in den nur befugte Personen dürfen
+- [ ] Spitze Gegenstände ausziehen
 - [ ] Alle Informationen für die Befüllung bereit halten
 
 ## 9:00
@@ -74,7 +75,7 @@ Puffer und Problemlösung
 
 ### drinnen
 
-- [ ] Kabel der Payload-Box abziehen
+- [ ] Ladekabel der Payload-Box abziehen
 - [ ] Payload-Box und aufgerollte Schnur mit Fallschirm nach draußen bringen
 
 ### draußen

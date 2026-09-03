@@ -19,3 +19,4 @@
 - Bei der mitgelieferten Kamera muss zuerst die Aufnahme gestartet und dann die Powerbank angeschlossen werden, sonst bricht der Ladevorgang eventuell ab.
 - Mit dem Strato-Mainboard ist leider nicht jedes USB-C Netzteil kompatibel. Es sollten mehrere USB-C Ladekabel und Netzteile durchprobiert werden. Eine rote/blaue LED auf dem Laderegler muss leuchten, sonst ist das Ladekabel nicht kompatibel.
 - Das Strato-Mainboard sollte so verbaut werden, dass man auch noch bei geschlossener Payload-Box durch Löcher im Styropor den Anschalter und die Ladebuche erreichen kann.
+- Für das Strato-Mainboard kann es sinnvoll sein, eine Powerbank am zum Laden anzuschließen, die man dann mit zum Startplatz nehmen kann und das System noch bis kurz vorm Start laden kann.
