@@ -250,15 +250,15 @@ bool init_as7331()
     StratoAS7331().setGain(AS7331::GAIN::_2048x);
 
     // 1024 ms integration time
-    StratoAS7331().setIntegrationTime(10);
-
-    // Now switch to measurement mode
-    StratoAS7331().setOpState(AS7331::OP_STATE::MEASUREMENT);
+    StratoAS7331().setIntegrationTime(6);
 
     if (StratoAS7331().identify())
     {
         std::cout << "AS7331 inited" << std::endl;
-        std::cout << StratoAS7331().getConfig();
+        // std::cout << StratoAS7331().getConfig();
+
+        // Now switch to measurement mode
+        StratoAS7331().setOpState(AS7331::OP_STATE::MEASUREMENT);
 
         as7331_log = true;
         return true;
