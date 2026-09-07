@@ -85,3 +85,4 @@
 
 - Stecker und SD-Karte dürfen niemals im laufenden Betrieb ein- und ausgesteckt werden. Der Schalter muss immer auf OFF sein.
 - Niemals den Raspberry Pi während des Hoch- oder Runterfahrens ausschalten, das kann zum Zerstören des Dateisystems führen. Beide Vorgänge dauern maximal eine Minute.
+- Der Detektor des MuonPi muss waagrecht liegen, sonst kann er keine kosmischen Teilchen aufnehmen.
