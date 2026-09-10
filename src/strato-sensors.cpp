@@ -15,6 +15,7 @@
 #include "i2c/qmc5883.h"
 #include "i2c/sht31.h"
 #include "i2c/ozone3click.h"
+#include "i2c/adxl355.h"
 
 #include "strato-sensors.h"
 #include "logfile.h"
@@ -350,8 +351,43 @@ bool init_sht31()
 
 
 
+#ifdef ADXL355_ADDR
 
+ADXL355& StratoADXL355()
+{
+    static ADXL355 device(ADXL355_ADDR);
+    return device;
+}
 
+bool adxl355_inited = false;
+
+bool adxl355_log = true;
+
+bool init_adxl355()
+{
+    if(StratoADXL355().identify())
+    {
+        StratoADXL355().init();
+        StratoADXL355().setRange(ADXL355::RANGE::_4G);
+        // std::cout << "range set" << std::endl;
+        StratoADXL355().setODR(ADXL355::ODR::_3_906HZ);
+        // std::cout << "odr set" << std::endl;
+        StratoADXL355().setHPF(ADXL355::HPF::OFF);
+        // std::cout << "hpf set" << std::endl;
+        StratoADXL355().setMode(ADXL355::MODE::MEASUREMENT);
+        std::cout << "ADXL355 inited" << std::endl;
+        adxl355_log = true;
+        return true;
+    }
+    else if(adxl355_log)
+    {
+        std::cerr << "ADXL355 init failed" << std::endl;
+        adxl355_log = false;
+    }
+    return false;
+}
+
+#endif
 
 
 
@@ -424,6 +460,9 @@ bool Sensors::execute()
             #endif
             #ifdef OZONE3CLICK_ADDR
             ozone3click_inited = false;
+            #endif
+            #ifdef ADXL355_ADDR
+            adxl355_inited = false;
             #endif
             inited = true;
         }
@@ -947,6 +986,43 @@ bool Sensors::execute()
         else
             ozone3click_inited = init_ozone3click();
         #endif
+        #endif
+
+
+
+        #ifdef ADXL355_ADDR
+
+        if (adxl355_inited)
+        {
+            auto acceleration = StratoADXL355().readAcceleration();
+            auto temperature = StratoADXL355().readTemperature();
+
+            if (acceleration.has_value())
+            {
+                const double ax = acceleration->x;
+                const double ay = acceleration->y;
+                const double az = acceleration->z;
+                double temp = temperature.value();
+
+                double acceleration_temp[4] = {ax, ay, az, temp};
+
+                // std::cout << ax << " " << ay << " " << az << " " << temp << std::endl;
+
+                writeLogfile("acceleration_adxl355", timestamp_filename, timestamp_value, acceleration_temp, 4);
+            }
+            else
+            {
+                if (adxl355_log)
+                    std::cerr << "ADXL355 read error" << std::endl;
+
+                adxl355_inited = init_adxl355();
+            }
+        }
+        else
+        {
+            adxl355_inited = init_adxl355();
+        }
+
         #endif
 
 
