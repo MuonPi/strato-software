@@ -56,18 +56,19 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Stato-Finder aus schalten durch den Schalter unter der Klappe
 - [ ] Strato-Finder aufladen
 
-## Payload Box
+## Payload-Box
 
-- [ ] Verantwortlichen für Knoten und Montage der Bayload Box festlegen
+- [ ] Verantwortlichen für Knoten und Montage der Bayload-Box festlegen
 - [ ] Payload-Box vorbereiten, Loch für Kamera, Flügelbefestigung
 - [ ] Anordnung der Komponenten in der Payload-Box überlegen, sodass nichts bei Vibrationen verrutschen kann
 - [ ] Überlegen, welche Komponenten schon am Tag vor dem Start montiert werden können
 - [ ] Payload-Box und Flügel neon (fluoreszierend) ansprühen
 - [ ] Kontaktzettel an die Außenseite kleben und in den Innenraum legen
 - [ ] Sensoren außerhalb der Payload-Box montieren
+- [ ] Payload-Box wiegen, es müssen 100g Reserve für Schnüre, Fallschirm und Klebeband bleiben
 - [ ] Schnurstücke gemäß der Anleitung von Strato-Flights zuschneiden
 - [ ] Fallschirm an der richtigen Stelle festknoten
-- [ ] Gesamte Schnur mit Fallschirm auf einer Rolle (zB leere 3D Druck-Filament-Rolle) aufwickeln, das Schnurende für den Ballon muss als erstes abgewickelt werden können, an dem Anfang der Schnur muss die Payload-Box noch vor dem Abrollen befestigt werden können
+- [ ] Gesamte Schnur mit Fallschirm auf einer Rolle (zB leere 3D-Druck-Filamentrolle) aufwickeln, das Schnurende für den Ballon muss als erstes abgewickelt werden können, an dem Anfang der Schnur muss die Payload-Box noch vor dem Abrollen befestigt werden können
 - [ ] Schnur gemäß der Anleitung am Deckel der Payload-Box befestigen
 - [ ] Informieren, wie die Payload-Box und der Ballon richtig verschlossen und verknotet wird
 - [ ] Ausreichend Klebeband und Kabelbinder bereit legen
@@ -88,5 +89,5 @@ Die Liste sollte durch individuelle Punkte eurer eigenen Komponenten ergänzt we
 - [ ] Alle Punkte, die schon am Tag vor dem Flug vorbereitet werden können, erleichtern den Flugtag
 - [ ] Generalprobentag durchlaufen und alle gelernten Fehler aufschreiben
 - [ ] Alle Tutorials von Strato-Flights auf Youtube ansehen https://www.youtube.com/@stratoflights4589
-- [ ] In Stresssituationen keine Panik bekommen, sondern funktionieren und nicht hektisch werden ;)
 - [ ] Aufmerksam die Checkliste für den Start durchlesen
+- [ ] In Stresssituationen keine Panik bekommen, sondern funktionieren und nicht hektisch werden ;)

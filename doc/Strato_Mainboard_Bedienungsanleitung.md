@@ -2,22 +2,39 @@
 # Strato-Mainboard Betriebsanleitung
 
 
+## Hinweise
+
+- Das Board muss extrem vorsichtig behandelt werden, da alle Kontakte ungeschützt sind. Alle metallischen Gegenstände müssen fern gehalten werden, da sonst Kurzschlussgefahr besteht.
+- Stecker und SD-Karte dürfen niemals im laufenden Betrieb ein- und ausgesteckt werden. Der Schalter muss dafür immer auf OFF sein.
+- Niemals den Raspberry Pi während des Hoch- oder Runterfahrens ausschalten, das kann zum Zerstören des Dateisystems führen. Beide Vorgänge dauern maximal eine Minute.
+
 ## Vorbereitung
 
-- Schalter auf OFF stellen, Akku abziehen
-- Detektor mit dem MuonPi durch UFL-Kabel verbinden. Richtung beachten: BIAS auf dem MuonPi mit BIAS auf dem Detektor, IN auf dem MuonPi mit OUT auf dem Detektor
-- Es empfiehlt sich, alle UFL-Stecker am MuonPi und Detekor mit Heißkleber festzukleben, damit sie sich nicht lösen können
+- Schalter auf OFF stellen
+- Akku abziehen
+- Detektor mit dem MuonPi durch UFL-Kabel verbinden
+  - Richtung beachten: BIAS auf dem MuonPi mit BIAS auf dem Detektor, IN auf dem MuonPi mit OUT auf dem Detektor
+  - Es empfiehlt sich, alle UFL-Stecker am MuonPi und Detekor mit Heißkleber festzukleben, damit sie sich nicht lösen können
+  - Der Detektor des MuonPi muss waagrecht liegen, sonst kann er keine kosmischen Teilchen aufnehmen
 - MuonPi auf das Strato-Mainboard stecken, darauf den Raspberry Pi
 - MuonPi und Raspberry Pi auf dem Strato Mainboard festschrauben. Es reicht an zwei gegenüberliegenden Ecken.
-- Alle verwendeten Sensoren einstecken
-- GPS-Antenne einstecken und verschrauben. Sie befindet sich direkt am MuonPi Board.
+- Es empfiehlt sich, das Strato-Mainboard in Frischhaltefolie einzupacken, damit es elektrisch isoliert ist, Löcher für die Anschlüsse können hinein geschnitten werden
+- Alle verwendeten Sensoren einstecken.
+- GPS-Antenne einstecken und verschrauben. Sie befindet sich direkt auf dem MuonPi Board.
+  - Die weiße Fläche der GPS-Antenne muss nach unten zeigen, seitlich ist aber auch möglich
+  - Es empfiehlt sich, die GPS-Antenne außerhalb der Box zu platzieren, zum Beispiel auf dem Deckel
 - LoRa-Antenne einstecken und verschrauben. Sie befindet sich auf dem Strato-Mainboard mit der Kennzeichnung "ANT_LORA"
+  - Die LoRa-Antenne muss mit der Spitze nach unten zeigen und kann einfach am Kabel unten aus der Box heraus hängen
+- Es ist sinnvoll, das Strato-Mainboard so in der Box zu platzieren, dass man von außen durch Löcher im Styropor den Ladeanschluss und den Schalter erreichen kann. Dadurch kann es bis kurz vor den Start schon im Kabelbetrieb verwendet werden.
 - Akku einstecken
 
 ## Inbetriebnahme
 
 - Hotspot einschalten
 - Schalter auf ON stellen
+
+### Die folgenden Schritte werden von der JLU über Fernzugriff durchgeführt
+
 - Am PC mit Powershell oder Terminal mit dem Raspberry Pi verbinden:
   ```bash
   ssh Benutzername@Hostname.local
@@ -80,9 +97,3 @@
   tail -f pressure_bme280_2026-09-03_16-00-00.txt
   ```
 - Die Werte in der neusten Log-Datei sollten sich sekündlich aktualisieren
-
-## Hinweise
-
-- Stecker und SD-Karte dürfen niemals im laufenden Betrieb ein- und ausgesteckt werden. Der Schalter muss immer auf OFF sein.
-- Niemals den Raspberry Pi während des Hoch- oder Runterfahrens ausschalten, das kann zum Zerstören des Dateisystems führen. Beide Vorgänge dauern maximal eine Minute.
-- Der Detektor des MuonPi muss waagrecht liegen, sonst kann er keine kosmischen Teilchen aufnehmen.

@@ -11,6 +11,7 @@
 - Das Festhalten des Ballons ist sehr anstrengend, es wird eine Person mit guter Fingerkraft und Ausdauer benötigt.
 - Etwas mehr Helium, als berechnet, sollte befüllt werden, da der Ballon im schlimmsten Fall sonst nicht platzen und in einer hohen Luftschicht bleiben kann. Mindestens 5 bar mehr befüllen.
 - Wir empfehlen keinen Countdown zu machen beim Loslassen, außer es ist wirklich windstill. Sobald der Ballon senkrecht steht, sollte man so bald wie möglich los lassen, sonst riskiert man einen Windstoß.
+- Wir empfehlen, den Ballon einfach an der roten Schnur zwischen Payload-Box, Fallschirm und Ballon hoch steigen zu lassen, dann die Payload-Box in die Hand zu nehmen und starten zu lassen. In der Anleitung ist ein anderer Weg beschrieben mit einem System, eine Schnur durch eine Öse zu fädeln und daran loszulassen, das empfehlen wir nicht, da sich diese zusätzliche Schnur schnell zu verfängt.
 - Es ist sinnvoll, die Kontaktdaten der Schule gut lesbar außen auf die Sonde zu schreiben und die Info, dass es ein ungefährliches Schülerexperiment ist. Auch innen sollte sich ein Zettel befinden, falls der äußere abfällt.
 
 
@@ -18,5 +19,5 @@
 
 - Bei der mitgelieferten Kamera muss zuerst die Aufnahme gestartet und dann die Powerbank angeschlossen werden, sonst bricht der Ladevorgang eventuell ab.
 - Mit dem Strato-Mainboard ist leider nicht jedes USB-C Netzteil kompatibel. Es sollten mehrere USB-C Ladekabel und Netzteile durchprobiert werden. Eine rote/blaue LED auf dem Laderegler muss leuchten, sonst ist das Ladekabel nicht kompatibel.
-- Das Strato-Mainboard sollte so verbaut werden, dass man auch noch bei geschlossener Payload-Box durch Löcher im Styropor den Anschalter und die Ladebuche erreichen kann.
-- Für das Strato-Mainboard kann es sinnvoll sein, eine Powerbank am zum Laden anzuschließen, die man dann mit zum Startplatz nehmen kann und das System noch bis kurz vorm Start laden kann.
+- Das Strato-Mainboard sollte so verbaut werden, dass man auch noch bei geschlossener Payload-Box durch Löcher im Styropor den Anschalter und die Ladebuche erreichen kann. Alle metallischen Kontakte sollten isoliert werden.
+- Falls keine Steckdose in der Nähe des Startplatzes ist, kann es für das Strato-Mainboard sinnvoll sein, eine Powerbank zum Laden anzuschließen, die man dann mit zum Startplatz nehmen und das System noch bis kurz vorm Start laden kann. Diese muss ebenfalls getestet werden, ob sie mit dem Laderegler kompatibel ist.
