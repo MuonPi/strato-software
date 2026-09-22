@@ -83,7 +83,6 @@ def plot_merge_file_versus_time(title, y_label, merge_file, channels):
     merge_file_path = os.path.join(MERGE_DIR, merge_file)
     df = pd.read_csv(merge_file_path)
     df["timestamp"] = pd.to_datetime(df["timestamp"])
-    print(df)
 
 
 
